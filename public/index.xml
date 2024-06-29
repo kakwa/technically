@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Technically some technical stuff, or not.</title>
+    <link>http://localhost:1313/</link>
+    <description>Recent content on Technically some technical stuff, or not.</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <copyright>&amp;copy; &lt;a href=&#34;https://github.com/kakwa&#34;&gt;Pierre-Francois Carpentier&lt;/a&gt; 2024</copyright>
+    <lastBuildDate>Sat, 29 Jun 2024 22:50:48 +0200</lastBuildDate>
+    <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Reversing WoWs Resource Format</title>
+      <link>http://localhost:1313/posts/wows_depack/</link>
+      <pubDate>Sat, 29 Jun 2024 22:50:48 +0200</pubDate>
+      <guid>http://localhost:1313/posts/wows_depack/</guid>
+      <description>Introduction First, a disclaimer, this is the first time I&amp;rsquo;m doing this kind of exercise, so the process described here is far from ideal, and the tools used less than adequate.&#xA;Also, I&amp;rsquo;m writting this after various findings, so the process seems quite straight forward. In reallity, it was full of dead ends and flows of ideas (good and bad) that came-up while staring at hexdumps for hours.&#xA;Motivation I&amp;rsquo;ve always wanted to play around World of Warships game content for various reasons, from extracting things like armor layouts or in game parameters to the 3D models themselves.</description>
+    </item>
+    <item>
+      <title>Reverse Engineering Tips</title>
+      <link>http://localhost:1313/posts/reverse_tips/</link>
+      <pubDate>Sat, 29 Jun 2024 22:01:30 +0200</pubDate>
+      <guid>http://localhost:1313/posts/reverse_tips/</guid>
+      <description>Data types These are more rule of thumbs patterns and need to be used looking at the surronding data.&#xA;Unsigned integers 32 bits integers generally look like: 02 2F 00 00: higher bytes tend to be 00, lower tend to be used.&#xA;Same thing applies to 64 bits integers.&#xA;They are typilcally used to describe the following elements:&#xA;counts size offsets Offsets tend to have values divided by 4 or 8 (32 or 64 bits blocks), they also tend to be 64 bits these days (size_t).</description>
+    </item>
+  </channel>
+</rss>

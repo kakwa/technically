@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on Technically some technical stuff, or not.</title>
+    <link>http://localhost:1313/posts/</link>
+    <description>Recent content in Posts on Technically some technical stuff, or not.</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <copyright>&amp;copy; &lt;a href=&#34;https://github.com/kakwa&#34;&gt;Pierre-Francois Carpentier&lt;/a&gt; 2024</copyright>
+    <lastBuildDate>Sat, 29 Jun 2024 22:50:48 +0200</lastBuildDate>
+    <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Wows_depack</title>
+      <link>http://localhost:1313/posts/wows_depack/</link>
+      <pubDate>Sat, 29 Jun 2024 22:50:48 +0200</pubDate>
+      <guid>http://localhost:1313/posts/wows_depack/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Reverse Engineering Tips</title>
+      <link>http://localhost:1313/posts/reverse_tips/</link>
+      <pubDate>Sat, 29 Jun 2024 22:01:30 +0200</pubDate>
+      <guid>http://localhost:1313/posts/reverse_tips/</guid>
+      <description>Data types These are more rule of thumbs patterns and need to be used looking at the surronding data.&#xA;Unsigned integers 32 bits integers generally look like: 02 2F 00 00: higher bytes tend to be 00, lower tend to be used.&#xA;Same thing applies to 64 bits integers.&#xA;They are typilcally used to describe the following elements:&#xA;counts size offsets Offsets tend to have values divided by 4 or 8 (32 or 64 bits blocks), they also tend to be 64 bits these days (size_t).</description>
+    </item>
+  </channel>
+</rss>

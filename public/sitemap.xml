@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>http://localhost:1313/posts/</loc>
+    <lastmod>2024-06-29T22:50:48+02:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/</loc>
+    <lastmod>2024-06-29T22:50:48+02:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/wows_depack/</loc>
+    <lastmod>2024-06-29T22:50:48+02:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/posts/reverse_tips/</loc>
+    <lastmod>2024-06-29T22:01:30+02:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/tags/</loc>
+  </url>
+</urlset>
