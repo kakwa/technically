@@ -7,12 +7,11 @@ draft = true
 > Series navigation
 > - All parts: [/posts/wows_depack_index/](/posts/wows_depack_index/)
 > - Previous: Part 2 — Getting The Metadata → [/posts/wows_depack_part2/](/posts/wows_depack_part2/)
+> Quick recap (from Part 2)
+> - `.idx` files provide names, parent relationships, and pointers to `.pkg` chunks.
+> - Header holds counts and offsets; middle section holds `\0`-separated names; third section links metadata IDs to `.pkg` offsets and IDs; footer stores the `.pkg` filename.
 
 # Starting The Actual Coding
-
-### Quick recap (from Part 2)
-- `.idx` files provide names, parent relationships, and pointers to `.pkg` chunks.
-- Header holds counts and offsets; middle section holds `\0`-separated names; third section links metadata IDs to `.pkg` offsets and IDs; footer stores the `.pkg` filename.
 
 ### Defining the structures
 

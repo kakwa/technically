@@ -50,39 +50,34 @@ kakwa@linux Games/World of Warships » ls
 
 [...] api-ms-win-crt-runtime-l1-1-0.dll  concrt140.dll             msvcp140_codecvt_ids.dll  Reports               vcruntime140_1.dll
 [...] api-ms-win-crt-stdio-l1-1-0.dll    crashes                   msvcp140.dll              res_packages          vcruntime140.dll
-[...] api-ms-win-crt-string-l1-1-0.dll   currentrealm.txt          patche                    res_unpack            Wallpapers
 [...] api-ms-win-crt-time-l1-1-0.dll     GameCheck                 placeholder.txt           screenshot            WorldOfWarships.exe
-[...] api-ms-win-crt-utility-l1-1-0.dll  lib                       platform64.dll            steam_api64.dll       wowsunpack.exe
-[...] app_type.xml                       mods_preferences.xml      preferences.xml           steam_autocloud.vdf   WOWSUnpackTool.cfg
-[...] Aslain_Modpack                     msvcp140_1.dll            profile                   stuff                 WOWSUnpackTool.exe
-[...] Aslains_WoWs_Logs_Archiver.exe     msvcp140_2.dll            readme.rtf                ucrtbase.dll
 [...] bin                                msvcp140_atomic_wait.dll  replays                   user_preferences.xml
 
 kakwa@linux Games/World of Warships » du -hd 1 | sort -h
 
-4.0K	./Reports
-12K	./patche
-2.8M	./Wallpapers
-4.2M	./GameCheck
-4.4M	./screenshot
-49M	./replays
-55M	./lib
-464M	./profile
-593M	./crashes
-1.2G	./bin
-62G	./res_packages
-73G	.
+4.0K  ./Reports
+12K   ./patche
+2.8M  ./Wallpapers
+4.2M  ./GameCheck
+4.4M  ./screenshot
+49M   ./replays
+55M   ./lib
+464M  ./profile
+593M  ./crashes
+1.2G  ./bin
+62G   ./res_packages
+73G  .
 ```
 
 So here, the bulk of the data is in the `res_packages/` directory. Lets take a look:
 
 ```shell
-kakwa@linux Games/World of Warships » ls res_packages                                                                                                                                                                                                                                                                 basecontent_0001.pkg           spaces_dock_dry_0001.pkg           spaces_greece_0001.pkg               spaces_sea_hope_0001.pkg              vehicles_level10_spain_0001.pkg      vehicles_level4_0001.pkg             vehicles_level6_panasia_0001.pkg     vehicles_level8_panamerica_0001.pkg
-camouflage_0001.pkg            spaces_dock_dunkirk_0001.pkg       spaces_honey_0001.pkg                spaces_shards_0001.pkg                vehicles_level10_uk_0001.pkg         vehicles_level4_ger_0001.pkg         vehicles_level6_premium_0001.pkg     vehicles_level8_panasia_0001.pkg
+kakwa@linux Games/World of Warships » ls res_packages
 [...]
-spaces_dock_1_april_0001.pkg   spaces_faroe_0001.pkg              spaces_ridge_0001.pkg                vehicles_level10_panamerica_0001.pkg  vehicles_level3_panasia_0001.pkg     vehicles_level6_jap_0001.pkg         vehicles_level8_it_0001.pkg          z_vehicles_events_0001.pkg
-spaces_dock_azurlane_0001.pkg  spaces_fault_line_0001.pkg         spaces_ring_0001.pkg                 vehicles_level10_panasia_0001.pkg     vehicles_level3_uk_0001.pkg          vehicles_level6_ned_0001.pkg         vehicles_level8_jap_0001.pkg
-spaces_dock_dragon_0001.pkg    spaces_gold_harbor_0001.pkg        spaces_rotterdam_0001.pkg            vehicles_level10_ru_0001.pkg          vehicles_level3_usa_0001.pkg         vehicles_level6_panamerica_0001.pkg  vehicles_level8_ned_0001.pkg
+spaces_dock_1_april_0001.pkg          spaces_faroe_0001.pkg                spaces_ridge_0001.pkg
+vehicles_level10_panamerica_0001.pkg  vehicles_level3_panasia_0001.pkg     vehicles_level6_jap_0001.pkg
+vehicles_level8_it_0001.pkg           z_vehicles_events_0001.pkg
+[...]
 ```
 
 Then use `file` to see if what type of files we are dealing with:
@@ -250,28 +245,7 @@ kakwa@linux World of Warships/res_unpack » hexdump -C system_data_0001.pkg | le
 00002220  38 ec cd 72 93 61 6b 6d  6c 47 ce a4 85 b7 5f 3b  |8..r.akmlG...._;|
 00002230  25 0b 6d 29 d5 ae ba 12  9b 63 26 33 e3 df f7 79  |%.m).....c&3...y|
 00002240  ec 28 03 26 b9 60 08 09  e1 79 9c 37 b7 22 bd b9  |.(.&.`...y.7."..|
-00002250  be 6a 0c 84 79 72 24 13  30 74 c9 82 de 92 7e b7  |.j..yr$.0t....~.|
-00002260  43 47 85 78 48 e1 01 80  8e 55 fc 93 da 42 d7 11  |CG.xH....U...B..|
-00002270  5c ce 93 14 c6 85 66 c8  95 1c ba 51 b3 6d a2 6c  |\.....f....Q.m.l|
-00002280  fb 3a ea 05 26 6c 3b 37  06 2f 0b 9a e8 be 3f 6a  |.:..&l;7./....?j|
-00002290  26 f3 8d d2 a6 19 ee 32  13 e0 a6 72 9f db fa 9d  |&......2...r....|
-000022a0  5c 52 b5 2c d6 69 be a8  7b c4 c7 25 c5 42 6b c0  |\R.,.i..{..%.Bk.|
-000022b0  8f 20 7b a7 21 43 13 b6  eb da 7c 19 b3 8c c5 1c  |. {.!C....|.....|
-000022c0  ad 37 87 94 a0 2a 3c fd  da 36 70 f2 47 9e 8d 81  |.7...*<..6p.G...|
-000022d0  e1 e3 dd 66 03 31 0e dd  8c 69 e4 71 0a 79 6b 0d  |...f.1...i.q.yk.|
-000022e0  29 64 4a 23 5d 57 a2 41  5b cf dd cf e4 75 43 7a  |)dJ#]W.A[....uCz|
-000022f0  9f 21 17 45 4e 17 9a 8b  f3 5b 70 46 dd 3f dd 82  |.!.EN....[pF.?..|
-00002300  de 1b c6 75 8d f6 60 4a  fc 5e 9f 12 f8 c1 50 2b  |...u..`J.^....P+|
-00002310  79 71 f6 5b bc ce 01 af  4e ce 2f 49 d4 e9 d3 65  |yq.[....N./I...e|
-00002320  79 b8 2f ce 77 0b 17 56  70 75 72 7d 44 fc b6 17  |y./.w..Vpur}D...|
-00002330  d2 99 c2 a5 4a fe e6 c2  f7 be c0 f6 f7 b5 36 35  |....J.........65|
-00002340  78 5f d7 18 40 a9 7b 9f  75 10 bf ca 40 83 51 a1  |x_..@.{.u...@.Q.|
-00002350  ad 8a b7 06 38 09 a4 6c  b7 82 78 e8 fa 4d 2f 74  |....8..l..x..M/t|
-00002360  1d a9 12 f8 56 76 98 2d  e8 e4 3b 25 e6 34 f1 2d  |....Vv.-..;%.4.-|
-00002370  7d f1 d4 6d fd d1 64 94  06 46 95 81 75 1a 8d 09  |}..m..d..F..u...|
-00002380  f1 83 80 4e cd 15 9f da  b1 38 37 1b dd d3 c2 3a  |...N.....87....:|
-00002390  5f 30 1b 67 f1 c2 03 5e  9d 9c 9f 13 3f 6a d3 95  |_0.g...^....?j..|
-000023a0  2a 64 f2 cc 9e 2e ef 36  b4 7c de 11 5f 9d bc 9f  |*d.....6.|.._...|
+[...]
 000023b0  92 a0 6d bc 47 a6 f3 58  03 13 17 37 f7 16 d0 3b  |..m.G..X...7...;|
 000023c0  06 1c 31 44 f3 55 fa 2f  dd af 44 bf fe 2f f9 05  |..1D.U./..D../..|
 000023d0  00 00 00 00 6d b9 de c1  ad 0c 00 00 00 00 00 00  |....m...........|

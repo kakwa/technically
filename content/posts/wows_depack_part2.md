@@ -8,11 +8,11 @@ draft = true
 > - All parts: [/posts/wows_depack_index/](/posts/wows_depack_index/)
 > - Previous: Part 1 — Searching The Data → [/posts/wows_depack_part1/](/posts/wows_depack_part1/)
 > - Next: Part 3 — Reading The Database → [/posts/wows_depack_part3/](/posts/wows_depack_part3/)
-
-### Quick recap (from Part 1)
-- Data lives in `res_packages/` as custom `.pkg` archives.
-- Each `.pkg` is a sequence of DEFLATE-compressed blobs separated by 64-bit IDs with zero padding.
-- No file names inside `.pkg`; names/paths must exist elsewhere (in indexes).
+>
+> Quick recap (from Part 1)
+> - Data lives in `res_packages/` as custom `.pkg` archives.
+> - Each `.pkg` is a sequence of DEFLATE-compressed blobs separated by 64-bit IDs with zero padding.
+> - No file names inside `.pkg`; names/paths must exist elsewhere (in indexes).
 
 # Give Me The Metadata
 
@@ -35,15 +35,6 @@ kakwa@linux Games/World of Warships » find ./ -type f | grep -v cef | grep -v r
 ./bin/6775398/res/texts/pl/LC_MESSAGES/global.mo
 ./bin/6775398/res/texts/zh_tw/LC_MESSAGES/global.mo
 ./bin/6775398/res/texts/fr/LC_MESSAGES/global.mo
-./bin/6775398/res/texts/nl/LC_MESSAGES/global.mo
-./bin/6775398/res/texts/th/LC_MESSAGES/global.mo
-./bin/6775398/res/texts/es/LC_MESSAGES/global.mo
-./bin/6775398/res/texts/ru/LC_MESSAGES/global.mo
-./bin/6775398/res/texts/zh/LC_MESSAGES/global.mo
-./bin/6775398/res/texts/ja/LC_MESSAGES/global.mo
-./bin/6775398/res/texts/en/LC_MESSAGES/global.mo
-./bin/6775398/res/texts/de/LC_MESSAGES/global.mo
-./bin/6775398/res/texts/es_mx/LC_MESSAGES/global.mo
 ./bin/6775398/res/texts/zh_sg/LC_MESSAGES/global.mo
 ./bin/6775398/res/camerasConsumer.xml
 ./bin/6775398/bin32/paths.xml
@@ -52,23 +43,15 @@ kakwa@linux Games/World of Warships » find ./ -type f | grep -v cef | grep -v r
 ./bin/6775398/bin64/paths.xml
 ./bin/6775398/bin64/Licenses.txt
 ./bin/6775398/bin64/monitor_config.json
+[...]
 ./bin/6775398/idx/spaces_dock_dry.idx
+./bin/6775398/idx/spaces_dock_hsf.idx
+./bin/6775398/idx/spaces_sea_hope.idx
 ./bin/6775398/idx/vehicles_pve.idx
 ./bin/6775398/idx/vehicles_level8_fr.idx
-./bin/6775398/idx/spaces_ocean.idx
-./bin/6775398/idx/vehicles_level8_panasia.idx
-./bin/6775398/idx/vehicles_level9_ned.idx
 ./bin/6775398/idx/vehicles_level5_panasia.idx
-./bin/6775398/idx/spaces_sea_hope.idx
-./bin/6775398/idx/spaces_dock_hsf.idx
 [...]
 ```
-
----
-
-Previous/Next
-- Previous: Part 1 — Searching The Data → [/posts/wows_depack_part1/](/posts/wows_depack_part1/)
-- Next: Part 3 — Reading The Database → [/posts/wows_depack_part3/](/posts/wows_depack_part3/)
 
 
 Ohhh, these `.idx` files look promissing, specially their names match quite well the pkg files:
@@ -135,12 +118,6 @@ There are a few things to note about the `./bin` directory: it contains several 
 ```shell
 kakwa@linux World of Warships/bin » du -hd 1 | sort -h
 12K	./5241351
-12K	./5315992
-12K	./5343985
-12K	./5450485
-12K	./5624555
-12K	./5771708
-12K	./5915585
 12K	./6081105
 12K	./6223574
 592M	./6623042
