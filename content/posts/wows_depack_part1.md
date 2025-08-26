@@ -1,14 +1,18 @@
 +++
-title = 'Reversing WoWs Resource Format'
+title = 'Reversing WoWs Resource Format - Part 1: Searching The Data'
 date = 2024-06-29T22:50:48+02:00
 draft = true
 +++
+
+> Series navigation
+> - All parts: [/posts/wows_depack_index/](/posts/wows_depack_index/)
+> - Next: Part 2 — Getting The Metadata → [/posts/wows_depack_part2/](/posts/wows_depack_part2/)
 
 # Introduction
 
 First, a disclaimer, this is the first time I'm doing this kind of exercise, so the process described here is far from ideal, and the tools used less than adequate.
 
-Also, I'm writting this after various findings, so the process seems quite straight forward. In reallity, it was full of dead ends and flows of ideas (good and bad) that came-up while staring at hexdumps for hours.
+Also, I'm writing this after various findings, so the process seems quite straight forward. In reality, it was full of dead ends and flows of ideas (good and bad) that came up while staring at hexdumps for hours.
 
 ## Motivation
 
@@ -26,13 +30,14 @@ I also wanted to do as an intellectual exercise of reverse engineering.
 
 My goals are:
 
-* Reverse the format, even partially (but enough to extract the data)* Document the format specification so other people could leverage it, and improve upon my implementation
+* Reverse the format, even partially (but enough to extract the data)
+* Document the format specification so other people could leverage it, and improve upon my implementation
 * Create a CLI tool with Linux/Unix as its main target
 * Create a library which can be reused (maybe through bindings) in other pieces of software.
 
 # Reverse Engineering
 
-## Intial effort
+## Initial effort
 
 ### Looking at the Game files
 
@@ -103,7 +108,7 @@ spaces_naval_defense_0001.pkg:        data
 
 So mostly `data` i.e. unknown format, and looking at the files which are not `data`, they are in fact most likely false positives. So we are dealing with a custom format.
 
-### Investing the interesting files
+### Investigating the interesting files
 
 Next, lets try to see if we have some clear text strings in the files using the `strings` utility:
 
@@ -365,3 +370,9 @@ So looking at these "IDs", here are the things to note:
 So they are probably just... well... random IDs.
 
 Also, it means that `.pkg` files only contains the raw resource files bundled together. All the meta data associated with these files, most importantly their names are contained elsewhere.
+
+---
+
+Previous/Next
+- Previous: Series Index → [/posts/wows_depack_index/](/posts/wows_depack_index/)
+- Next: Part 2 — Getting The Metadata → [/posts/wows_depack_part2/](/posts/wows_depack_part2/)

@@ -1,14 +1,24 @@
 +++
-title = 'Reversing WoWs Resource Format - Part 2'
+title = 'Reversing WoWs Resource Format - Part 2: Getting The Metadata'
 date = 2024-06-29T22:50:48+02:00
 draft = true
 +++
+
+> Series navigation
+> - All parts: [/posts/wows_depack_index/](/posts/wows_depack_index/)
+> - Previous: Part 1 — Searching The Data → [/posts/wows_depack_part1/](/posts/wows_depack_part1/)
+> - Next: Part 3 — Reading The Database → [/posts/wows_depack_part3/](/posts/wows_depack_part3/)
+
+### Quick recap (from Part 1)
+- Data lives in `res_packages/` as custom `.pkg` archives.
+- Each `.pkg` is a sequence of DEFLATE-compressed blobs separated by 64-bit IDs with zero padding.
+- No file names inside `.pkg`; names/paths must exist elsewhere (in indexes).
 
 # Give Me The Metadata
 
 In Part 1, we found the actual data and where it was stored, but it would be nice to have the whole file & directory structure.
 
-So it's back to looking at the game files. 
+So it's back to looking at the game files.
 
 ## More exploring
 
@@ -53,6 +63,12 @@ kakwa@linux Games/World of Warships » find ./ -type f | grep -v cef | grep -v r
 ./bin/6775398/idx/spaces_dock_hsf.idx
 [...]
 ```
+
+---
+
+Previous/Next
+- Previous: Part 1 — Searching The Data → [/posts/wows_depack_part1/](/posts/wows_depack_part1/)
+- Next: Part 3 — Reading The Database → [/posts/wows_depack_part3/](/posts/wows_depack_part3/)
 
 
 Ohhh, these `.idx` files look promissing, specially their names match quite well the pkg files:
@@ -1059,3 +1075,11 @@ So we have
 |<-------------- unknown 2 ------------->|
 |                64 bits                 |
 ```
+
+---
+
+Previous/Next
+- Part 1 — Searching The Data → [/posts/wows_depack_part1/](/posts/wows_depack_part1/)
+- Part 2 — Getting The Metadata → [/posts/wows_depack_part2/](/posts/wows_depack_part2/)
+- Part 3 — Reading The Database → [/posts/wows_depack_part3/](/posts/wows_depack_part3/)
+- Back to Series Index → [/posts/wows_depack_index/](/posts/wows_depack_index/)
