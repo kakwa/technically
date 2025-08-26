@@ -4,18 +4,16 @@ date = 2024-06-29T22:50:48+02:00
 draft = true
 +++
 
-> Series navigation
-> - All parts: [/posts/wows_depack_index/](/posts/wows_depack_index/)
-> - Next: Part 2 — Getting The Metadata → [/posts/wows_depack_part2/](/posts/wows_depack_part2/)
+# Parts
 
-# Quick recap (this part)
-> - Bulk of game data is under `res_packages/`.
-> - `.pkg` files are custom archives: concatenated DEFLATE-compressed blobs separated by 64-bit IDs with zero padding.
-> - We can extract blobs, but names/paths are not inside `.pkg` — they live in separate index files.
+- Part 1 — Searching The Data → [/posts/wows_depack_part1/](/posts/wows_depack_part1/)
+- Part 2 — Getting The Metadata → [/posts/wows_depack_part2/](/posts/wows_depack_part2/)
+- Part 3 — Reading The Database → [/posts/wows_depack_part3/](/posts/wows_depack_part3/)
+- Part 4 — Putting It All Together → [/posts/wows_depack_part4/](/posts/wows_depack_part4/)
 
 # Introduction
 
-First, a disclaimer, this is the first time I'm doing this kind of exercise, so the process described here is far from ideal, and the tools used less than adequate.
+Firstly, a disclaimer, this is the first time I'm doing this kind of exercise, so the process described here is far from ideal, and the tools used less than adequate.
 
 Also, I'm writing this after various findings, so the process seems quite straight forward. In reality, it was full of dead ends and flows of ideas (good and bad) that came up while staring at hexdumps for hours.
 
@@ -23,32 +21,28 @@ Also, I'm writing this after various findings, so the process seems quite straig
 
 I've always wanted to play around World of Warships game content for various reasons, from extracting things like armor layouts or in game parameters to the 3D models themselves.
 
-There is already a tool that does that: [wows-unpack](https://forum.worldofwarships.eu/topic/113847-all-wows-unpack-tool-unpack-game-client-resources/)
+There is already a closed-sources Windows tool doing that: [wows-unpack](https://forum.worldofwarships.eu/topic/113847-all-wows-unpack-tool-unpack-game-client-resources/)
 
-But being an pro-OSS and working under linux, this tool doesn't suite me well.
+But being an pro-OSS Linux user, this tool doesn't suite me well as it annoying to use (`Wine`) and cannot be readily integrated in other programs.
 
-It also doesn't fit my needs regarding having something that could be integrated into other programs easily
-
-I also wanted to do as an intellectual exercise of reverse engineering.
+I also wanted to do it as an intellectual & learning exercise of reverse engineering.
 
 ## Goals
 
-My goals are:
+* Reverse engineer the format sufficiently for data extraction
+* Document the specification for others to build upon
+* Create a OSS CLI tool
+* Develop a reusable OSS library
 
-* Reverse the format, even partially (but enough to extract the data)
-* Document the format specification so other people could leverage it, and improve upon my implementation
-* Create a CLI tool with Linux/Unix as its main target
-* Create a library which can be reused (maybe through bindings) in other pieces of software.
+# Reverse Engineering Process
 
-# Reverse Engineering
+## Initial Analysis
 
-## Initial effort
+### Game File Structure
 
-### Looking at the Game files
+Unfortunately, I only have very fuzzy memories of the initial steps I took since they came from an initial effort 2 years before the bulk of the reversing.
 
-I started this reverse process a while back, around 2 years ago, but lost interest. Consequently I only have very fuzzy memories of the initial steps I took, and the original findings.
-
-Anyway, the first step was simply to look at the game files and see were the bulk of the data was:
+The gist of it was to look at the game files and see where most of the data was:
 
 ```shell
 kakwa@linux Games/World of Warships » ls
@@ -74,7 +68,7 @@ kakwa@linux Games/World of Warships » du -hd 1 | sort -h
 73G  .
 ```
 
-So here, the bulk of the data is in the `res_packages/` directory. Let's take a look:
+So here, the most of the data is in the `res_packages/` directory. Let's take a closer look:
 
 ```shell
 kakwa@linux Games/World of Warships » ls res_packages
@@ -85,9 +79,10 @@ vehicles_level8_it_0001.pkg           z_vehicles_events_0001.pkg
 [...]
 ```
 
-Then use `file` to see if what type of files we are dealing with:
+Let's use `file` to see if what type of files we are dealing with:
+
 ```shell
-kakwa@linux Games/World of Warships » cd res_packages 
+kakwa@linux Games/World of Warships » cd res_packages
 
 kakwa@linux World of Warships/res_packages » file *
 [...]
@@ -106,9 +101,9 @@ spaces_naval_defense_0001.pkg:        data
 [...]
 ```
 
-So mostly `data` i.e. unknown format, and looking at the files which are not `data`, they are in fact most likely false positives. So we are dealing with a custom format.
+So mostly `data` i.e. unknown binary format, and looking at the files which are not `data`, they are in fact most likely false positives. So we are dealing with a custom format.
 
-### Investigating the interesting files
+### File Analysis
 
 Next, let's try to see if we have some clear text strings in the files using the `strings` utility:
 
@@ -141,14 +136,14 @@ Next, let's try to compress a file:
 
 ```shell
 # Size before
-kakwa@linux World of Warships/res_packages » ls -l vehicles_level4_usa_0001.pkg                                                                                                                                                                                                                                      
+kakwa@linux World of Warships/res_packages » ls -l vehicles_level4_usa_0001.pkg
 -rwxr-xr-x 1 kakwa kakwa 15356139 Jan 17 19:01 vehicles_level4_usa_0001.pkg
 
 # Compress
 kakwa@linux World of Warships/res_packages » gzip vehicles_level4_usa_0001.pkg
 
 # Size After
-ls -l vehicles_level4_usa_0001.pkg.gz 
+ls -l vehicles_level4_usa_0001.pkg.gz
 
 -rwxr-xr-x 1 kakwa kakwa 15332196 Jan 17 19:01 vehicles_level4_usa_0001.pkg.gz
 ```
@@ -171,13 +166,15 @@ kakwa@linux World of Warships/res_packages » hexdump -C vehicles_level4_usa_000
 [...]
 ```
 
-I hexdumped one of the file, looking for some pattern that would help me determine the type of compression used. I was looking for things like padding or signatures repeating within the .pkg file. I'm not sure how, but I finally determined the compression used was `DEFLATE` (RFC 1951) (I vaguely remember `7f f0` being a marker, but I might be very well mistaken). In any case, [The Wikipedia page listing file signatures](https://en.wikipedia.org/wiki/List_of_file_signatures) is really useful, as well as Googling around candidate patterns.
+I hexdumped one of the file, looking for some pattern that would help me determine the type of compression used. I was looking for things like padding or signatures repeating within the .pkg file. I'm not sure how, but I finally determined the compression used was `DEFLATE` (RFC 1951) (I vaguely remember `7f f0` being a marker, but I might be very well mistaken).
+
+In any case, [The Wikipedia page listing file signatures](https://en.wikipedia.org/wiki/List_of_file_signatures) is really useful, as well as Googling around candidate patterns.
 
 I ended-up creating [this tool](https://github.com/kakwa/brute-force-deflate) which tries to brute force deflate all the sections of the file, and sure enough, I was able to extract some interesting files:
 
 ```shell
 # Extracting stuff
-kakwa@linux World of Warships/res_packages » bf-deflate -i system_data_0001.pkg -o systemout                                                                                 
+kakwa@linux World of Warships/res_packages » bf-deflate -i system_data_0001.pkg -o systemout
 # look the file types we just extracted
 kakwa@linux World of Warships/res_packages » file systemout/* | tail
 
@@ -193,7 +190,7 @@ systemout/000A16D41E-000A16D426: data
 systemout/bf-Xe4fzss:            empty
 
 # Look if we indeed got what "file" says it is
-kakwa@linux World of Warships/res_packages » head systemout/000A15EFAA-000A15F919 
+kakwa@linux World of Warships/res_packages » cat systemout/000A15EFAA-000A15F919
 
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 
@@ -205,6 +202,8 @@ kakwa@linux World of Warships/res_packages » head systemout/000A15EFAA-000A15F9
         <Interface>BattleLogicEntityOwner</Interface>
         <Interface>DamageDealerOwner</Interface>
         <Interface>DebugDrawEntity</Interface>
+    </Implements>
+</root>
 ```
 
 Okay, we actually are able to extract actual files!
@@ -215,30 +214,16 @@ Note that in my "brute-force deflate" tool, I chose to name the files I managed 
 
 Going back to the reverse engineering, that was progress, but I then lost I interest, and didn't follow-up for two years.
 
-If I recall correctly I remember being discouraged by not being able to exploit the few 3D models/textures I managed to extract, so I left it as is for the time being.
+### Follow-up
 
-## Follow-up effort
+Two years later, I regained interest when I finally tested the Windows `wows_unpack` tool. It revealed that files have individual names and paths—indicating a custom archive format probably similar to `.zip` file and most likely containing:
 
-### Renewed interest
+* Compressed data blobs
+* Index containing file paths, types, IDs, and offsets
 
-Then, a few weeks ago, I 3D printed a [ship model from Thingiverse](https://www.thingiverse.com/thing:2479868) clearly imported from WoWs, and posted the result on [Reddit](https://www.reddit.com/r/WorldOfWarships/comments/10ozv6y/i_might_have_accidentally_created_t11_petro_3d/).
+### PKG File Format
 
-In one of the comment, someone asked if it was possible to export other game models, which sparked my interest once again. FYI, a [plugin](https://github.com/ShadowyBandit/.geometry-converter) to import WoWs .geometry (Big World game engin format) into Blender, but it doesn't look functional at the moment.
-
-During the quick search, I also tried the Windows wows_unpack tool for the first time (I should really have started from there). This gave me some insights, in particular, the resource files having individual names and paths withing the .pkg files.
-
-So, we are dealing with what is roughly a custom archive format (a bit like a zip file). This means we can probably expect the following things:
-
-* a bunch of data blobs concatenated together, with the compressed data in these blobs.
-* an index with the file paths and some metadata containing possibly things like file types, file ids, offsets pointing to the correct data blob, checksums, etc.
-
-So let's take a look at the files again.
-
-### Investigating the .pkg files
-
-First, I copied over a few of the game files into a dedicated `res_unpack` directory to avoid breaking my install by accident.
-
-Then, let's stare at more hexdumps:
+Let's stare at more hexdumps:
 
 ```shell
 kakwa@linux World of Warships/res_unpack » hexdump -C system_data_0001.pkg | less
@@ -301,7 +286,7 @@ Looking at the end of the file, we have this pattern repeating one final time at
 
 Furthermore, the first uncompressed block seems to start right at the beginning of the file, so there is probably no header section.
 
-### General format of the .pkg file
+### PKG Structure
 
 Looking at a few other `.pkg`, this pattern seems to be shared across all files.
 
@@ -328,9 +313,9 @@ Note that by this point, I'm making a lot of assumptions:
 
 But let's go forward, this format seems common enough to still yield good results. Plus we can always go back and revisit this interpretation.
 
-### What the ID might be
+### Understanding IDs
 
-Let's take a look at some of these:
+The 64-bit values between data blocks appear random and high-value—too short for hashes, too large for offsets. These are likely simple random unique identifiers:
 
 ```
 00 00 00 00 | bf 00 45 5c | 6c 36 00 00 | 00 00 00 00
@@ -340,34 +325,15 @@ Let's take a look at some of these:
 00 00 00 00 | 92 ab 31 63 | 91 2a 00 00 | 00 00 00 00
 ```
 
-So looking at these "IDs", here are the things to note:
+### Recap
 
-* they are rather random and high value, meaning they probably don't represent offsets.
-* they look too short (~48 bits) for any [hash algorithm](https://en.wikipedia.org/wiki/List_of_hash_functions).
-* their fix size doesn't indicate it's some kind of compressed data.
+We've identified the data storage format:
+- Game data resides in `res_packages/` directory
+- `.pkg` files are custom archives containing DEFLATE-compressed blobs separated by 64-bit IDs
+- File names and paths are probably stored separately
 
-So they are probably just... well... random IDs.
-
-Also, it means that `.pkg` files only contain the raw resource files bundled together. All the metadata associated with these files, most importantly their names, are contained elsewhere.
-
-### Recap for Part 1
-
-In this part, we have identify where the data is stored, and its format:
-- Bulk of game data is under `res_packages/`.
-- `.pkg` files are custom archives: concatenated DEFLATE-compressed blobs separated by 64-bit IDs with zero padding.
-
-However, names/paths are not in `.pkg`; they live somewhere else, and that's we will be exploring in  [Part 2 — Getting The Metadata](/posts/wows_depack_part2/)
+Getting the file metadata will be explored in [the next part](/posts/wows_depack_part2/) of this series. 
 
 ---
 
-Previous/Next
-- Previous: Series Index → [/posts/wows_depack_index/](/posts/wows_depack_index/)
-- Next: Part 2 — Getting The Metadata → [/posts/wows_depack_part2/](/posts/wows_depack_part2/)
 
----
-
-Previous/Next
-- Part 1 — Searching The Data → [/posts/wows_depack_part1/](/posts/wows_depack_part1/)
-- Part 2 — Getting The Metadata → [/posts/wows_depack_part2/](/posts/wows_depack_part2/)
-- Part 3 — Reading The Database → [/posts/wows_depack_part3/](/posts/wows_depack_part3/)
-- Back to Series Index → [/posts/wows_depack_index/](/posts/wows_depack_index/)
