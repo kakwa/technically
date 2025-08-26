@@ -54,7 +54,7 @@ kakwa@linux Games/World of Warships » find ./ -type f | grep -v cef | grep -v r
 ```
 
 
-Ohhh, these `.idx` files look promissing, specially their names match quite well the pkg files:
+Ohhh, these `.idx` files look promising, especially their names match quite well the `.pkg` files:
 
 ```
 spaces_dock_hsf.idx -> spaces_dock_hsf_0001.pkg
@@ -124,7 +124,7 @@ kakwa@linux World of Warships/bin » du -hd 1 | sort -h
 594M	./6775398
 ```
 
-This look a lot like incrementa build numbers, with WoWs keeping the latest published build 'N' and 'N-1' (the mostly empty directories are only containing left overs like logs or mods).
+This looks a lot like incremental build numbers, with WoWs keeping the latest published build 'N' and 'N-1' (the mostly empty directories only contain leftovers like logs or mods).
 
 We will need to take this into account, using the highest numbered sub-directory to get the most up to date indexes.
 
@@ -772,6 +772,11 @@ kakwa@linux 6775398/idx » hexdump -C system_data.idx| less
 00007173
 (END)
 ```
+
+### Quick recap (this part)
+- `.idx` files hold metadata: header, `\0`-separated names, records pointing to `.pkg` offsets, and a footer with the `.pkg` filename.
+- Metadata entries carry `id` and `parent_id`, enabling directory hierarchies.
+- Pkg pointers include offsets, sizes, and the `.pkg` chunk id; types likely indicate compression mode.
 
 
 Right away, we can notice 3 things:

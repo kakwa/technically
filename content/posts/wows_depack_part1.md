@@ -8,6 +8,11 @@ draft = true
 > - All parts: [/posts/wows_depack_index/](/posts/wows_depack_index/)
 > - Next: Part 2 — Getting The Metadata → [/posts/wows_depack_part2/](/posts/wows_depack_part2/)
 
+# Quick recap (this part)
+> - Bulk of game data is under `res_packages/`.
+> - `.pkg` files are custom archives: concatenated DEFLATE-compressed blobs separated by 64-bit IDs with zero padding.
+> - We can extract blobs, but names/paths are not inside `.pkg` — they live in separate index files.
+
 # Introduction
 
 First, a disclaimer, this is the first time I'm doing this kind of exercise, so the process described here is far from ideal, and the tools used less than adequate.
@@ -69,7 +74,7 @@ kakwa@linux Games/World of Warships » du -hd 1 | sort -h
 73G  .
 ```
 
-So here, the bulk of the data is in the `res_packages/` directory. Lets take a look:
+So here, the bulk of the data is in the `res_packages/` directory. Let's take a look:
 
 ```shell
 kakwa@linux Games/World of Warships » ls res_packages
@@ -105,7 +110,7 @@ So mostly `data` i.e. unknown format, and looking at the files which are not `da
 
 ### Investigating the interesting files
 
-Next, lets try to see if we have some clear text strings in the files using the `strings` utility:
+Next, let's try to see if we have some clear text strings in the files using the `strings` utility:
 
 ```shell
 kakwa@linux World of Warships/res_packages » strings *
@@ -132,7 +137,7 @@ KqM&u
 
 Nada, that's just garbage. So we are dealing with a completely binary format.
 
-Next, lets try to compress a file:
+Next, let's try to compress a file:
 
 ```shell
 # Size before
@@ -294,11 +299,11 @@ Looking at the end of the file, we have this pattern repeating one final time at
 (END)
 ```
 
-Further more, the first uncompressed block seems to start right at the begining of the file, so there is probably no header section.
+Furthermore, the first uncompressed block seems to start right at the beginning of the file, so there is probably no header section.
 
 ### General format of the .pkg file
 
-Looking at a few other `.pkg`, this pattern seems to be shared accross all files.
+Looking at a few other `.pkg`, this pattern seems to be shared across all files.
 
 So we can deduce the format `.pkg` is a concatenated list of sections like the following:
 
@@ -321,7 +326,7 @@ Note that by this point, I'm making a lot of assumptions:
 * I'm also not completely sure if the block containing the data is always compressed using Deflate
 * I'm not even sure if this general file format is actually shared across all files.
 
-But let's go forward, this format seems common enough to still yeild good results. Plus we can always go back and revisit this interpretation.
+But let's go forward, this format seems common enough to still yield good results. Plus we can always go back and revisit this interpretation.
 
 ### What the ID might be
 
@@ -343,10 +348,26 @@ So looking at these "IDs", here are the things to note:
 
 So they are probably just... well... random IDs.
 
-Also, it means that `.pkg` files only contains the raw resource files bundled together. All the meta data associated with these files, most importantly their names are contained elsewhere.
+Also, it means that `.pkg` files only contain the raw resource files bundled together. All the metadata associated with these files, most importantly their names, are contained elsewhere.
+
+### Recap for Part 1
+
+In this part, we have identify where the data is stored, and its format:
+- Bulk of game data is under `res_packages/`.
+- `.pkg` files are custom archives: concatenated DEFLATE-compressed blobs separated by 64-bit IDs with zero padding.
+
+However, names/paths are not in `.pkg`; they live somewhere else, and that's we will be exploring in  [Part 2 — Getting The Metadata](/posts/wows_depack_part2/)
 
 ---
 
 Previous/Next
 - Previous: Series Index → [/posts/wows_depack_index/](/posts/wows_depack_index/)
 - Next: Part 2 — Getting The Metadata → [/posts/wows_depack_part2/](/posts/wows_depack_part2/)
+
+---
+
+Previous/Next
+- Part 1 — Searching The Data → [/posts/wows_depack_part1/](/posts/wows_depack_part1/)
+- Part 2 — Getting The Metadata → [/posts/wows_depack_part2/](/posts/wows_depack_part2/)
+- Part 3 — Reading The Database → [/posts/wows_depack_part3/](/posts/wows_depack_part3/)
+- Back to Series Index → [/posts/wows_depack_index/](/posts/wows_depack_index/)

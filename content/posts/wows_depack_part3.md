@@ -37,9 +37,9 @@ typedef struct {
 
 ### Start Parsing
 
-Important disclaimer: the code presented here is extremely unsafe for clarity. it has no error handling and is very suceptible to buffer overflows. This will be fixed in the final code, but don't copy the examples presented here.
+Important disclaimer: the code presented here is extremely unsafe for clarity. It has no error handling and is very susceptible to buffer overflows. This will be fixed in the final code, but don't copy the examples presented here.
 
-Initaly we will parse the index file and implement a human readable output. We will determine later what to do with the metadata we extract, for now, lets just display it.
+Initially we will parse the index file and implement a human-readable output. We will determine later what to do with the metadata we extract; for now, let's just display it.
 
 #### Mapping the file
 
@@ -809,7 +809,7 @@ Ok, it seems that `(type_1, type_2)` can either have the `(0x0, 0x0)` values, or
 
 Looking at a few `(0x0, 0x0)`, a common file with such values are `.png`.
 
-It's a bit of a wild guess, but these might be compression levels. `(0x0, 0x0)`, ie no compression would be logical for `.png` as these files are already compressed. Compressing them would actually only cost CPU resources with no space gains.
+It's a bit of a wild guess, but these might be compression levels. `(0x0, 0x0)`, i.e. no compression would be logical for `.png` as these files are already compressed. Compressing them would actually only cost CPU resources with no space gains.
 
 For now, lets just keep that in mind, we will revisit it later.
 
@@ -920,6 +920,11 @@ However, it raises an interesting question: how this `id` is generated? Is it co
 
 It's not really critical to read files, but might be important to write content if we ever get to that.
 
+### Quick recap (this part)
+- Defined C structs for `.idx` and started a parser with `mmap`.
+- Validated header, metadata, and data-file entry parsing; handled struct packing.
+- Linked entries via IDs to reconstruct paths; printed a simple tree.
+
 ### Implementing a pseudo-inode system
 
 The next step in the implementation was to implement a pseudo inode system.
@@ -996,5 +1001,7 @@ Or that in (ugly) tree form:
 ---
 
 Previous/Next
-- Previous: Part 2 — Getting The Metadata → [/posts/wows_depack_part2/](/posts/wows_depack_part2/)
+- Part 1 — Searching The Data → [/posts/wows_depack_part1/](/posts/wows_depack_part1/)
+- Part 2 — Getting The Metadata → [/posts/wows_depack_part2/](/posts/wows_depack_part2/)
+- Part 3 — Reading The Database → [/posts/wows_depack_part3/](/posts/wows_depack_part3/)
 - Back to Series Index → [/posts/wows_depack_index/](/posts/wows_depack_index/)
