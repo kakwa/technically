@@ -9,6 +9,4 @@ draft = true
 - Part 1: [Searching The Data](/posts/wows_depack_part1/)
 - Part 2: [Getting The Metadata](/posts/wows_depack_part2/)
 - Part 3: [Reading The Database](/posts/wows_depack_part3/)
-
-Use these links to navigate the series quickly.
-
+- Part 4: [Putting It All Together](/posts/wows_depack_part4/)

@@ -7,6 +7,7 @@ draft = true
 > Series navigation
 > - All parts: [/posts/wows_depack_index/](/posts/wows_depack_index/)
 > - Previous: Part 2 — Getting The Metadata → [/posts/wows_depack_part2/](/posts/wows_depack_part2/)
+> - Next: Part 4 — Putting It All Together → [/posts/wows_depack_part4/](/posts/wows_depack_part4/)
 > Quick recap (from Part 2)
 > - `.idx` files provide names, parent relationships, and pointers to `.pkg` chunks.
 > - Header holds counts and offsets; middle section holds `\0`-separated names; third section links metadata IDs to `.pkg` offsets and IDs; footer stores the `.pkg` filename.
@@ -998,10 +999,21 @@ Or that in (ugly) tree form:
 [...]
 ```
 
+## Recap (Part 3)
+
+- Implemented a minimal C parser: `mmap` `.idx`, parse header, metadata, pkg-pointer, and footer sections.
+- Fixed struct packing and accounted for relative offsets (`+0x10` from the magic block) to match hexdumps.
+- Clarified fields: `file_name_size`, `offset_idx_file_name`, `id`, `parent_id`; matched pkg-pointer entries via shared IDs.
+- Confirmed counts: metadata uses file+dir count (Nfd); pkg-pointer section uses file count (Nf).
+- Reconstructed full paths by chaining `parent_id` up to root; printed flat list and tree.
+- Observed `(type_1,type_2)` pairs likely reflect compression mode; common `(0x5,0x1)` vs `(0x0,0x0)`.
+- Ready to extract `.pkg` blobs and write files next.
+
 ---
 
-Previous/Next
+Parts:
 - Part 1 — Searching The Data → [/posts/wows_depack_part1/](/posts/wows_depack_part1/)
 - Part 2 — Getting The Metadata → [/posts/wows_depack_part2/](/posts/wows_depack_part2/)
 - Part 3 — Reading The Database → [/posts/wows_depack_part3/](/posts/wows_depack_part3/)
+- Part 4 — Putting It All Together → [/posts/wows_depack_part4/](/posts/wows_depack_part4/)
 - Back to Series Index → [/posts/wows_depack_index/](/posts/wows_depack_index/)

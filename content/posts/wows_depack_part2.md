@@ -1058,6 +1058,17 @@ So we have
 |                64 bits                 |
 ```
 
+## Recap (Part 2)
+
+- Identified `.idx` files in `./bin/<latest>/idx/` as indexes for `.pkg` archives and matched them by name.
+- Mapped overall `.idx` layout into 4 parts:
+  - Header: magic `ISFP`, counts (entries and files), header-size-like field, offsets to start/end of the third section, and a per-file id/crc-like value.
+  - Names: `\0`-separated file and directory names.
+  - Records section (per-record 384 bits): two 64-bit unknowns (likely ids, one enabling parent/child hierarchy), 64-bit start offset in `.pkg`, 2×32-bit types, 32-bit relative end size, 64-bit `.pkg` chunk id, and padding.
+  - Footer: `.pkg` filename length, an unknown 64-bit value, a repeated 64-bit constant, then the `.pkg` filename string.
+- Established the link between names and `.pkg` chunks via ids and offsets, enough to reconstruct directories and locate data.
+- Next: parse these records programmatically to rebuild the tree and read blobs (Part 3).
+
 ---
 
 Previous/Next
