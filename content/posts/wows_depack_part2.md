@@ -4,27 +4,26 @@ date = 2024-06-29T22:50:48+02:00
 draft = true
 +++
 
-> Series navigation
-> - All parts: [/posts/wows_depack_index/](/posts/wows_depack_index/)
-> - Previous: Part 1 — Searching The Data → [/posts/wows_depack_part1/](/posts/wows_depack_part1/)
-> - Next: Part 3 — Reading The Database → [/posts/wows_depack_part3/](/posts/wows_depack_part3/)
->
-> Quick recap (from Part 1)
-> - Data lives in `res_packages/` as custom `.pkg` archives.
-> - Each `.pkg` is a sequence of DEFLATE-compressed blobs separated by 64-bit IDs with zero padding.
-> - No file names inside `.pkg`; names/paths must exist elsewhere (in indexes).
+# Parts
 
-# Give Me The Metadata
+- Part 1 — Searching The Data → [/posts/wows_depack_part1/](/posts/wows_depack_part1/)
+- Part 2 — Getting The Metadata → [/posts/wows_depack_part2/](/posts/wows_depack_part2/)
+- Part 3 — Reading The Database → [/posts/wows_depack_part3/](/posts/wows_depack_part3/)
+- Part 4 — Putting It All Together → [/posts/wows_depack_part4/](/posts/wows_depack_part4/)
 
-In Part 1, we found the actual data and where it was stored, but it would be nice to have the whole file & directory structure.
+# Searching & Reading The Metadata
 
-So it's back to looking at the game files.
+In Part 1, we discovered:
 
-## More exploring
+- Data lives in `res_packages/` as custom `.pkg` archives.
+- Each `.pkg` is a sequence of DEFLATE-compressed blobs separated by 64-bit IDs with zero padding.
+- No file names inside `.pkg`; names/paths must exist elsewhere (in indexes).
 
-Hopefully the resources metadata are not embedded directly in the WoWs executable or one of its library.
+Now we need to find where and how the file and directory structure.
 
-Let's look:
+## Back To File Exploration
+
+The metadata hopefully isn't embedded in executables. Let's search:
 
 ```shell
 # List all files
@@ -53,14 +52,11 @@ kakwa@linux Games/World of Warships » find ./ -type f | grep -v cef | grep -v r
 [...]
 ```
 
+The `.idx` files look promising, especially their names match the `.pkg` files:
+- `spaces_dock_hsf.idx` → `spaces_dock_hsf_0001.pkg`
+- `vehicles_level9_ned.idx` → `vehicles_level9_ned_0001.pkg`
 
-Ohhh, these `.idx` files look promising, especially their names match quite well the `.pkg` files:
-
-```
-spaces_dock_hsf.idx -> spaces_dock_hsf_0001.pkg
-ehicles_level9_ned.idx -> vehicles_level9_ned_0001.pkg
-etc
-```
+## Checking We Have The Metadata
 
 Let's take a look:
 
@@ -111,26 +107,15 @@ These `.idx` files, as the extension indicates, are our indexes containing all t
 
 Also, note that we have a few names (like `maps` or `helpers`) without extensions, these are probably directory names.
 
-### bin directory and Game versions
+**Note**: `bin/` directory and game versions
 
-There are a few things to note about the `./bin` directory: it contains several sub-directory looking like that:
+The `./bin` directory contains build-numbered subdirectories (5241351, 6081105, etc.), with WoWs keeping the current and previous builds. We'll use the highest number for the latest indexes.
 
-```shell
-kakwa@linux World of Warships/bin » du -hd 1 | sort -h
-12K	./5241351
-12K	./6081105
-12K	./6223574
-592M	./6623042
-594M	./6775398
-```
+# IDX File Structure
 
-This looks a lot like incremental build numbers, with WoWs keeping the latest published build 'N' and 'N-1' (the mostly empty directories only contain leftovers like logs or mods).
+## General Layout
 
-We will need to take this into account, using the highest numbered sub-directory to get the most up to date indexes.
-
-### Index (.idx) general layout
-
-So next, lets look at one of these index files.
+Let's examine an index file:
 
 ```shell
 kakwa@linux 6775398/idx » hexdump -C system_data.idx | less
@@ -257,9 +242,9 @@ Ok, it's there, in the second chunk. And it also works if we test for other IDs.
 
 We will come back later to the second chunk, remembering that, but lets focus on the first chunk for now.
 
-### Format of the first metadata chunk of the '.idx' file
+## Metadata Chunk Format
 
-Lets try to understand the first part of the .idx file structure.
+The first section contains file metadata entries:
 
 ```shell
 kakwa@linux 6775398/idx » hexdump -C system_data.idx | less
@@ -396,7 +381,7 @@ kakwa@linux 6775398/idx » hexdump -C system_data.idx| grep '00 00 00 00 00 00 0
 Indeed, the repetitions are quite frequent, and running the same command on other files yeild roughly the same values:
 
 ```shell
-kakwa@linux 6775398/idx » hexdump -C particles.idx| grep '00 00 00 00 00 00 00' | sed 's/^..........//' | sed 's/  .*//' | sort  | uniq -c | sort -n 
+kakwa@linux 6775398/idx » hexdump -C particles.idx| grep '00 00 00 00 00 00 00' | sed 's/^..........//' | sed 's/  .*//' | sort  | uniq -c | sort -n
       1 27 b9 08 b1 d1 a1 b1 db
       1 28 00 00 00 00 00 00 00
       1 8e ae 00 00 00 00 00 00
@@ -435,11 +420,9 @@ So in the end, making a few assumptions, for now, we have figured out that the r
 |               64 bits                 ||               64 bits                 |
 ```
 
-### Header
+## Header Section Analysis
 
-Now, lets start analyzing the header part of the `.idx`.
-
-Here is the first bytes on an `.idx` file.
+The `.idx` file header contains:
 
 ```
 00000000  49 53 46 50 00 00 00 02  91 9d 39 b4 40 00 00 00  |ISFP......9.@...|
@@ -471,7 +454,7 @@ Lets analyze the content.
 Looking at all the files, for the first 128 bits, we get:
 
 ```shell
-kakwa@linux 6775398/idx » for i in *;do hexdump -C $i | head -n 1;done 
+kakwa@linux 6775398/idx » for i in *;do hexdump -C $i | head -n 1;done
 [...]
 00000000  49 53 46 50 00 00 00 02  1b 73 f9 d5 40 00 00 00  |ISFP.....s..@...|
 00000000  49 53 46 50 00 00 00 02  78 f0 2c 09 40 00 00 00  |ISFP....x.,.@...|
@@ -519,7 +502,7 @@ kakwa@linux 6775398/idx » for i in *;do hexdump -C $i | head -n 2 | tail -n 1;d
 00000010  a5 01 00 00 36 01 00 00  01 00 00 00 00 00 00 00  |....6...........|
 00000010  13 04 00 00 fb 02 00 00  01 00 00 00 00 00 00 00  |................|
 00000010  79 03 00 00 a9 02 00 00  01 00 00 00 00 00 00 00  |y...............|
-``` 
+```
 
 So here, we recognize two 32 bits integers due to the `00 00`,  and then either a fixed 64 bits integer with always a `01 00 00 00 00 00 00 00` value, or something like two 32 bits integers with value `01 00 00 00` and `00 00 00 00` (as the value never varies, again, it's not that important).
 
@@ -543,7 +526,7 @@ Let's validate that:
 
 ```shell
 # Q&D filtering out names without an extension (no '.')
-kakwa@linux 6775398/idx » cat listing | grep  '\.' | wc -l 
+kakwa@linux 6775398/idx » cat listing | grep  '\.' | wc -l
 284
 ```
 
@@ -643,7 +626,6 @@ So we have:
 
 Last 64 bits:
 
-
 ```shell
 kakwa@linux 6623042/idx » for i in *;do hexdump -C $i | head -n 4 | tail -n 1;done | less
 [...]
@@ -700,7 +682,7 @@ So, to recap, here is the header section format:
 |<---- offset third section end -------->|
 ```
 
-### Format of the middle section
+## Filename Section
 
 Not much to say there.
 
@@ -728,8 +710,7 @@ kakwa@linux 6775398/idx » hexdump -C system_data.idx| less
 
 So it's a bunch of `\0` separated strings. The only thing interesting to note is that it's not a fixed size section.
 
-### Format of the third section
-
+## PKG Pointer Section
 
 Here what it looks like:
 
@@ -773,27 +754,9 @@ kakwa@linux 6775398/idx » hexdump -C system_data.idx| less
 (END)
 ```
 
-### Quick recap (this part)
-- `.idx` files hold metadata: header, `\0`-separated names, records pointing to `.pkg` offsets, and a footer with the `.pkg` filename.
-- Metadata entries carry `id` and `parent_id`, enabling directory hierarchies.
-- Pkg pointers include offsets, sizes, and the `.pkg` chunk id; types likely indicate compression mode.
+This section contains 384-bit records (48 bytes each) linking files to their data in `.pkg` files through IDs and offsets.
 
-
-Right away, we can notice 3 things:
-
-* like before, it looks cyclical
-* it contains the IDs of the pkg file
-* it ends with the `.pkg` file name.
-
-One cycle probably contains other metadata about a packaged file.
-
-Lets try to first determine the size of these cycles.
-
-first, lets "reallign" the hexdump.
-
-Here the last file name strings ends at 00003c05 (last '\0'), which means 6 bytes.
-
-hexdump has a convinient `-s` (skip) option for that.
+Each record contains metadata IDs, PKG file offsets, data sizes, and compression types.
 
 ```shell
 # lets skip the first 6 bytes to allign hexdump output
@@ -875,7 +838,6 @@ File 2:
 0000f74d  79 c6 03 00 dc b8 5f 80  80 00 08 00 00 00 00 00  |y....._.........|
 ```
 
-
 File 3:
 
 ```
@@ -949,7 +911,7 @@ However, it could very much be a relative offset (to the start of the data chunk
 Lets validate that with the second record
 
 Record
-``` 
+```
 00003c36  8f ec 87 4a 28 d0 f7 c7  70 11 03 07 0d 33 ed 77  |...J(...p....3.w|
 00003c46  1e 9b ef 05 00 00 00 00  05 00 00 00 01 00 00 00  |................|
 00003c56  15 15 01 00 03 77 63 97  3e ab 02 00 00 00 00 00  |.....wc.>.......|
@@ -1007,7 +969,7 @@ So to recap, we have:
 |     32 bits       ||               64 bits                 ||      32 bits      |
 ```
 
-### The last bits
+## The Last Bits
 
 So, okay, we have the core of the 3 part of the file.
 
@@ -1058,7 +1020,7 @@ So we have
 |                64 bits                 |
 ```
 
-## Recap (Part 2)
+# Recap (Part 2)
 
 - Identified `.idx` files in `./bin/<latest>/idx/` as indexes for `.pkg` archives and matched them by name.
 - Mapped overall `.idx` layout into 4 parts:
@@ -1067,12 +1029,5 @@ So we have
   - Records section (per-record 384 bits): two 64-bit unknowns (likely ids, one enabling parent/child hierarchy), 64-bit start offset in `.pkg`, 2×32-bit types, 32-bit relative end size, 64-bit `.pkg` chunk id, and padding.
   - Footer: `.pkg` filename length, an unknown 64-bit value, a repeated 64-bit constant, then the `.pkg` filename string.
 - Established the link between names and `.pkg` chunks via ids and offsets, enough to reconstruct directories and locate data.
-- Next: parse these records programmatically to rebuild the tree and read blobs (Part 3).
 
----
-
-Previous/Next
-- Part 1 — Searching The Data → [/posts/wows_depack_part1/](/posts/wows_depack_part1/)
-- Part 2 — Getting The Metadata → [/posts/wows_depack_part2/](/posts/wows_depack_part2/)
-- Part 3 — Reading The Database → [/posts/wows_depack_part3/](/posts/wows_depack_part3/)
-- Back to Series Index → [/posts/wows_depack_index/](/posts/wows_depack_index/)
+In [the next part](/posts/wows_depack_part2/) of this series we will start the actual implementation.
