@@ -1,6 +1,6 @@
 +++
 title = 'Reversing WoWs Resource Format - Part 1: Searching The Data'
-date = 2025-08-27T01:00:00+02:00
+date = 2025-08-24T01:00:00+02:00
 draft = false
 +++
 
