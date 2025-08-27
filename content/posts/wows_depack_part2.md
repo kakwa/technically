@@ -1,7 +1,7 @@
 +++
 title = 'Reversing WoWs Resource Format - Part 2: Getting The Metadata'
-date = 2024-06-29T22:50:48+02:00
-draft = true
+date = 2025-08-27T00:00:00+02:00
+draft = false
 +++
 
 # Parts
