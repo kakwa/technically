@@ -1,0 +1,147 @@
+<!doctype html><html xmlns=http://www.w3.org/1999/xhtml lang=en><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Reversing WoWs Resource Format - Part 4: Tidying-Up The Project | Technically some technical stuff, or not.</title>
+<meta property='og:title' content='Reversing WoWs Resource Format - Part 4: Tidying-Up The Project - Technically some technical stuff, or not.'><meta property='og:description' content='Parts Part 1 — Searching The Data → /posts/wows_depack_part1/ Part 2 — Getting The Metadata → /posts/wows_depack_part2/ Part 3 — Reading The Database → /posts/wows_depack_part3/ Part 4 — Tidying-Up The Project → /posts/wows_depack_part4/ Tidying-Up The Project In the last part we got a first rough implementation.
+In this final part, we will clean up things, correct a few shortcuts we took, and create an actual project out of this.
+Creating Unit Tests I did this project right around the release of ChatGPT 3.'><meta property='og:url' content='http://technically.kakwalab.ovh/posts/wows_depack_part4/'><meta property='og:site_name' content='Technically some technical stuff, or not.'><meta property='og:type' content='article'><meta property='og:image' content='https://www.gravatar.com/avatar/bf9868bd766533e965b2eb1ed2d4ef76?s=256'><meta property='article:section' content='Posts'><meta property='article:published_time' content='2025-08-27T00:00:00+02:00'><meta property='article:modified_time' content='2025-08-27T00:00:00+02:00'><meta name=twitter:card content='summary'><meta name=twitter:site content='@'><meta name=twitter:creator content='@'><link rel=stylesheet href=/css/style.css><link rel=stylesheet href=http://technically.kakwalab.ovh/css/custom.css><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/site.webmanifest><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=canonical href=http://technically.kakwalab.ovh/posts/wows_depack_part4/><meta name=msapplication-TileColor content="#da532c"><meta name=theme-color content="#ffffff"></head><body><section class=section><div class=container><nav id=nav-main class=nav><div id=nav-name class=nav-left><a id=nav-anchor class=nav-item href=http://technically.kakwalab.ovh/><h1 id=nav-heading class="title is-4">Technically some technical stuff, or not.</h1></a></div><div class=nav-right><nav id=nav-items class="nav-item level is-mobile"><a class=level-item aria-label=github href=https://github.com/kakwa target=_blank rel='me noopener'><span class=icon><i><svg viewbox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37.0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44.0 0020 4.77 5.07 5.07.0 0019.91 1S18.73.65 16 2.48a13.38 13.38.0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07.0 005 4.77 5.44 5.44.0 003.5 8.55c0 5.42 3.3 6.61 6.44 7A3.37 3.37.0 009 18.13V22"/></svg>
+</i></span></a><a class=level-item aria-label=email href=mailto:carpentier.pf@gmail.com target=_blank rel='me noopener'><span class=icon><i><svg viewbox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><path d="M4 4h16c1.1.0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1.0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+</i></span></a><a class=level-item aria-label=linkedin href=https://linkedin.com/in/pfcarpentier target=_blank rel='me noopener'><span class=icon><i><svg viewbox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><path stroke-width="1.8" d="m5.839218 4.101561c0 1.211972-.974141 2.194011-2.176459 2.194011S1.4863 5.313533 1.4863 4.101561c0-1.211094.974141-2.194011 2.176459-2.194011s2.176459.982917 2.176459 2.194011zm.017552 3.94922H1.468748v14.04167H5.85677V8.050781zm7.005038.0H8.501869v14.04167h4.360816v-7.370999c0-4.098413 5.291077-4.433657 5.291077.0v7.370999h4.377491v-8.89101c0-6.915523-7.829986-6.66365-9.669445-3.259423V8.050781z"/></svg></i></span></a></nav></div></nav><nav class=nav></nav></div><script src=/js/navicon-shift.js></script></section><section class=section><div class=container><div class="subtitle tags is-6 is-pulled-right"></div><h2 class="subtitle is-6">August 27, 2025</h2><h1 class=title>Reversing WoWs Resource Format - Part 4: Tidying-Up The Project</h1><div class=content><h1 id=parts>Parts</h1><ul><li>Part 1 — Searching The Data → <a href=/posts/wows_depack_part1/>/posts/wows_depack_part1/</a></li><li>Part 2 — Getting The Metadata → <a href=/posts/wows_depack_part2/>/posts/wows_depack_part2/</a></li><li>Part 3 — Reading The Database → <a href=/posts/wows_depack_part3/>/posts/wows_depack_part3/</a></li><li>Part 4 — Tidying-Up The Project → <a href=/posts/wows_depack_part4/>/posts/wows_depack_part4/</a></li></ul><h1 id=tidying-up-the-project>Tidying-Up The Project</h1><p>In the last part we got a first rough implementation.</p><p>In this final part, we will clean up things, correct a few shortcuts we took, and create an actual project out of this.</p><h2 id=creating-unit-tests>Creating Unit Tests</h2><p>I did this project right around the release of ChatGPT 3.5. Initially I didn&rsquo;t plan to add unit tests. But after giving the struct definitions and the format documentation, ChatGPT was able to generate test cases which, while not completely functional, were close enough to start with. It seems evident now, but at the time I was kind of blown away by it.</p><p>In the end, you can probably thank our AI overlords for the unit tests of this project. And it was a lifesaver when I significantly reworked the data loading from <code>mmap</code> to a proper unpacking taking endianness into account.</p><p>Also, I&rsquo;ve used the usual suspects of GitHub Actions + CUnit + lcov for CI and code coverage measurement.</p><h2 id=fuzzing>Fuzzing</h2><p>C being the both-ways shotgun it is, you are most likely to get things wrong, especially in the unhappy paths.</p><p>In that regard, leveraging fuzzing & <a href=https://github.com/AFLplusplus/AFLplusplus>AFL++</a> greatly helps in catching memory issues. It works by taking a collection of valid input files (here, the <code>.idx</code> files) and tweaking them to try triggering crashes.</p><p>Here is the gist of using it:</p><ul><li>Install AFL++ and build with AFL++ Instrumentation:</li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#75715e># Debian/Ubuntu</span>
+</span></span><span style=display:flex><span>apt install afl-clang
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>cmake -DCMAKE_C_COMPILER<span style=color:#f92672>=</span>afl-clang -DCMAKE_CXX_COMPILER<span style=color:#f92672>=</span>afl-clang++ .
+</span></span><span style=display:flex><span>make
+</span></span></code></pre></div><ul><li>Run with a collection of valid <code>.idx</code> files</li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>INDEX_DIR<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;/path/to/WoWs/bin/6831266/idx/&#34;</span>
+</span></span><span style=display:flex><span>afl-fuzz -i <span style=color:#e6db74>&#34;</span>$INDEX_DIR<span style=color:#e6db74>&#34;</span> -o ./out -t <span style=color:#ae81ff>10000</span> -- ./wows-depack-cli -i <span style=color:#e6db74>&#39;@@&#39;</span>
+</span></span></code></pre></div><p>Crashes go to <code>out/crashes/</code> and can then be investigated using <code>gdb</code>, and potentially used as test/non-regression tests.</p><h2 id=api-documentation>API Documentation</h2><p>Here, we simply call good old <a href=https://doxygen.nl/>Doxygen</a> to the rescue.</p><p>The Doxygen annotations are easy to write these days using LLMs: if your naming scheme is decent enough, simply feeding the header definitions (structs and functions) will get you 90% of the way there. Add a few fixes, and you are in business.</p><p>Prettier docs are also slightly more likely to be read, so I&rsquo;m using <a href=https://github.com/jothepro/doxygen-awesome-css>this nice theme</a>. Just point to it in <code>Doxyfile.in</code> (<code>HTML_EXTRA_STYLESHEET</code>).</p><p>And lastly, to keep it up to date, I simply combined GitHub Actions & GitHub Pages to maintain and publish it.</p><h2 id=proper-unpacking>Proper Unpacking</h2><p>Initially, I did the unpacking using <code>mmap</code> + &ldquo;casting&rdquo; to structs. While it works, it&rsquo;s a bit dangerous as endianness can become an issue, as is data alignment in structs (forces <code>#pragma pack 1</code> which might not work on every architecture).</p><p>So I significantly reworked the project to properly read the file field by field, handling endianness along the way. It was a bit painful to do (having unit tests helped a lot in avoiding regressions there), but now the project is much cleaner on that front.</p><h1 id=annex-1---a-few-links>Annex 1 - A Few Links</h1><ul><li><strong>Game</strong>: <a href=https://store.steampowered.com/app/552990/World_of_Warships/>WoWs</a></li><li><strong>Closed Source Utility</strong>: <a href=https://raw.githubusercontent.com/wowsinfo/wowsunpack/refs/heads/master/src/wowsunpack/wowsunpack.exe>wowsunpack.exe</a></li><li><strong>My Project</strong>: <a href=https://github.com/kakwa/wows-depack>wows-depack (GitHub)</a></li><li><strong>Similar Project in Rust</strong>: <a href=https://github.com/landaire/wowsunpack>wowsunpack (GitHub)</a></li></ul><h1 id=annex-2---misc-reverse-engineering-tips>Annex 2 - Misc Reverse Engineering Tips</h1><h2 id=data-type-identification>Data Type Identification</h2><p>These are more rule-of-thumb patterns and need to be used while looking at the surrounding data.</p><h3 id=unsigned-integers>Unsigned integers</h3><p>32-bit integers generally look like: <code>02 2F 00 00</code>: higher bytes tend to be <code>00</code>, lower bytes tend to be used.</p><p>The same thing applies to 64-bit integers.</p><p>They are typically used to describe the following elements:</p><ul><li>counts</li><li>size</li><li>offsets</li></ul><p>Offsets tend to have values divided by 4 or 8 (32 or 64 bits blocks), they also tend to be 64 bits these days (<code>size_t</code>).</p><p>32-bit low-value integers tend to be counts or string sizes.</p><h3 id=float>Float</h3><p>32-bit floats generally have all 4 bytes used, with nearly no zero nibbles, for example: <code>b1 61 33 78</code>.</p><p>These are difficult to distinguish from random ints at a glance; they need to be parsed and checked to see if the values are consistent (similar to other fields, within set boundaries, etc.).</p><h3 id=rgba>RGBA</h3><p>RGBA look like: <code>7f 7f fe 00</code> or <code>00 ff fe 00</code>. It&rsquo;s an array of 4 bytes <code>{R,G,B,A}</code> which tend to have recurring values, and often with 1 or 2 bytes in the extreme (<code>00</code> or <code>ff</code>).</p><p>example:</p><pre tabindex=0><code>0000b9a0  7f 7f fe 00 82 4b f0 3e  11 f7 02 3f 98 11 9e bf  |.....K.&gt;...?....|
+0000ba00  7f 7f 00 00 67 cf c5 3e  10 f7 02 3f 98 11 9e bf  |....g..&gt;...?....|
+0000ba10  00 7f 7f 00 67 cf c5 3e  15 f7 02 3f 36 e0 8c bf  |....g..&gt;...?6...|
+</code></pre><p>Here <code>7f 7f fe 00</code>, <code>7f 7f 00 00</code> and <code>00 7f 7f 00</code> are like RGBA values (the rest being floats).</p><h3 id=strings>Strings</h3><p>A bunch of printable characters, often <code>00</code>-terminated.</p><pre tabindex=0><code>00015280  7f fe 7f 00 43 4d 5f 50  41 5f 75 6e 69 74 65 64  |....CM_PA_united|
+00015290  2e 61 72 6d 6f 72 00                              |.armor.|
+</code></pre><h2 id=tools>Tools</h2><h3 id=file>File</h3><p>Just a very simple utility to check for known file signatures:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>file *
+</span></span></code></pre></div><h3 id=strings-1>Strings</h3><p>Tool to try extracting the strings contained in a given file:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>strings -n &lt;MIN_STR_LENGTH&gt; &lt;FILE&gt;
+</span></span></code></pre></div><p>There will be a bit of noise (increasing MIN_STR_LENGTH reduces it), but it should give you interesting human-readable strings contained in a given file.</p><h3 id=hexdump>Hexdump</h3><p>hexdump is my go-to tool for investigating binary data. I especially like the <code>hexdump -C FILE | less</code> combo:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>hexdump -C &lt;FILE&gt; | less
+</span></span></code></pre></div><p>If you are investigating a specific section of a file, you can start at a given offset with the <code>-s &lt;SKIPPED_BYTES></code> option; this will make things easier to read and navigate and help determine the data alignment:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>hexdump -s &lt;SKIPPED_BYTES&gt; -C &lt;FILE&gt; | less
+</span></span></code></pre></div><p>To get a general feel, don&rsquo;t hesitate to loop over files and display the first bits of a collection:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>find ./ -name <span style=color:#e6db74>&#39;*.geometry&#39;</span> | <span style=color:#66d9ef>while</span> read file;
+</span></span><span style=display:flex><span><span style=color:#66d9ef>do</span>
+</span></span><span style=display:flex><span>    hexdump -C $file | head -n 6;
+</span></span><span style=display:flex><span><span style=color:#66d9ef>done</span>
+</span></span></code></pre></div><h3 id=imhex>ImHex</h3><p>While I&rsquo;ve not used it here, you should give a try to <a href=https://github.com/WerWolv/ImHex>ImHex</a>. I&rsquo;ve used it in subsequent works, and it&rsquo;s an amazing tool that greatly helps in determining and validating the data structure of binary files.</p><h1 id=annex-3---file-specification>Annex 3 - File Specification</h1><h2 id=general-information>General Information</h2><p>The WoWs resources are packed into something similar to a <code>.zip</code> archive (WoTs and WoWPs actually use ZIP files).</p><p>Each archive is actually separated into two files:</p><ul><li>a <code>.pkg</code> containing the compressed files concatenated together. This file is in the <code>res_packages/</code> directory.</li><li>a <code>.idx</code> containing the index of the files contained in the <code>.pkg</code> and their metadata (name, path, type, etc). This file is located in the <code>./bin/&lt;build_number>/idx/</code> directory.</li></ul><h2 id=convention>Convention</h2><p>A byte/8 bits is represented as follows:</p><pre tabindex=0><code>+====+
+| XX |
++====+
+</code></pre><p>A variable length field (ex: strings) is represented as follows:</p><pre tabindex=0><code>|~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+|           Field            |
+|~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+</code></pre><p>The boundary between two fields is marked as follows:</p><pre tabindex=0><code>...=++=...
+    ||
+...=++=...
+</code></pre><h2 id=misc>Misc</h2><p>Integers (offset and size in particular) are <code>Big Endian</code>.</p><p>Strings seem limited to ASCII and are <code>\0</code> terminated.</p><h2 id=index-file>Index file</h2><h3 id=general-layout>General Layout</h3><p>The index file is composed of 5 sections:</p><pre tabindex=0><code>|~~~~~~~~~~~~~~~~~~~~~~~~~~~~| ^
+|           Header           | } index header (number of files, pointers to sections, etc)
+|~~~~~~~~~~~~~~~~~~~~~~~~~~~~| v
+
+|~~~~~~~~~~~~~~~~~~~~~~~~~~~~| ^
+|       File metadata 1      | |
+|----------------------------| |
+|           [...]            | } metadata section (pointer to name, type, etc)
+|----------------------------| |
+|      File metadata Nfd     | |
+|~~~~~~~~~~~~~~~~~~~~~~~~~~~~| v
+
+|~~~~~~~~~~~~~~~~~~~~~~~~~~~~| ^
+|        File Name 1         | |
+|----------------------------| |
+|           [...]            | } file names (`\0` separated strings)
+|----------------------------| |
+|        File Name Nfd       | |
+|~~~~~~~~~~~~~~~~~~~~~~~~~~~~| v
+
+|~~~~~~~~~~~~~~~~~~~~~~~~~~~~| ^
+|   File `.pkg` pointers 1   | |
+|----------------------------| |
+|           [...]            | }  pkg pointers section in the `.pkg` file (offsets)
+|----------------------------| |
+|   File `.pkg` pointers Nf  | |
+|~~~~~~~~~~~~~~~~~~~~~~~~~~~~| v
+
+|~~~~~~~~~~~~~~~~~~~~~~~~~~~~| ^
+|           Footer           | } index footer (corresponding `.pkg` file name)
+|~~~~~~~~~~~~~~~~~~~~~~~~~~~~| V
+</code></pre><h3 id=header>Header</h3><h4 id=layout>Layout</h4><pre tabindex=0><code>+====+====+====+====++====+====+====+====++====+====+====+====++====+====+====+====+
+| MA | MA | MA | MA || 00 | 00 | 00 | 02 || ID | ID | ID | ID || 40 | 00 | 00 | 00 |
++====+====+====+====++====+====+====+====++====+====+====+====++====+====+====+====+
+|&lt;----- magic -----&gt;||&lt;--- endianess ---&gt;||&lt;------- id ------&gt;||&lt;--- unknown_2 ---&gt;|
+|     32 bits       ||      32 bits      ||     32 bits       ||      32 bits      |
+
++====+====+====+====++====+====+====+====++====+====+====+====++====+====+====+====+
+| FD | FD | FD | FD || FO | FO | FO | FO || 01 | 00 | 00 | 00 || 00 | 00 | 00 | 00 |
++====+====+====+====++====+====+====+====++====+====+====+====++====+====+====+====+
+|&lt;- file_dir_count &gt;||&lt;-- file_count ---&gt;||&lt;-------------- unknown_3 -------------&gt;|
+|     32 bits       ||      32 bits      ||                64 bits                 |
+
++====+====+====+====+====+====+====+=====++=====+====+====+====+====+====+====+====+
+| HS | HS | HS | HS | HS | HS | HS | HS  ||  OF | OF | OF | OF | OF | OF | OF | OF |
++====+====+====+====+====+====+====+=====++=====+====+====+====+====+====+====+====+
+|&lt;------------- header_size ------------&gt;||&lt;------- offset_idx_data_section ------&gt;|
+|                64 bits                 ||             64 bits                    |
+
++====+====+====+====+====+====+====+=====+
+| OE | OE | OE | OE | OE | OE | OE | OE  |
++====+====+====+====+====+====+====+=====+
+|&lt;----- offset_idx_footer_section ------&gt;|
+|               64 bits                  |
+</code></pre><h4 id=field-descriptions>Field descriptions</h4><table><thead><tr><th>Field</th><th>size</th><th>Description</th></tr></thead><tbody><tr><td><code>magic</code></td><td>32 bits</td><td>Magic bytes, always &ldquo;ISFP&rdquo;</td></tr><tr><td><code>endianess</code></td><td>32 bits</td><td>Endianess marker, always 0x2000000 if LE</td></tr><tr><td><code>id</code></td><td>32 bits</td><td>Unsure, unique per index file, not referenced anywhere else</td></tr><tr><td><code>unknown_2</code></td><td>32 bits</td><td>Unknown, always 0x40, maybe some offset</td></tr><tr><td><code>file_dir_count</code></td><td>32 bits</td><td>Number of files + directories (Nfd), also number of entries in the metadata section and the file names section</td></tr><tr><td><code>file_count</code></td><td>32 bits</td><td>Number of files (Nf), also the number of entries in the file pkg pointers section</td></tr><tr><td><code>unknown_3</code></td><td>64 bits</td><td>Unknown, always &lsquo;1&rsquo;, maybe the number of <code>.pkg</code> file the index file references (the format hints that it might be supported, but it&rsquo;s not used)</td></tr><tr><td><code>header_size</code></td><td>64 bits</td><td>Most likely the header size, always 40</td></tr><tr><td><code>offset_idx_data_section</code></td><td>64 bits</td><td>Offset to the pkg data section, the offset is computed from <code>file_plus_dir_count</code> so <code>0x10</code> needs to be added</td></tr><tr><td><code>offset_idx_footer_section</code></td><td>64 bits</td><td>Offset to the footer section, the offset is computed from <code>file_plus_dir_count</code> so <code>0x10</code> needs to be added</td></tr></tbody></table><h3 id=file-metadata>File Metadata</h3><p>This section is repeated for each file and directory (<code>header->file_dir_count</code>).</p><h4 id=layout-1>Layout</h4><pre tabindex=0><code>+====+====+====+====+====+====+====+=====++=====+====+====+====+====+====+====+====+
+| NS | NS | NS | NS | NS | NS | NS | NS  ||  OF | OF | OF | OF | OF | OF | OF | OF |
++====+====+====+====+====+====+====+=====++=====+====+====+====+====+====+====+====+
+|&lt;---------- file_name_size ------------&gt;||&lt;-------- offset_idx_file_name --------&gt;|
+|               64 bits                  ||              64 bits                   |
+
++====+====+====+====+====+====+====+=====++=====+====+====+====+====+====+====+====+
+| UN | UN | UN | UN | UN | UN | UN | UN  ||  T2 | T2 | T2 | T2 | T2 | T2 | T2 | T2 |
++====+====+====+====+====+====+====+=====++=====+====+====+====+====+====+====+====+
+|&lt;----------------- id -----------------&gt;||&lt;------------- parent_id  -------------&gt;|
+|                64 bits                 ||                64 bits                 |
+
+[...repeat...]
+</code></pre><h4 id=field-descriptions-1>Field descriptions</h4><table><thead><tr><th>Field</th><th>Size</th><th>Description</th></tr></thead><tbody><tr><td><code>file_name_size</code></td><td>64 bits</td><td>Size of the file name string</td></tr><tr><td><code>offset_idx_file_name</code></td><td>64 bits</td><td>Offset from the start of the current metadata record to the start of the file name string</td></tr><tr><td><code>id</code></td><td>64 bits</td><td>Unique ID of the metadata record</td></tr><tr><td><code>parent_id</code></td><td>64 bits</td><td>ID of the potential parent record (in particular, a directory record)</td></tr></tbody></table><h3 id=file-names-section>File names section</h3><p>This section is just <code>\0</code> separated list of strings:</p><h4 id=layout-2>Layout</h4><pre tabindex=0><code>+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+====+
+|             file name string         | 00 |
++~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+====+
+[...repeat...]
+</code></pre><h3 id=file-pkg-pointers>File &ldquo;.pkg&rdquo; Pointers</h3><p>This section is repeated for each file (<code>header->file_count</code>).</p><h4 id=layout-3>Layout</h4><pre tabindex=0><code>+====+====+====+====+====+====+====+====++=====+====+====+====+====+====+====+====+
+| UO | UO | UO | UO | UO | UO | UO | UO ||  UT | UT | UT | UT | UT | UT | UT | UT |
++====+====+====+====+====+====+====+====++=====+====+====+====+====+====+====+====+
+|&lt;----------- metadata_id -------------&gt;||&lt;------------- footer_id --------------&gt;|
+|               64 bits                 ||                64 bits                 |
+
++====+====+====+====+====+====+====+====++====+====+====+====++====+====+====+====+
+| OF | OF | OF | OF | OF | OF | OF | OF || T1 | T1 | T1 | T1 || T2 | T2 | T2 | T2 |
++====+====+====+====+====+====+====+====++====+====+====+====++====+====+====+====+
+|&lt;--------- offset_pkg_data -----------&gt;||&lt;---- type_1 -----&gt;||&lt;----- type_2 ----&gt;|
+|               64 bits                 ||     32 bits       ||      32 bits      |
+
++====+====+====+====++====+====+====+====+====+====+====+====++====+====+====+====+
+| OE | OE | OE | OE || ID | ID | ID | ID | ID | ID | ID | ID || 00 | 00 | 00 | 00 |
++====+====+====+====++====+====+====+====+====+====+====+====++====+====+====+====+
+|&lt;- size_pkg_data -&gt;||&lt;------------ id_pkg_data ------------&gt;||&lt;---- padding ----&gt;|
+|     32 bits       ||               64 bits                 ||      32 bits      |
+[...repeat...]
+</code></pre><h4 id=field-descriptions-2>Field Descriptions</h4><table><thead><tr><th>Field</th><th>Size</th><th>Description</th></tr></thead><tbody><tr><td><code>metadata_id</code></td><td>64 bits</td><td>ID of the corresponding metadata entry</td></tr><tr><td><code>footer_id</code></td><td>64 bits</td><td>ID of the footer entry (only one entry possible in practice)</td></tr><tr><td><code>offset_pkg_data</code></td><td>64 bits</td><td>Offset to the compressed data from the start of the <code>.pkg</code> file</td></tr><tr><td><code>type_1</code></td><td>32 bits</td><td>Compression param 1 (<code>0x0</code> for uncompressed, <code>0x5</code> for deflate)</td></tr><tr><td><code>type_2</code></td><td>32 bits</td><td>Compression param 2 (<code>0x0</code> for uncompressed, <code>0x1</code> for deflate)</td></tr><tr><td><code>size_pkg_data</code></td><td>32 bits</td><td>Size of the compressed data section in the <code>.pkg</code> file</td></tr><tr><td><code>id_pkg_data</code></td><td>64 bits</td><td>ID of the data section in the <code>.pkg</code> file</td></tr><tr><td><code>padding</code></td><td>32 bits</td><td>Always <code>0x00000000</code></td></tr></tbody></table><h3 id=footer>Footer</h3><h4 id=layout-4>Layout</h4><pre tabindex=0><code>+====+====+====+====+====+====+====+====++=====+====+====+====+====+====+====+====+
+| UO | UO | UO | UO | UO | UO | UO | UO ||  U3 | U3 | U3 | U3 | U3 | U3 | U3 | U3 |
++====+====+====+====+====+====+====+====++=====+====+====+====+====+====+====+====+
+|&lt;--------- pkg_file_name_size --------&gt;||&lt;-------------- unknown_7 -------------&gt;|
+|               64 bits                 ||                64 bits                 |
+
++====+====+====+====+====+====+====+====++~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+| UT | UT | UT | UT | UT | UT | UT | UT ||             pkg_file_name_string
++====+====+====+====+====+====+====+====++~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+|&lt;----------------- id -----------------&gt;|
+|                64 bits                 |
+</code></pre><h4 id=field-descriptions-3>Field descriptions</h4><table><thead><tr><th>Field</th><th>Size</th><th>Description</th></tr></thead><tbody><tr><td><code>pkg_file_name_size</code></td><td>64 bits</td><td>Size of the corresponding <code>.pkg</code> file name string</td></tr><tr><td><code>unknown_7</code></td><td>64 bits</td><td>unknown, looks like an ID</td></tr><tr><td><code>id</code></td><td>64 bits</td><td>ID of the footer entry</td></tr></tbody></table><h2 id=pkg-format>PKG format</h2><h3 id=pkg-entry>PKG Entry</h3><p>The <code>.pkg</code> format is rather simple, it&rsquo;s bunch of concatenated compressed (RFC 1951/Deflate) or raw/uncompressed data blobs (one for each file) separated by an ID.</p><h4 id=layout-5>Layout</h4><pre tabindex=0><code>+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
+|                                                                                 |
+|                   Compressed (RFC 1951/Deflate) or Raw Data                     |
+|                                                                                 |
++~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
++====+====+====+====++====+====+====+====+====+====+====+====++====+====+====+====+
+| 00 | 00 | 00 | 00 || XX | XX | XX | XX | XX | XX | 00 | 00 || 00 | 00 | 00 | 00 |
++====+====+====+====++====+====+====+====+====+====+====+====++====+====+====+====+
+|&lt;--- padding_1 ---&gt;||&lt;---------------- id -----------------&gt;||&lt;--- padding_2 ---&gt;|
+|     32 bits       ||               64 bits                 ||      32 bits      |
+
+[...repeat...]
+</code></pre><h4 id=field-descriptions-4>Field descriptions</h4><table><thead><tr><th>Field</th><th>Size</th><th>Description</th></tr></thead><tbody><tr><td><code>padding_1</code></td><td>32 bits</td><td>Always <code>0x00000000</code></td></tr><tr><td><code>id_pkg_data</code></td><td>64 bits</td><td>ID of the data blob</td></tr><tr><td><code>padding_2</code></td><td>32 bits</td><td>Always <code>0x00000000</code></td></tr></tbody></table><div class=related></div></div></div></section><script src=/js/copycode.js></script><section class=section><div class="container has-text-centered"><p>&copy; <a href=https://github.com/kakwa>Pierre-Francois Carpentier</a> 2024</p></div></section></body></html>

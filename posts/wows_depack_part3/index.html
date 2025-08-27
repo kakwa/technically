@@ -1,0 +1,561 @@
+<!doctype html><html xmlns=http://www.w3.org/1999/xhtml lang=en><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Reversing WoWs Resource Format - Part 3: Reading The Database | Technically some technical stuff, or not.</title>
+<meta property='og:title' content='Reversing WoWs Resource Format - Part 3: Reading The Database - Technically some technical stuff, or not.'><meta property='og:description' content='Parts Part 1 — Searching The Data → /posts/wows_depack_part1/ Part 2 — Getting The Metadata → /posts/wows_depack_part2/ Part 3 — Reading The Database → /posts/wows_depack_part3/ Part 4 — Tidying-Up The Project → /posts/wows_depack_part4/ The Implementation In the last part, we discovered and got a fairly good idea of the metadata/IDX format.
+In this part, we will create a rough implementation to extract the content.
+Data Structures First, define C structures matching our reverse-engineered format:'><meta property='og:url' content='http://technically.kakwalab.ovh/posts/wows_depack_part3/'><meta property='og:site_name' content='Technically some technical stuff, or not.'><meta property='og:type' content='article'><meta property='og:image' content='https://www.gravatar.com/avatar/bf9868bd766533e965b2eb1ed2d4ef76?s=256'><meta property='article:section' content='Posts'><meta property='article:published_time' content='2025-08-27T00:00:00+02:00'><meta property='article:modified_time' content='2025-08-27T00:00:00+02:00'><meta name=twitter:card content='summary'><meta name=twitter:site content='@'><meta name=twitter:creator content='@'><link rel=stylesheet href=/css/style.css><link rel=stylesheet href=http://technically.kakwalab.ovh/css/custom.css><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/site.webmanifest><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=canonical href=http://technically.kakwalab.ovh/posts/wows_depack_part3/><meta name=msapplication-TileColor content="#da532c"><meta name=theme-color content="#ffffff"></head><body><section class=section><div class=container><nav id=nav-main class=nav><div id=nav-name class=nav-left><a id=nav-anchor class=nav-item href=http://technically.kakwalab.ovh/><h1 id=nav-heading class="title is-4">Technically some technical stuff, or not.</h1></a></div><div class=nav-right><nav id=nav-items class="nav-item level is-mobile"><a class=level-item aria-label=github href=https://github.com/kakwa target=_blank rel='me noopener'><span class=icon><i><svg viewbox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37.0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44.0 0020 4.77 5.07 5.07.0 0019.91 1S18.73.65 16 2.48a13.38 13.38.0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07.0 005 4.77 5.44 5.44.0 003.5 8.55c0 5.42 3.3 6.61 6.44 7A3.37 3.37.0 009 18.13V22"/></svg>
+</i></span></a><a class=level-item aria-label=email href=mailto:carpentier.pf@gmail.com target=_blank rel='me noopener'><span class=icon><i><svg viewbox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><path d="M4 4h16c1.1.0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1.0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+</i></span></a><a class=level-item aria-label=linkedin href=https://linkedin.com/in/pfcarpentier target=_blank rel='me noopener'><span class=icon><i><svg viewbox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"><path stroke-width="1.8" d="m5.839218 4.101561c0 1.211972-.974141 2.194011-2.176459 2.194011S1.4863 5.313533 1.4863 4.101561c0-1.211094.974141-2.194011 2.176459-2.194011s2.176459.982917 2.176459 2.194011zm.017552 3.94922H1.468748v14.04167H5.85677V8.050781zm7.005038.0H8.501869v14.04167h4.360816v-7.370999c0-4.098413 5.291077-4.433657 5.291077.0v7.370999h4.377491v-8.89101c0-6.915523-7.829986-6.66365-9.669445-3.259423V8.050781z"/></svg></i></span></a></nav></div></nav><nav class=nav></nav></div><script src=/js/navicon-shift.js></script></section><section class=section><div class=container><div class="subtitle tags is-6 is-pulled-right"></div><h2 class="subtitle is-6">August 27, 2025</h2><h1 class=title>Reversing WoWs Resource Format - Part 3: Reading The Database</h1><div class=content><h1 id=parts>Parts</h1><ul><li>Part 1 — Searching The Data → <a href=/posts/wows_depack_part1/>/posts/wows_depack_part1/</a></li><li>Part 2 — Getting The Metadata → <a href=/posts/wows_depack_part2/>/posts/wows_depack_part2/</a></li><li>Part 3 — Reading The Database → <a href=/posts/wows_depack_part3/>/posts/wows_depack_part3/</a></li><li>Part 4 — Tidying-Up The Project → <a href=/posts/wows_depack_part4/>/posts/wows_depack_part4/</a></li></ul><h1 id=the-implementation>The Implementation</h1><p>In the last part, we discovered and got a fairly good idea of the metadata/IDX format.</p><p>In this part, we will create a rough implementation to extract the content.</p><h2 id=data-structures>Data Structures</h2><p>First, define C structures matching our reverse-engineered format:</p><pre tabindex=0><code>// INDEX file header
+typedef struct {
+    char magic[4];
+    uint32_t unknown_1;
+    uint32_t id;
+    uint32_t unknown_2;
+    uint32_t file_plus_dir_count;
+    uint32_t file_count;
+    uint64_t unknown_3;
+    uint64_t header_size;
+    uint64_t offset_idx_data_section;
+    uint64_t offset_idx_footer_section;
+} WOWS_INDEX_HEADER;
+</code></pre><h2 id=parser-implementation>Parser Implementation</h2><p><strong>Note:</strong> These examples omit error handling for clarity. Production code requires bounds checking and validation.</p><h3 id=file-mapping>File Mapping</h3><p>Memory map the index file:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-C data-lang=C><span style=display:flex><span><span style=color:#75715e>// Open the index file
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>int</span> fd <span style=color:#f92672>=</span> <span style=color:#a6e22e>open</span>(args.input, O_RDONLY);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Recover the file size
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>struct</span> stat s;
+</span></span><span style=display:flex><span><span style=color:#a6e22e>fstat</span>(fd, <span style=color:#f92672>&amp;</span>s);
+</span></span><span style=display:flex><span><span style=color:#66d9ef>size_t</span> index_size <span style=color:#f92672>=</span> s.st_size;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Map the whole content in memory
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>char</span> <span style=color:#f92672>*</span>index_content <span style=color:#f92672>=</span> <span style=color:#a6e22e>mmap</span>(<span style=color:#ae81ff>0</span>, index_size, PROT_READ, MAP_PRIVATE, fd, <span style=color:#ae81ff>0</span>);
+</span></span></code></pre></div><p>The second step is to have an entry point to actually parse the thing:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-C data-lang=C><span style=display:flex><span>    WOWS_CONTEXT context;
+</span></span><span style=display:flex><span>    context.debug <span style=color:#f92672>=</span> true;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Start the parsing
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>wows_parse_index</span>(index_content, index_size, <span style=color:#f92672>&amp;</span>context);
+</span></span></code></pre></div><p>Here, I pass the memory-mapped content of the index, its size (will be used in the future to avoid overflows), and a <code>context</code>, which will be used to pass parsing options and maintain &ldquo;states&rdquo; in the parsing if necessary.</p><h3 id=parsing-the-header-section>Parsing the Header Section</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-C data-lang=C><span style=display:flex><span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>wows_parse_index</span>(<span style=color:#66d9ef>char</span> <span style=color:#f92672>*</span>contents, <span style=color:#66d9ef>size_t</span> length, WOWS_CONTEXT <span style=color:#f92672>*</span>context) {
+</span></span><span style=display:flex><span>  <span style=color:#75715e>// header section
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>  WOWS_INDEX_HEADER <span style=color:#f92672>*</span>header <span style=color:#f92672>=</span> (WOWS_INDEX_HEADER <span style=color:#f92672>*</span>)contents;
+</span></span></code></pre></div><p>We can print it with a few <code>printf</code>:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-C data-lang=C><span style=display:flex><span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>print_header</span>(WOWS_INDEX_HEADER <span style=color:#f92672>*</span>header) {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;Index Header Content:</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;* magic:                     %.4s</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, (<span style=color:#66d9ef>char</span> <span style=color:#f92672>*</span>)<span style=color:#f92672>&amp;</span>header<span style=color:#f92672>-&gt;</span>magic);
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;* unknown_1:                 0x%x</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, header<span style=color:#f92672>-&gt;</span>unknown_1);
+</span></span><span style=display:flex><span>    [...]
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Output</p><pre tabindex=0><code>Index Header Content:
+* magic:                     ISFP
+* unknown_1:                 0x2000000
+* id:                        0xb4399d91
+* unknown_2:                 0x40
+* file_plus_dir_count:       311
+* file_count:                284
+* unknown_3:                 1
+* header_size:               40
+* offset_idx_data_section:   0x3bf6
+* offset_idx_footer_section: 0x7136
+</code></pre><h4 id=metadata-entries>Metadata entries</h4><p>Then, we can do a bunch of pointer arithmetic operations to extract the other sections of the index file:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-C data-lang=C><span style=display:flex><span>  <span style=color:#75715e>// Recover the start of the metadata array
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>  WOWS_INDEX_METADATA_ENTRY <span style=color:#f92672>*</span>metadatas;
+</span></span><span style=display:flex><span>  metadatas <span style=color:#f92672>=</span>
+</span></span><span style=display:flex><span>      (WOWS_INDEX_METADATA_ENTRY <span style=color:#f92672>*</span>)(contents <span style=color:#f92672>+</span> <span style=color:#66d9ef>sizeof</span>(WOWS_INDEX_HEADER));
+</span></span></code></pre></div><p>Then, we do something with these sections, like for example:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-C data-lang=C><span style=display:flex><span>    <span style=color:#75715e>// Parse &amp; print each entry in the metadata section
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>for</span> (i <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; i <span style=color:#f92672>&lt;</span> header<span style=color:#f92672>-&gt;</span>file_plus_dir_count; i<span style=color:#f92672>++</span>) {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (context<span style=color:#f92672>-&gt;</span>debug) {
+</span></span><span style=display:flex><span>            <span style=color:#a6e22e>print_metadata_entry</span>(<span style=color:#f92672>&amp;</span>metadatas[i], i);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span></code></pre></div><p>With <code>print_metadata_entry</code> looking like this:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-C data-lang=C><span style=display:flex><span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>print_metadata_entry</span>(WOWS_INDEX_METADATA_ENTRY <span style=color:#f92672>*</span>entry, <span style=color:#66d9ef>int</span> index) {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;Metadata entry %d:</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, index);
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;* file_type:                 %lu</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, entry<span style=color:#f92672>-&gt;</span>file_type_1);
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;* offset_idx_file_name:      0x%lx</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, entry<span style=color:#f92672>-&gt;</span>offset_idx_file_name);
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;* unknown_4:                 0x%lx</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, entry<span style=color:#f92672>-&gt;</span>unknown_4);
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;* file_type_2:               0x%lx</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, entry<span style=color:#f92672>-&gt;</span>file_type_2);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h4 id=re-evaluating-some-of-the-fields-meaning>Re-Evaluating some of the fields meaning:</h4><p>Once done, it gives us a more comfortable read:</p><pre tabindex=0><code>[...]
+Metadata entry 0:
+* file_type:                 14
+* offset_idx_file_name:      0x26e0
+* unknown_4:                 0x93b6404fba9a0c8f
+* file_type_2:               0xdbb1a1d1b108b927
+
+Metadata entry 1:
+* file_type:                 19
+* offset_idx_file_name:      0x26ce
+* unknown_4:                 0xc7f7d0284a87ec8f
+* file_type_2:               0x74d821503e1beba4
+
+Metadata entry 2:
+* file_type:                 18
+* offset_idx_file_name:      0x26c1
+* unknown_4:                 0x6b4f2cace7a270ad
+* file_type_2:               0xdbb1a1d1b108b927
+
+Metadata entry 3:
+[...]
+
+Metadata entry 310:
+* file_type:                 19
+* offset_idx_file_name:      0x14fb
+* unknown_4:                 0xce7afff48d1bd174
+* file_type_2:               0x74d821503e1beba4
+</code></pre><p>This permits us to review our previous reverse and right away there are two interesting things to note:</p><ul><li>There was a bit of an unknown regarding the number of metadata chunks: was it <code>file_count</code> or <code>file_plus_dir_count</code>? Now we are more certain it&rsquo;s <code>file_plus_dir_count</code> as it&rsquo;s the larger value. If it was not, we would try to parse a section past the metadatas as metadata with funky results (garbage or crash). This is not the case.</li><li><code>file_type</code> in metadata is not a file type/enum. The values are small but quite varied; it&rsquo;s more likely the length of the file name.</li></ul><p>Lets check with the last entry:</p><pre tabindex=0><code>Metadata entry 310:
+* file_type:                 19
+[...]
+</code></pre><p><code>hexdump -C system_data.idx| less</code>
+[&mldr;]
+00003be0 61 72 69 61 74 69 6f 6e 5f 64 75 6d 6d 79 2e 64 |ariation_dummy.d|
+00003bf0 64 73 00 77 61 76 65 73 5f 68 65 69 67 68 74 73 |ds.waves_heights|
+00003c00 30 2e 64 64 73 00 8f 0c 9a ba 4f 40 b6 93 70 11 |0.dds&mldr;..O@..p.|
+00003c10 03 07 0d 33 ed 77 00 00 00 00 00 00 00 00 05 00 |&mldr;3.w&mldr;&mldr;&mldr;.|</p><pre tabindex=0><code>
+The last file name is `waves_heights0.dds`, 18 characters long, with the `\0`, we have our 19 value.
+
+So let&#39;s rename this field.
+
+Now that we have fixed that, we can recover the file names of each entry:
+
+```C
+char *filename = (char *)entry;
+filename += entry-&gt;offset_idx_file_name;
+
+printf(&#34;* filename: %.*s\n&#34;, (int)entry-&gt;file_name_size, filename);
+</code></pre><p>Nice:</p><pre tabindex=0><code>Metadata entry 0:
+* file_name_size:            14
+* offset_idx_file_name:      0x26e0
+* unknown_4:                 0x93b6404fba9a0c8f
+* file_type_2:               0xdbb1a1d1b108b927
+* filename:                  KDStorage.bin
+
+Metadata entry 1:
+* file_name_size:            19
+* offset_idx_file_name:      0x26ce
+* unknown_4:                 0xc7f7d0284a87ec8f
+* file_type_2:               0x74d821503e1beba4
+* filename:                  waves_heights1.dds
+</code></pre><p>We have file names and directory names, for example:</p><pre tabindex=0><code>[...]
+Metadata entry 10:
+* file_name_size:            11
+* offset_idx_file_name:      0x2654
+* unknown_4:                 0x46c008ccf65395e0
+* file_type_2:               0x46e29969bd85cf06
+* filename:                  space_defs
+
+Metadata entry 11:
+* file_name_size:            13
+* offset_idx_file_name:      0x263f
+* unknown_4:                 0x7213702d5e6899e0
+* file_type_2:               0x13d93873302ed14c
+* filename:                  aid_null.dds
+
+Metadata entry 12:
+* file_name_size:            16
+* offset_idx_file_name:      0x262c
+* unknown_4:                 0xa1a829d8713f89e0
+* file_type_2:               0xdbb1a1d1b108b927
+* filename:                  camouflages.xml
+[...]
+</code></pre><p>There is something which should enable us to differentiate between the two, maybe one of the unknown fields.</p><p>Also, we still need to figure out how the directory system works:</p><ul><li>How directories & subdirectories are composed (to get <code>&lt;dir>/&lt;sub dir>/&lt;sub sub dir>/</code> paths)</li><li>How the path goes back to the root (<code>/</code>)</li></ul><p>We will not look at it here, but that&rsquo;s something to keep in mind.</p><h4 id=footer-parsing>Footer Parsing</h4><p>Extracting footer information:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-C data-lang=C><span style=display:flex><span>WOWS_INDEX_FOOTER <span style=color:#f92672>*</span>footer <span style=color:#f92672>=</span> (WOWS_INDEX_FOOTER <span style=color:#f92672>*</span>)(contents <span style=color:#f92672>+</span> header<span style=color:#f92672>-&gt;</span>offset_idx_footer_section);
+</span></span><span style=display:flex><span><span style=color:#a6e22e>print_footer</span>(footer);
+</span></span></code></pre></div><p>The results were incorrect due to an offset miscalculation.</p><pre tabindex=0><code>Index Footer Content:
+* size_pkg_file_name:        50b0bd0300002d0b
+* unknown_7:                 0xe967
+* unknown_6:                 0x15
+</code></pre><p>A file name size of <code>50b0bd0300002d0b</code>? I don&rsquo;t think so.</p><p>So let&rsquo;s look at it more closely.</p><p>In the header, we have:</p><pre tabindex=0><code>Index Header Content:
+[...]
+* offset_idx_footer_section: 0x7136
+[...]
+</code></pre><p>The hexdump gives:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>kakwa@linux 6775398/idx » hexdump -s <span style=color:#ae81ff>6</span> -C system_data.idx| less
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>...<span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span><span style=color:#ae81ff>00007116</span>  <span style=color:#ae81ff>21</span> <span style=color:#ae81ff>67</span> ac <span style=color:#ae81ff>70</span> <span style=color:#ae81ff>22</span> ec ca b8  <span style=color:#ae81ff>70</span> <span style=color:#ae81ff>11</span> <span style=color:#ae81ff>03</span> <span style=color:#ae81ff>07</span> 0d <span style=color:#ae81ff>33</span> ed <span style=color:#ae81ff>77</span>  |!g.p<span style=color:#e6db74>&#34;...p....3.w|
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>00007126  28 f9 15 0a 00 00 00 00  05 00 00 00 01 00 00 00  |(...............|
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>00007136  0b 2d 00 00 03 bd b0 50  67 e9 00 00 00 00 00 00  |.-.....Pg.......|
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>00007146  15 00 00 00 00 00 00 00  18 00 00 00 00 00 00 00  |................|
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>00007156  70 11 03 07 0d 33 ed 77  73 79 73 74 65 6d 5f 64  |p....3.wsystem_d|
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>00007166  61 74 61 5f 30 30 30 31  2e 70 6b 67 00           |ata_0001.pkg.|
+</span></span></span></code></pre></div><p>If our previous interpretation was correct, a simple offset from the start of the index file should be <code>0x7146</code>, not <code>0x7136</code>.</p><p>Maybe we are missing some fields in the footer, but given the previous 128 bits at offset <code>0x7136</code> really look like the end of a pkg metadata entry, I doubt it.</p><p>A more plausible explanation is that the offset is relative to the header <code>id</code> field at <code>0x10</code>.
+Maybe the <code>magic</code> + <code>unknown_1</code> bits, i.e., the first 128 bits, are considered to be a separate section.</p><p>Anyway, let&rsquo;s just offset by 128 bits.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-C data-lang=C><span style=display:flex><span><span style=color:#75715e>#define MAGIC_SECTION_OFFSET sizeof(uint32_t) * 4
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Get the footer section
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>WOWS_INDEX_FOOTER <span style=color:#f92672>*</span>footer <span style=color:#f92672>=</span> (WOWS_INDEX_FOOTER <span style=color:#f92672>*</span>)(contents <span style=color:#f92672>+</span> header<span style=color:#f92672>-&gt;</span>offset_idx_footer_section <span style=color:#f92672>+</span> MAGIC_SECTION_OFFSET);
+</span></span></code></pre></div><p>That&rsquo;s better:</p><pre tabindex=0><code>Index Footer Content:
+* size_pkg_file_name:        23
+* unknown_7:                 0x18
+* unknown_6:                 0xb5a4fa9349d9fd0d
+</code></pre><p>We can also recover the pkg file name as follows:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-C data-lang=C><span style=display:flex><span><span style=color:#66d9ef>char</span> <span style=color:#f92672>*</span>pkg_filename <span style=color:#f92672>=</span> (<span style=color:#66d9ef>char</span> <span style=color:#f92672>*</span>)footer;
+</span></span><span style=display:flex><span>pkg_filename <span style=color:#f92672>+=</span> <span style=color:#66d9ef>sizeof</span>(WOWS_INDEX_FOOTER);
+</span></span><span style=display:flex><span><span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;* pkg filename:              %.*s</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>,
+</span></span><span style=display:flex><span>       (<span style=color:#66d9ef>int</span>)footer<span style=color:#f92672>-&gt;</span>size_pkg_file_name, pkg_filename);
+</span></span></code></pre></div><h4 id=safety-considerations>Safety Considerations</h4><p>The current implementation lacks bounds checking and trusts all offsets—this needs fixing in production code.</p><h4 id=pkg-data-entries>PKG Data Entries</h4><p>Similar process for the data section:</p><p>And lets add the 128 bits from the start (hexdump gives us <code>0x3c06</code>, which is again a <code>0x10</code> difference with <code>0x3bf6</code>).</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-C data-lang=C><span style=display:flex><span>    <span style=color:#75715e>// Get pkg data pointer section
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    WOWS_INDEX_DATA_FILE_ENTRY <span style=color:#f92672>*</span>data_file_entry <span style=color:#f92672>=</span>
+</span></span><span style=display:flex><span>        (WOWS_INDEX_DATA_FILE_ENTRY <span style=color:#f92672>*</span>)(contents <span style=color:#f92672>+</span>
+</span></span><span style=display:flex><span>                                       header<span style=color:#f92672>-&gt;</span>offset_idx_data_section <span style=color:#f92672>+</span>
+</span></span><span style=display:flex><span>                                       MAGIC_SECTION_OFFSET);
+</span></span></code></pre></div><p>From there, we are not sure if we have <code>header->file_plus_dir_count</code> or <code>header->file_count</code> entries. The latter seems more likely as this section points to the pkg files, but that&rsquo;s not a given.</p><p>Also, we are unsure how one entry there is paired with a metadata entry. Maybe the order is simply the same in this array, maybe the matching is done through one of the unknown field.</p><p>But first, lets dump the content with some <code>printf</code>:</p><pre tabindex=0><code>Data file entry [0]:
+* unknown_5:                 0x93b6404fba9a0c8f
+* unknown_6:                 0x77ed330d07031170
+* offset_pkg_data_chunk:     0x0
+* type_1:                    0x5
+* type_2:                    0x1
+* size_pkg_data_chunk:       0x21f5
+* id_pkg_data_chunk:         0x366c
+* padding:                   0x4a87ec8f
+
+Data file entry [1]:
+* unknown_5:                 0x77ed330d07031170
+* unknown_6:                 0x5ef9b1e
+* offset_pkg_data_chunk:     0x100000005
+* type_1:                    0x11515
+* type_2:                    0x97637703
+* size_pkg_data_chunk:       0x2ab3e
+* id_pkg_data_chunk:         0x6b4f2cace7a270ad
+* padding:                   0x7031170
+[...]
+</code></pre><p>Humm, that doesn&rsquo;t look righ&mldr; Why is the padding not the expected <code>0x0</code>? Also why the first entry looks mostly ok, except the padding, and the rest is garbage.</p><p>First, I double-check the <code>WOWS_INDEX_DATA_FILE_ENTRY</code> field sizes, and it was ok.</p><p>Then, I remembered that compilers can add padding to have all the fields properly aligned in memory, this helps with performances.</p><p>To avoid that, we need to add:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-C data-lang=C><span style=display:flex><span><span style=color:#75715e>#pragma pack(1)
+</span></span></span></code></pre></div><p>Now the output looks like that:</p><pre tabindex=0><code>* unknown_5:                 0x93b6404fba9a0c8f
+* unknown_6:                 0x77ed330d07031170
+* offset_pkg_data_chunk:     0x0
+* type_1:                    0x5
+* type_2:                    0x1
+* size_pkg_data_chunk:       0x21f5
+* id_pkg_data_chunk:         0x366c5c4500bf
+* padding:                   0x0
+
+Data file entry [1]:
+* unknown_5:                 0xc7f7d0284a87ec8f
+* unknown_6:                 0x77ed330d07031170
+* offset_pkg_data_chunk:     0x5ef9b1e
+* type_1:                    0x5
+* type_2:                    0x1
+* size_pkg_data_chunk:       0x11515
+* id_pkg_data_chunk:         0x2ab3e97637703
+* padding:                   0x0
+
+Data file entry [2]:
+* unknown_5:                 0x6b4f2cace7a270ad
+* unknown_6:                 0x77ed330d07031170
+* offset_pkg_data_chunk:     0x2205
+* type_1:                    0x5
+* type_2:                    0x1
+* size_pkg_data_chunk:       0x1cb
+* id_pkg_data_chunk:         0xcadc1deb96d
+* padding:                   0x0
+</code></pre><p>That&rsquo;s much better.</p><p>But this small issue raises a number of issues with my method of parsing. Casting to structs comes with numerous issues, from overflows to endianness.</p><p>This is not that critical here since we are just trying to have a rough prototype, but on more critical software, that&rsquo;s not a good idea.</p><p>After this prototype, it might be a good idea to start learning Rust ^^.</p><p>Also, if we try to parse <code>header->file_plus_dir_count</code> entries, we get the following:</p><pre tabindex=0><code>Data file entry [283]:
+* unknown_5:                 0xb8caec2270ac6721
+* unknown_6:                 0x77ed330d07031170
+* offset_pkg_data_chunk:     0xa15f928
+* type_1:                    0x5
+* type_2:                    0x1
+* size_pkg_data_chunk:       0x2d0b
+* id_pkg_data_chunk:         0xe96750b0bd03
+* padding:                   0x0
+
+Data file entry [284]:
+* unknown_5:                 0x15
+* unknown_6:                 0x18
+* offset_pkg_data_chunk:     0x77ed330d07031170
+* type_1:                    0x74737973
+* type_2:                    0x645f6d65
+* size_pkg_data_chunk:       0x5f617461
+* id_pkg_data_chunk:         0x676b702e31303030
+* padding:                   0x0
+
+Data file entry [285]:
+* unknown_5:                 0x0
+* unknown_6:                 0x0
+* offset_pkg_data_chunk:     0x0
+* type_1:                    0x0
+* type_2:                    0x0
+* size_pkg_data_chunk:       0x0
+* id_pkg_data_chunk:         0x0
+* padding:                   0x0
+</code></pre><p>The entry <code>283</code> is OK. This is the 284th entry since we start at <code>0</code>, which is exactly <code>header->file_count</code>. The next one has weird values and the rest just <code>0</code>.</p><p>So <code>header->file_count</code> is indeed the number of entries in this section.</p><h4 id=entry-matching>Entry Matching</h4><p>The fact that on one side we have <code>header->file_count</code> and on the other <code>header->file_plus_dir_count</code> means it&rsquo;s not a simple index matching.</p><p>Lets investigate the unknown fields:</p><pre tabindex=0><code>[...]
+Data file entry [279]:
+* unknown_5:                 0xce7afff48d1bd174
+* unknown_6:                 0x77ed330d07031170
+[...]
+
+Data file entry [280]:
+* unknown_5:                 0x199e99feb0c986f8
+* unknown_6:                 0x77ed330d07031170
+[...]
+</code></pre><p><code>unknown_6</code> is always the same, not really interesting.</p><p><code>unknown_5</code> on the contrary is specific to each entry:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>kakwa@linux GitHub/wows-depack <span style=color:#f92672>(</span>main<span style=color:#f92672>)</span> » ./wows-depack-cli -i ~/Games/World<span style=color:#ae81ff>\ </span>of<span style=color:#ae81ff>\ </span>Warships/bin/6775398/idx/system_data.idx | grep <span style=color:#e6db74>&#39;unknown_5&#39;</span> | sort | uniq -c
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>...<span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span>      <span style=color:#ae81ff>1</span> * unknown_5:                 0x14b002d7c2835863
+</span></span><span style=display:flex><span>      <span style=color:#ae81ff>1</span> * unknown_5:                 0x15a7b41a61f65f9c
+</span></span><span style=display:flex><span>      <span style=color:#ae81ff>1</span> * unknown_5:                 0x15fcab5401f27f56
+</span></span><span style=display:flex><span>      <span style=color:#ae81ff>1</span> * unknown_5:                 0x18a0d0dc4b05f8fa
+</span></span><span style=display:flex><span>      <span style=color:#ae81ff>1</span> * unknown_5:                 0x192a05120f00553e
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>...<span style=color:#f92672>]</span>
+</span></span></code></pre></div><p>The values, however, are present two times—one in the metadata entry, the other in the data file entry:</p><pre tabindex=0><code>Metadata entry [72]:
+[...]
+* unknown_4:                 0x1011b17d9304bb39
+[...]
+</code></pre><pre tabindex=0><code>Data file entry [65]:
+[...]
+* unknown_5:                 0x1011b17d9304bb39
+[...]
+</code></pre><p>So the link is established through these fields. These are simply random, unique IDs for each entry.</p><p>In fact <code>unknown_4</code> and <code>unknown_5</code> are not the only fields leveraging this.</p><p>Looking at <code>file_type_2</code> values, we get something like that:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>kakwa@linux GitHub/wows-depack <span style=color:#f92672>(</span>main *<span style=color:#f92672>)</span> » ./wows-depack-cli -i ~/Games/World<span style=color:#ae81ff>\ </span>of<span style=color:#ae81ff>\ </span>Warships/bin/6775398/idx/system_data.idx | grep <span style=color:#e6db74>&#39;0x937f155e4baaf562\|filename:&#39;</span> | grep -A <span style=color:#ae81ff>1</span> <span style=color:#e6db74>&#39;0x937f155e4baaf562&#39;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>...<span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span>--
+</span></span><span style=display:flex><span>* file_type_2:               0x937f155e4baaf562
+</span></span><span style=display:flex><span>* filename:                  LowerAftTrans.dds
+</span></span><span style=display:flex><span>--
+</span></span><span style=display:flex><span>* file_type_2:               0x937f155e4baaf562
+</span></span><span style=display:flex><span>* filename:                  MidBarbette.dds
+</span></span><span style=display:flex><span>--
+</span></span><span style=display:flex><span>* file_type_2:               0x937f155e4baaf562
+</span></span><span style=display:flex><span>* filename:                  Bulkhead.dds
+</span></span><span style=display:flex><span>--
+</span></span><span style=display:flex><span>* file_type_2:               0x937f155e4baaf562
+</span></span><span style=display:flex><span>* filename:                  MidBelt.dds
+</span></span><span style=display:flex><span>--
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>...<span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span>--
+</span></span><span style=display:flex><span>* unknown_4:                 0x937f155e4baaf562
+</span></span><span style=display:flex><span>* filename:                  armour
+</span></span><span style=display:flex><span>--
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>...<span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span>--
+</span></span><span style=display:flex><span>* file_type_2:               0x937f155e4baaf562
+</span></span><span style=display:flex><span>* filename:                  Bottom.dds
+</span></span><span style=display:flex><span>--
+</span></span><span style=display:flex><span>* file_type_2:               0x937f155e4baaf562
+</span></span><span style=display:flex><span>* filename:                  ConstrBig.dds
+</span></span><span style=display:flex><span>--
+</span></span><span style=display:flex><span>* file_type_2:               0x937f155e4baaf562
+</span></span><span style=display:flex><span>* filename:                  ConstrMid.dds
+</span></span><span style=display:flex><span>--
+</span></span><span style=display:flex><span>* file_type_2:               0x937f155e4baaf562
+</span></span><span style=display:flex><span>* filename:                  ConstrSm.dds
+</span></span><span style=display:flex><span>--
+</span></span><span style=display:flex><span>* file_type_2:               0x937f155e4baaf562
+</span></span><span style=display:flex><span>* filename:                  DoubleBottom.dds
+</span></span><span style=display:flex><span>--
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>...<span style=color:#f92672>]</span>
+</span></span></code></pre></div><p>Ok, <code>file_type_2</code> is not a file type at all; it&rsquo;s the <code>id</code> (<code>unknown_4</code> right now) of just one node that really looks like a directory.</p><p><code>file_type_2</code> should probably be renamed <code>parent_id</code> or something.</p><p>Also, <code>unknown_6</code> follows the same logic: it&rsquo;s the id of the footer entry (side note: maybe the format supports having one index for several files).</p><h3 id=recap-of-the-format>Recap of the format</h3><p>During these first steps in the implementation, we managed to figure out quite a bit about the format.</p><p>So lets recap the format at this point:</p><h4 id=general-format>General format</h4><p>The index file is composed of 5 sections:</p><pre tabindex=0><code>|~~~~~~~~~~~~~~~~~~~~~~~~~~~~| ^
+|           Header           | } index header (number of files, pointers to sections, etc)
+|~~~~~~~~~~~~~~~~~~~~~~~~~~~~| v
+
+|~~~~~~~~~~~~~~~~~~~~~~~~~~~~| ^
+|       File metadata 1      | |
+|----------------------------| |
+|           [...]            | } metadata section (pointer to name, type, etc)
+|----------------------------| |
+|      File metadata Nfd     | |
+|~~~~~~~~~~~~~~~~~~~~~~~~~~~~| v
+
+|~~~~~~~~~~~~~~~~~~~~~~~~~~~~| ^
+|        File Name 1         | |
+|----------------------------| |
+|           [...]            | } file names (`\0` separated strings)
+|----------------------------| |
+|        File Name Nfd       | |
+|~~~~~~~~~~~~~~~~~~~~~~~~~~~~| v
+
+|~~~~~~~~~~~~~~~~~~~~~~~~~~~~| ^
+|   File `.pkg` pointers 1   | |
+|----------------------------| |
+|           [...]            | }  pkg pointers section in the `.pkg` file (offsets)
+|----------------------------| |
+|   File `.pkg` pointers Nf  | |
+|~~~~~~~~~~~~~~~~~~~~~~~~~~~~| v
+
+|~~~~~~~~~~~~~~~~~~~~~~~~~~~~| ^
+|           Footer           | } index footer (corresponding `.pkg` file name)
+|~~~~~~~~~~~~~~~~~~~~~~~~~~~~| V
+</code></pre><h4 id=header>Header</h4><pre tabindex=0><code>+====+====+====+====++====+====+====+====++====+====+====+====++====+====+====+====+
+| MA | MA | MA | MA || 00 | 00 | 00 | 02 || ID | ID | ID | ID || 40 | 00 | 00 | 00 |
++====+====+====+====++====+====+====+====++====+====+====+====++====+====+====+====+
+|&lt;----- magic -----&gt;||&lt;--- unknown_1 ---&gt;||&lt;------- id ------&gt;||&lt;--- unknown_2 ---&gt;|
+|     32 bits       ||      32 bits      ||     32 bits       ||      32 bits      |
+
++====+====+====+====++====+====+====+====++====+====+====+====++====+====+====+====+
+| FD | FD | FD | FD || FO | FO | FO | FO || 01 | 00 | 00 | 00 || 00 | 00 | 00 | 00 |
++====+====+====+====++====+====+====+====++====+====+====+====++====+====+====+====+
+|&lt;- file_dir_count &gt;||&lt;-- file_count ---&gt;||&lt;-------------- unknown_3 -------------&gt;|
+|     32 bits       ||      32 bits      ||                64 bits                 |
+
++====+====+====+====+====+====+====+=====++=====+====+====+====+====+====+====+====+
+| HS | HS | HS | HS | HS | HS | HS | HS  ||  OF | OF | OF | OF | OF | OF | OF | OF |
++====+====+====+====+====+====+====+=====++=====+====+====+====+====+====+====+====+
+|&lt;------------- header_size ------------&gt;||&lt;------- offset_idx_data_section ------&gt;|
+|                64 bits                 ||             64 bits                    |
+
++====+====+====+====+====+====+====+=====+
+| OE | OE | OE | OE | OE | OE | OE | OE  |
++====+====+====+====+====+====+====+=====+
+|&lt;----- offset_idx_footer_section ------&gt;|
+|               64 bits                  |
+</code></pre><table><thead><tr><th>Field</th><th>size</th><th>Description</th></tr></thead><tbody><tr><td><code>magic</code></td><td>32 bits</td><td>Magic bytes, always &ldquo;ISFP&rdquo;</td></tr><tr><td><code>unknown_1</code></td><td>32 bits</td><td>Unknown, always 0x2000000</td></tr><tr><td><code>id</code></td><td>32 bits</td><td>Unsure, unique per index file, not referenced anywhere else</td></tr><tr><td><code>unknown_2</code></td><td>32 bits</td><td>Unknown, always 0x40, maybe some offset</td></tr><tr><td><code>file_dir_count</code></td><td>32 bits</td><td>Number of files + directories (Nfd), also number of entries in the metadata section and the file names section</td></tr><tr><td><code>file_count</code></td><td>32 bits</td><td>Number of files (Nf), also the number of entries in the file pkg pointers section</td></tr><tr><td><code>unknown_3</code></td><td>64 bits</td><td>Unknown, always &lsquo;1&rsquo;, maybe the number of <code>.pkg</code> file the index file references (the format hints that it might be supported, but it&rsquo;s not used)</td></tr><tr><td><code>header_size</code></td><td>64 bits</td><td>Most likely the header size, always 40</td></tr><tr><td><code>offset_idx_data_section</code></td><td>64 bits</td><td>Offset to the pkg data section, the offset is computed from <code>file_plus_dir_count</code> so <code>0x10</code> needs to be added</td></tr><tr><td><code>offset_idx_footer_section</code></td><td>64 bits</td><td>Offset to the footer section, the offset is computed from <code>file_plus_dir_count</code> so <code>0x10</code> needs to be added</td></tr></tbody></table><h4 id=file-metadata>File metadata</h4><p>This section is repeated for each file and directory (<code>header->file_dir_count</code>).</p><pre tabindex=0><code>+====+====+====+====+====+====+====+=====++=====+====+====+====+====+====+====+====+
+| NS | NS | NS | NS | NS | NS | NS | NS  ||  OF | OF | OF | OF | OF | OF | OF | OF |
++====+====+====+====+====+====+====+=====++=====+====+====+====+====+====+====+====+
+|&lt;---------- file_name_size ------------&gt;||&lt;-------- offset_idx_file_name --------&gt;|
+|               64 bits                  ||              64 bits                   |
+
++====+====+====+====+====+====+====+=====++=====+====+====+====+====+====+====+====+
+| UN | UN | UN | UN | UN | UN | UN | UN  ||  T2 | T2 | T2 | T2 | T2 | T2 | T2 | T2 |
++====+====+====+====+====+====+====+=====++=====+====+====+====+====+====+====+====+
+|&lt;----------------- id -----------------&gt;||&lt;------------- parent_id  -------------&gt;|
+|                64 bits                 ||                64 bits                 |
+
+[...repeat...]
+</code></pre><table><thead><tr><th>Field</th><th>Size</th><th>Description</th></tr></thead><tbody><tr><td><code>file_name_size</code></td><td>64 bits</td><td>Size of the file name string</td></tr><tr><td><code>offset_idx_file_name</code></td><td>64 bits</td><td>Offset from the start of the current metadata record to the start of the file name string</td></tr><tr><td><code>id</code></td><td>64 bits</td><td>Unique ID of the metadata record</td></tr><tr><td><code>parent_id</code></td><td>64 bits</td><td>ID of the potential parent record (in particular, a directory record)</td></tr></tbody></table><h4 id=file-names-section>File names section</h4><p>This section is just <code>\0</code> separated list of strings:</p><pre tabindex=0><code>+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+====+
+|             file name string         | 00 |
++~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+====+
+[...repeat...]
+</code></pre><h4 id=file-pkg-pointers>File &ldquo;.pkg&rdquo; pointers</h4><p>This section is repeated for each file (<code>header->file_count</code>).</p><pre tabindex=0><code>+====+====+====+====+====+====+====+====++=====+====+====+====+====+====+====+====+
+| UO | UO | UO | UO | UO | UO | UO | UO ||  UT | UT | UT | UT | UT | UT | UT | UT |
++====+====+====+====+====+====+====+====++=====+====+====+====+====+====+====+====+
+|&lt;----------- metadata_id -------------&gt;||&lt;------------- footer_id --------------&gt;|
+|               64 bits                 ||                64 bits                 |
+
++====+====+====+====+====+====+====+====++====+====+====+====++====+====+====+====+
+| OF | OF | OF | OF | OF | OF | OF | OF || T1 | T1 | T1 | T1 || T2 | T2 | T2 | T2 |
++====+====+====+====+====+====+====+====++====+====+====+====++====+====+====+====+
+|&lt;--------- offset_pkg_data -----------&gt;||&lt;---- type_1 -----&gt;||&lt;----- type_2 ----&gt;|
+|               64 bits                 ||     32 bits       ||      32 bits      |
+
++====+====+====+====++====+====+====+====+====+====+====+====++====+====+====+====+
+| OE | OE | OE | OE || ID | ID | ID | ID | ID | ID | ID | ID || 00 | 00 | 00 | 00 |
++====+====+====+====++====+====+====+====+====+====+====+====++====+====+====+====+
+|&lt;- size_pkg_data -&gt;||&lt;------------ id_pkg_data ------------&gt;||&lt;---- padding ----&gt;|
+|     32 bits       ||               64 bits                 ||      32 bits      |
+[...repeat...]
+</code></pre><table><thead><tr><th>Field</th><th>Size</th><th>Description</th></tr></thead><tbody><tr><td><code>metadata_id</code></td><td>64 bits</td><td>ID of the corresponding metadata entry</td></tr><tr><td><code>footer_id</code></td><td>64 bits</td><td>ID of the footer entry (only one entry possible in practice)</td></tr><tr><td><code>offset_pkg_data</code></td><td>64 bits</td><td>Offset to the compressed data from the start of the <code>.pkg</code> file</td></tr><tr><td><code>type_1</code></td><td>32 bits</td><td>Some kind of type, role unknown</td></tr><tr><td><code>type_2</code></td><td>32 bits</td><td>Some kind of type, role unknown</td></tr><tr><td><code>size_pkg_data</code></td><td>32 bits</td><td>Size of the compressed data section in the <code>.pkg</code> file</td></tr><tr><td><code>id_pkg_data</code></td><td>64 bits</td><td>ID of the data section in the <code>.pkg</code> file</td></tr><tr><td><code>padding</code></td><td>32 bits</td><td>Always <code>0x00000000</code></td></tr></tbody></table><h4 id=footer>Footer</h4><pre tabindex=0><code>+====+====+====+====+====+====+====+====++=====+====+====+====+====+====+====+====+
+| UO | UO | UO | UO | UO | UO | UO | UO ||  U3 | U3 | U3 | U3 | U3 | U3 | U3 | U3 |
++====+====+====+====+====+====+====+====++=====+====+====+====+====+====+====+====+
+|&lt;--------- pkg_file_name_size --------&gt;||&lt;-------------- unknown_7 -------------&gt;|
+|               64 bits                 ||                64 bits                 |
+
++====+====+====+====+====+====+====+====++~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+| UT | UT | UT | UT | UT | UT | UT | UT ||             pkg_file_name_string
++====+====+====+====+====+====+====+====++~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+|&lt;----------------- id -----------------&gt;|
+|                64 bits                 |
+</code></pre><table><thead><tr><th>Field</th><th>Size</th><th>Description</th></tr></thead><tbody><tr><td><code>pkg_file_name_size</code></td><td>64 bits</td><td>Size of the corresponding <code>.pkg</code> file name string</td></tr><tr><td><code>unknown_7</code></td><td>64 bits</td><td>unknown, looks like an ID</td></tr><tr><td><code>id</code></td><td>64 bits</td><td>ID of the footer entry</td></tr></tbody></table><h4 id=pkg-format>PKG format</h4><p>The <code>.pkg</code> format is rather simple, it&rsquo;s bunch of concatenated compressed (RFC 1951/Deflate) data blobs (one for each file) separated by an ID.</p><pre tabindex=0><code>+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
+|                                                                                 |
+|                      Compressed Data (RFC 1951/Deflate)                         |
+|                                                                                 |
++~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
++====+====+====+====++====+====+====+====+====+====+====+====++====+====+====+====+
+| 00 | 00 | 00 | 00 || XX | XX | XX | XX | XX | XX | 00 | 00 || 00 | 00 | 00 | 00 |
++====+====+====+====++====+====+====+====+====+====+====+====++====+====+====+====+
+|&lt;--- padding_1 ---&gt;||&lt;---------------- id -----------------&gt;||&lt;--- padding_2 ---&gt;|
+|     32 bits       ||               64 bits                 ||      32 bits      |
+
+[...repeat...]
+</code></pre><table><thead><tr><th>Field</th><th>Size</th><th>Description</th></tr></thead><tbody><tr><td><code>padding_1</code></td><td>32 bits</td><td>Always <code>0x00000000</code></td></tr><tr><td><code>id_pkg_data</code></td><td>64 bits</td><td>ID of the data blob</td></tr><tr><td><code>padding_2</code></td><td>32 bits</td><td>Always <code>0x00000000</code></td></tr></tbody></table><h3 id=back-to-the-implementation>Back to the implementation</h3><h4 id=small-tangent>Small tangent</h4><p>By this point, I was a bit intrigued by the <code>type_1</code> and <code>type_2</code> fields in the <code>pkg</code> pointer sections.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>kakwa@linux GitHub/wows-depack <span style=color:#f92672>(</span>main<span style=color:#f92672>)</span> » <span style=color:#66d9ef>for</span> i in ~/Games/World<span style=color:#ae81ff>\ </span>of<span style=color:#ae81ff>\ </span>Warships/bin/6775398/idx/*;<span style=color:#66d9ef>do</span> ./wows-depack-cli -i <span style=color:#e6db74>&#34;</span>$i<span style=color:#e6db74>&#34;</span>| grep <span style=color:#e6db74>&#39;type_[12]:&#39;</span>  ;<span style=color:#66d9ef>done</span> | sort -n | uniq -c | sort -n
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  <span style=color:#ae81ff>57265</span> * type_1:                    0x0
+</span></span><span style=display:flex><span>  <span style=color:#ae81ff>57265</span> * type_2:                    0x0
+</span></span><span style=display:flex><span> <span style=color:#ae81ff>232089</span> * type_1:                    0x5
+</span></span><span style=display:flex><span> <span style=color:#ae81ff>232089</span> * type_2:                    0x1
+</span></span></code></pre></div><p>Ok, it seems that <code>(type_1, type_2)</code> can either have the <code>(0x0, 0x0)</code> values, or the <code>(0x5, 0x1)</code> values. In most cases, it&rsquo;s the latter.</p><p>Looking at a few <code>(0x0, 0x0)</code>, a common file with such values are <code>.png</code>.</p><p>It&rsquo;s a bit of a wild guess, but these might be compression levels. <code>(0x0, 0x0)</code>, i.e. no compression would be logical for <code>.png</code> as these files are already compressed. Compressing them would actually only cost CPU resources with no space gains.</p><p>For now, lets just keep that in mind, we will revisit it later.</p><h4 id=glueing-the-entries-together>Glueing the entries together</h4><p>So, we have metadata entries which can be linked together, we have pkg pointer entries which are linked to metadata entries and footer entries.</p><p>It&rsquo;s time to link all that together.</p><p>To do that, the obvious choice is to feed these IDs into an hash map, this will make look-ups easier and quicker.</p><p>Once done, the output now looks like that:</p><pre tabindex=0><code>File entry [259]:
+* metadata_id:               0xc90b3d356989c551
+* footer_id:                 0x77ed330d07031170
+* offset_pkg_data:           0x5d30db8
+* type_1:                    0x5
+* type_2:                    0x1
+* size_pkg_data:             0x89667
+* id_pkg_data:               0xaab740ef4f6a6
+* padding:                   0x0
+* file_name_size:            18
+* offset_idx_file_name:      0x164e
+* id:                        0xc90b3d356989c551
+* parent_id:                 0xeb7ddcfb5178376
+* filename:                  snow_tiles_ah.dds
+parent [1]:
+* file_name_size:            8
+* offset_idx_file_name:      0x19cf
+* id:                        0xeb7ddcfb5178376
+* parent_id:                 0xb220a7743c83e638
+* filename:                  weather
+parent [2]:
+* file_name_size:            5
+* offset_idx_file_name:      0x16a3
+* id:                        0xb220a7743c83e638
+* parent_id:                 0x3837637adc4586b1
+* filename:                  maps
+parent [3]:
+* file_name_size:            7
+* offset_idx_file_name:      0x1746
+* id:                        0x3837637adc4586b1
+* parent_id:                 0xdbb1a1d1b108b927
+* filename:                  system
+</code></pre><p>This entry is for the following path: <code>/system/maps/weather/snow_tiles_ah.dds</code></p><p>This should be enough now to start thinking about the actual tool and how it will be implemented.</p><h4 id=another-tangent>Another tangent</h4><p>The goal is in the end is to parse all the index files, so it got me curious about the IDs across the different files.</p><p>Looking at the dumps, <code>content</code> is a fairly common directory name, present in a lot of the index files.</p><p>And if we look at these records, we get:</p><pre tabindex=0><code>kakwa@linux GitHub/wows-depack (main *%) » for i in ~/Games/World\ of\ Warships/bin/6775398/idx/*;do echo $i; ./wows-depack-cli -i &#34;$i&#34; |grep -B 5  &#39;* filename:                  content$&#39;;done|less                                                                                                                 130 ↵
+
+/home/kakwa/Games/World of Warships/bin/6775398/idx/basecontent.idx
+parent [5]:
+* file_name_size:            8
+* offset_idx_file_name:      0x470b7
+* id:                        0xa33046442d8327fc
+* parent_id:                 0xdbb1a1d1b108b927
+* filename:                  content
+--
+parent [5]:
+* file_name_size:            8
+* offset_idx_file_name:      0x470b7
+* id:                        0xa33046442d8327fc
+* parent_id:                 0xdbb1a1d1b108b927
+* filename:                  content
+[...]
+/home/kakwa/Games/World of Warships/bin/6775398/idx/camouflage.idx
+parent [5]:
+* file_name_size:            8
+* offset_idx_file_name:      0xecae
+* id:                        0xa33046442d8327fc
+* parent_id:                 0xdbb1a1d1b108b927
+* filename:                  content
+--
+parent [4]:
+* file_name_size:            8
+* offset_idx_file_name:      0xecae
+* id:                        0xa33046442d8327fc
+* parent_id:                 0xdbb1a1d1b108b927
+* filename:                  content
+--
+parent [5]:
+* file_name_size:            8
+* offset_idx_file_name:      0xecae
+* id:                        0xa33046442d8327fc
+* parent_id:                 0xdbb1a1d1b108b927
+* filename:                  content
+[...]
+</code></pre><p>Interestingly <code>id</code> is always <code>0xa33046442d8327fc</code> (and also <code>parent_id</code> is <code>0xdbb1a1d1b108b927</code>). This will make implementation a bit easier.</p><p>However, it raises an interesting question: how this <code>id</code> is generated? Is it completely random? Or is it derived from the path/name?</p><p>It&rsquo;s not really critical to read files, but might be important to write content if we ever get to that.</p><h3 id=file-system-tree>File System Tree</h3><p>Build a tree structure using:</p><ol><li><strong>HashMap</strong> for fast ID lookups (<a href=https://github.com/tidwall/hashmap.c>hashmap.c</a>)</li><li><strong>Inode types</strong>: files and directories</li><li><strong>Tree construction</strong>: Start with PKG data chunks (files), resolve names via metadata, build directory hierarchy using <code>parent_id</code> relationships</li></ol><p>The result: a complete archive tree with root node and children.</p><p>With a bit more work, adding a path/tree printer function, I now get something like that:</p><pre tabindex=0><code>/postfx_animations.xml
+/settings/Default_v3.settings
+/settings/Default_v1.settings
+/settings/Default_v2.settings
+/scripts/user_data_object_defs/Barge.def
+/scripts/user_data_object_defs/SpatialUIDebugTool.def
+/scripts/user_data_object_defs/FogPoint.def
+/scripts/user_data_object_defs/StaticSoundEmitter.def
+[...]
+/helpers/maps/green_hemisphere.dds
+/helpers/maps/lev_dirt01.dds
+/helpers/maps/fat_disc_quarter.dds
+/helpers/maps/lev_grass_01.dds
+/helpers/maps/lev_grassflowers.dds
+/helpers/maps/red_ruler.dds
+/helpers/maps/hemisphere.dds
+/helpers/maps/disc_quarter.dds
+/helpers/maps/red_hemisphere_ring.dds
+/server_stats.xml
+</code></pre><p>Or that in (ugly) tree form:</p><pre tabindex=0><code>-./
+ |-* postfx_animations.xml
+ |--settings/
+ |  |-* Default_v3.settings
+ |  |-* Default_v1.settings
+ |  |-* Default_v2.settings
+ |--scripts/
+ |  |--user_data_object_defs/
+ |  |  |-* Barge.def
+ |  |  |-* SpatialUIDebugTool.def
+ |  |  |-* FogPoint.def
+ |  |  |-* StaticSoundEmitter.def
+ |  |  |-* Minefield.def
+ |  |  |-* SoundedEffect.def
+ |  |  |-* SquadronReticleTool.def
+ |  |  |-* Trigger.def
+ |  |  |-* WayPoint.def
+[...]
+</code></pre><h1 id=recap-part-3>Recap (Part 3)</h1><ul><li>We defined the C structs for the metadata/index</li><li>We resolved a few loose ends: filename lengths, parent IDs, unique identifiers for linking</li><li>We implemented a file tree using hashmaps and parent-child relationships</li><li>We identified compression type patterns</li></ul><p>In the <a href=/posts/wows_depack_part4/>next and last part</a> we will tie things together and wrap up the implementation.</p><div class=related></div></div></div></section><script src=/js/copycode.js></script><section class=section><div class="container has-text-centered"><p>&copy; <a href=https://github.com/kakwa>Pierre-Francois Carpentier</a> 2024</p></div></section></body></html>
