@@ -19,23 +19,60 @@ In this final part, we will clean-up things, correct a few shortcuts we took, an
 
 ## Creating Unit Tests
 
-TODO (used ChatGPT 3.5 + tweaks, useful for validating reworks & memory leak checks + Github Actions).
+I did this project right around the release of ChatGPT 3.5. Initially I didn't planned to add unit tests. But after giving the structs definitions and the format documentation, ChatGPT was able to genererate tests cases which, while not completely functional, were close enough to start with. It seems evident now, but at the time I was kind of blown-away by it.
+
+In the end, you can probably thanks our AI overloards for the unit tests of this project. And it was a life saver when I significantly reworked the data loading from mmap to a proper unpacking taking endianness into account.
+
+Also, I've used the ususal suspects of Github Actions + CUnits + lcov for CI and Code Coverage measurement
 
 ## Fuzzing
 
-TODO (mention you will get it wrong + AFL)
+C being the both ways shotgun it is, you are most likely to get things wrong, specially in the non-happy paths.
 
-## API Documentation Wit Doxygen
+In that regard, leveraging fuzzing & [AFL++](https://github.com/AFLplusplus/AFLplusplus) greatly helps in catching memory issues. It works by taking a collection of valid input files (here, the `.idx` files), and tweaking them to try triggering crashs.
 
-TODO (ChatGPT + Theme + Github Pages/Actions)
+Here is the gist of using it:
+
+- Install AFL++ and build with AFL++ Instrumentation:
+```shell
+# Debian/Ubuntu
+apt install afl-clang
+
+cmake -DCMAKE_C_COMPILER=afl-clang -DCMAKE_CXX_COMPILER=afl-clang++ .
+make
+```
+
+- Run with a collection of valid `.idx` files
+```shell
+INDEX_DIR="/path/to/WoWs/bin/6831266/idx/"
+afl-fuzz -i "$INDEX_DIR" -o ./out -t 10000 -- ./wows-depack-cli -i '@@'
+```
+Crashes go to `out/crashes/` and can then be investigated using `gdb`, and potentially used as test/non-regression tests.
+
+
+## API Documentation
+
+Here, we simply call good old [Doxygen](https://doxygen.nl/) to the rescue.
+
+The Doxygen annotations are easy to write these days using LLMs: if your naming scheme is decent enough, simply feeding the header definitions (structs and functions) will get you 90% of the way there. Add a few fixes, and you are in business.
+
+Prettier docs are also slightly more likely to be read, so I'm using the [this nice theme](https://github.com/jothepro/doxygen-awesome-css). Just point to it in `Doxyfile.in` (`HTML_EXTRA_STYLESHEET`).
+
+And lastly, to keep it up to date, I simply combined Github Actions & Github Pages to maintain and publish it.
+
 
 ## Proper Unpacking
 
-TODO (MMAP is bad (+why it's bad) and document proper unpacking (field by field).
+Initially, I did the unpacking using `mmap` + "casting" to struct. While it works, it's a bit dangerous as endianess can become an issue, as is data alignment in structs (forces `#pragma pack 1` which might not work on every architecture).
+
+So I significantly reworked the project to properly read the file field by field, handling endianess along the way. It was a bit painful to do (having unit tests helped a lot avoiding regressions there) but now the project is much cleaner on that front.
 
 # Annex 1 - A Few Links
 
-TODO links to other implementations, tools and the overall game.
+- **Game**: [WoWs](https://store.steampowered.com/app/552990/World_of_Warships/)
+- **Closed Source Utility**: [wowsunpack.exe](https://raw.githubusercontent.com/wowsinfo/wowsunpack/refs/heads/master/src/wowsunpack/wowsunpack.exe)
+- **My Project**: [wows-depack (GitHub)](https://github.com/kakwa/wows-depack)
+- **Similar Project in Rust**: [wowsunpack (GitHub)](https://github.com/landaire/wowsunpack)
 
 # Annex 2 - Misc Reverse Engineering Tips
 
@@ -90,18 +127,40 @@ Bunch of printables charactes, often `00` terminated.
 
 ## Tools
 
+### File
+
+Just a very simple utility to check for now file signatures:
+
+```bash
+file *
+```
+
 ### Strings
 
-TODO strings command tips (size of string)
+Tool to try extracting the strings contained in a given file:
+
+```bash
+strings -n <MIN_STR_LENGTH> <FILE>
+```
+
+There will be a bit of noise (increasing MIN_STR_LENGTH reduces it), but it should give you interesting human readable strings contained in a given file.
 
 ### Hexdump
+hexdump is my go to tool for investigating binary data. I specially like the `hexdump -C FILE | less` combo:
 
-TODO General presentation, -C | less, offset
+```bash
+hexdump -C <FILE> | less
+```
 
-For a general fill, don't hesitate to quickly
+If you are investigating a specific section of a file, you can start at a given offset with the `-s <SKIPPED_BYTES>` option, this will make things easier to read an navigate and help determining the data alignment:
 
-It can also be used to compare the start of a file
-```bashe
+```bash
+hexdump -s <SKIPPED_BYTES> -C <FILE> | less
+```
+
+
+To get a general fill, don't hesitate to loop over files and display the first bits of a collection:
+```bash
 find ./ -name '*.geometry' | while read file;
 do
     hexdump -C $file | head -n 6;
@@ -110,7 +169,7 @@ done
 
 ### ImHex
 
-TODO Presentation https://github.com/WerWolv/ImHex
+While I've not used it here, you should give a try to [ImHex](https://github.com/WerWolv/ImHex). I've used it in subsequent works, and its an amazing tool, greatly helping in determining and validating the data structure of binary files.
 
 # Annex 3 - File Specification
 
