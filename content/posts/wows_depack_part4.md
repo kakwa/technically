@@ -15,21 +15,21 @@ draft = true
 
 In the last part we got a first rough implementation.
 
-In this final part, we will clean-up things, correct a few shortcuts we took, and create an actual project out of this.
+In this final part, we will clean up things, correct a few shortcuts we took, and create an actual project out of this.
 
 ## Creating Unit Tests
 
-I did this project right around the release of ChatGPT 3.5. Initially I didn't planned to add unit tests. But after giving the structs definitions and the format documentation, ChatGPT was able to genererate tests cases which, while not completely functional, were close enough to start with. It seems evident now, but at the time I was kind of blown-away by it.
+I did this project right around the release of ChatGPT 3.5. Initially I didn't plan to add unit tests. But after giving the struct definitions and the format documentation, ChatGPT was able to generate test cases which, while not completely functional, were close enough to start with. It seems evident now, but at the time I was kind of blown away by it.
 
-In the end, you can probably thanks our AI overloards for the unit tests of this project. And it was a life saver when I significantly reworked the data loading from mmap to a proper unpacking taking endianness into account.
+In the end, you can probably thank our AI overlords for the unit tests of this project. And it was a lifesaver when I significantly reworked the data loading from `mmap` to a proper unpacking taking endianness into account.
 
-Also, I've used the ususal suspects of Github Actions + CUnits + lcov for CI and Code Coverage measurement
+Also, I've used the usual suspects of GitHub Actions + CUnit + lcov for CI and code coverage measurement.
 
 ## Fuzzing
 
-C being the both ways shotgun it is, you are most likely to get things wrong, specially in the non-happy paths.
+C being the both-ways shotgun it is, you are most likely to get things wrong, especially in the unhappy paths.
 
-In that regard, leveraging fuzzing & [AFL++](https://github.com/AFLplusplus/AFLplusplus) greatly helps in catching memory issues. It works by taking a collection of valid input files (here, the `.idx` files), and tweaking them to try triggering crashs.
+In that regard, leveraging fuzzing & [AFL++](https://github.com/AFLplusplus/AFLplusplus) greatly helps in catching memory issues. It works by taking a collection of valid input files (here, the `.idx` files) and tweaking them to try triggering crashes.
 
 Here is the gist of using it:
 
@@ -56,16 +56,16 @@ Here, we simply call good old [Doxygen](https://doxygen.nl/) to the rescue.
 
 The Doxygen annotations are easy to write these days using LLMs: if your naming scheme is decent enough, simply feeding the header definitions (structs and functions) will get you 90% of the way there. Add a few fixes, and you are in business.
 
-Prettier docs are also slightly more likely to be read, so I'm using the [this nice theme](https://github.com/jothepro/doxygen-awesome-css). Just point to it in `Doxyfile.in` (`HTML_EXTRA_STYLESHEET`).
+Prettier docs are also slightly more likely to be read, so I'm using [this nice theme](https://github.com/jothepro/doxygen-awesome-css). Just point to it in `Doxyfile.in` (`HTML_EXTRA_STYLESHEET`).
 
-And lastly, to keep it up to date, I simply combined Github Actions & Github Pages to maintain and publish it.
+And lastly, to keep it up to date, I simply combined GitHub Actions & GitHub Pages to maintain and publish it.
 
 
 ## Proper Unpacking
 
-Initially, I did the unpacking using `mmap` + "casting" to struct. While it works, it's a bit dangerous as endianess can become an issue, as is data alignment in structs (forces `#pragma pack 1` which might not work on every architecture).
+Initially, I did the unpacking using `mmap` + "casting" to structs. While it works, it's a bit dangerous as endianness can become an issue, as is data alignment in structs (forces `#pragma pack 1` which might not work on every architecture).
 
-So I significantly reworked the project to properly read the file field by field, handling endianess along the way. It was a bit painful to do (having unit tests helped a lot avoiding regressions there) but now the project is much cleaner on that front.
+So I significantly reworked the project to properly read the file field by field, handling endianness along the way. It was a bit painful to do (having unit tests helped a lot in avoiding regressions there), but now the project is much cleaner on that front.
 
 # Annex 1 - A Few Links
 
@@ -78,15 +78,15 @@ So I significantly reworked the project to properly read the file field by field
 
 ## Data Type Identification
 
-These are more rule of thumbs patterns and need to be used looking at the surronding data.
+These are more rule-of-thumb patterns and need to be used while looking at the surrounding data.
 
 ### Unsigned integers
 
-32 bits integers generally look like: `02 2F 00 00`: higher bytes tend to be `00`, lower tend to be used.
+32-bit integers generally look like: `02 2F 00 00`: higher bytes tend to be `00`, lower bytes tend to be used.
 
-Same thing applies to 64 bits integers.
+The same thing applies to 64-bit integers.
 
-They are typilcally used to describe the following elements:
+They are typically used to describe the following elements:
 
 - counts
 - size
@@ -94,13 +94,13 @@ They are typilcally used to describe the following elements:
 
 Offsets tend to have values divided by 4 or 8 (32 or 64 bits blocks), they also tend to be 64 bits these days (`size_t`).
 
-32 bits low value integers tend to be counts or string sizes.
+32-bit low-value integers tend to be counts or string sizes.
 
 ### Float
 
-32 bits Floats are generally have all 4 bytes used, with nearly no 4 bits zeros, for example: `b1 61 33 78`.
+32-bit floats generally have all 4 bytes used, with nearly no zero nibbles, for example: `b1 61 33 78`.
 
-This are difficult to distinguish from random ints at a glance, they need to be parsed and check if the values are cosistent (simular to other fields, between set boundaries, etc).
+These are difficult to distinguish from random ints at a glance; they need to be parsed and checked to see if the values are consistent (similar to other fields, within set boundaries, etc.).
 
 ### RGBA
 
@@ -118,7 +118,7 @@ Here `7f 7f fe 00`, `7f 7f 00 00` and `00 7f 7f 00` are like RGBA values (the re
 
 ### Strings
 
-Bunch of printables charactes, often `00` terminated.
+A bunch of printable characters, often `00`-terminated.
 
 ```
 00015280  7f fe 7f 00 43 4d 5f 50  41 5f 75 6e 69 74 65 64  |....CM_PA_united|
@@ -129,7 +129,7 @@ Bunch of printables charactes, often `00` terminated.
 
 ### File
 
-Just a very simple utility to check for now file signatures:
+Just a very simple utility to check for known file signatures:
 
 ```bash
 file *
@@ -143,23 +143,23 @@ Tool to try extracting the strings contained in a given file:
 strings -n <MIN_STR_LENGTH> <FILE>
 ```
 
-There will be a bit of noise (increasing MIN_STR_LENGTH reduces it), but it should give you interesting human readable strings contained in a given file.
+There will be a bit of noise (increasing MIN_STR_LENGTH reduces it), but it should give you interesting human-readable strings contained in a given file.
 
 ### Hexdump
-hexdump is my go to tool for investigating binary data. I specially like the `hexdump -C FILE | less` combo:
+hexdump is my go-to tool for investigating binary data. I especially like the `hexdump -C FILE | less` combo:
 
 ```bash
 hexdump -C <FILE> | less
 ```
 
-If you are investigating a specific section of a file, you can start at a given offset with the `-s <SKIPPED_BYTES>` option, this will make things easier to read an navigate and help determining the data alignment:
+If you are investigating a specific section of a file, you can start at a given offset with the `-s <SKIPPED_BYTES>` option; this will make things easier to read and navigate and help determine the data alignment:
 
 ```bash
 hexdump -s <SKIPPED_BYTES> -C <FILE> | less
 ```
 
 
-To get a general fill, don't hesitate to loop over files and display the first bits of a collection:
+To get a general feel, don't hesitate to loop over files and display the first bits of a collection:
 ```bash
 find ./ -name '*.geometry' | while read file;
 do
@@ -169,17 +169,17 @@ done
 
 ### ImHex
 
-While I've not used it here, you should give a try to [ImHex](https://github.com/WerWolv/ImHex). I've used it in subsequent works, and its an amazing tool, greatly helping in determining and validating the data structure of binary files.
+While I've not used it here, you should give a try to [ImHex](https://github.com/WerWolv/ImHex). I've used it in subsequent works, and it's an amazing tool that greatly helps in determining and validating the data structure of binary files.
 
 # Annex 3 - File Specification
 
 ## General Information
 
-The WoWs resources are packed into something similar to a `.zip` archive (WoTs and WoWPs actually use zip files).
+The WoWs resources are packed into something similar to a `.zip` archive (WoTs and WoWPs actually use ZIP files).
 
-Each archive is actually separated in two files:
+Each archive is actually separated into two files:
 
-- a `.pkg` containing the compressed files concatenated together. This file is in the `res_package/` directory.
+- a `.pkg` containing the compressed files concatenated together. This file is in the `res_packages/` directory.
 - a `.idx` containing the index of the files contained in the `.pkg` and their metadata (name, path, type, etc). This file is located in the `./bin/<build_number>/idx/` directory.
 
 ## Convention
@@ -211,7 +211,7 @@ The boundary between two fields is marked as follows:
 
 Integers (offset and size in particular) are `Big Endian`.
 
-Strings seems limited to ASCII and are `\0` terminated.
+Strings seem limited to ASCII and are `\0` terminated.
 
 ## Index file
 

@@ -14,7 +14,7 @@ draft = true
 
 # The Implementation
 
-In the last part, we discovered and got a fairly good idea of the metadata/idx format.
+In the last part, we discovered and got a fairly good idea of the metadata/IDX format.
 
 In this part, we will create a rough implementation to extract the content.
 
@@ -58,7 +58,7 @@ size_t index_size = s.st_size;
 // Map the whole content in memory
 char *index_content = mmap(0, index_size, PROT_READ, MAP_PRIVATE, fd, 0);
 ```
-The second is to have an entry point to actually parse the thing:
+The second step is to have an entry point to actually parse the thing:
 
 ```C
     WOWS_CONTEXT context;
@@ -68,7 +68,7 @@ The second is to have an entry point to actually parse the thing:
     return wows_parse_index(index_content, index_size, &context);
 ```
 
-Here, I pass the memory mapped content of the index, its size (will be used in the futur to avoid overflows) and a `context` which will be used to pass parsing options and maintain "states" in the parsing if necessary.
+Here, I pass the memory-mapped content of the index, its size (will be used in the future to avoid overflows), and a `context`, which will be used to pass parsing options and maintain "states" in the parsing if necessary.
 
 ### Parsing the Header Section
 
@@ -108,7 +108,7 @@ Index Header Content:
 
 #### Metadata entries
 
-Then, we can do a bunch of pointer arythmetic operation to extract the other sections of the index file:
+Then, we can do a bunch of pointer arithmetic operations to extract the other sections of the index file:
 
 ```C
   // Recover the start of the metadata array
@@ -128,7 +128,7 @@ Then, we do something with these sections, like for example:
     }
 ```
 
-With `print_metadata_entry` looking like that:
+With `print_metadata_entry` looking like this:
 
 ```C
 int print_metadata_entry(WOWS_INDEX_METADATA_ENTRY *entry, int index) {
@@ -143,7 +143,7 @@ int print_metadata_entry(WOWS_INDEX_METADATA_ENTRY *entry, int index) {
 
 #### Re-Evaluating some of the fields meaning:
 
-Once done, it gives us more confortable read:
+Once done, it gives us a more comfortable read:
 
 ```
 [...]
@@ -175,10 +175,10 @@ Metadata entry 310:
 * file_type_2:               0x74d821503e1beba4
 ```
 
-This permits to review our previous reverse and right away there are two interesting things to note:
+This permits us to review our previous reverse and right away there are two interesting things to note:
 
-* There was a bit of an unknown regarding the number of metadata chunck: was it `file_count` or `file_plus_dir_count`? Now we are more certain it's `file_plus_dir_count` as its the larger value. If it was not, we would try parse a section past the metadatas as metadata with funky results (garbage or crash). This is not the case.
-* `file_type` in metadata is not a file type/enum. The value are small, but quite varied, it's more likely the length of the file name.
+* There was a bit of an unknown regarding the number of metadata chunks: was it `file_count` or `file_plus_dir_count`? Now we are more certain it's `file_plus_dir_count` as it's the larger value. If it was not, we would try to parse a section past the metadatas as metadata with funky results (garbage or crash). This is not the case.
+* `file_type` in metadata is not a file type/enum. The values are small but quite varied; it's more likely the length of the file name.
 
 Lets check with the last entry:
 
@@ -198,7 +198,7 @@ Metadata entry 310:
 
 The last file name is `waves_heights0.dds`, 18 characters long, with the `\0`, we have our 19 value.
 
-So lets rename this field.
+So let's rename this field.
 
 Now that we have fixed that, we can recover the file names of each entry:
 
@@ -253,11 +253,11 @@ Metadata entry 12:
 [...]
 ```
 
-There is something which should enable us to differenciate between the twos, maybe one of the unknown field.
+There is something which should enable us to differentiate between the two, maybe one of the unknown fields.
 
 Also, we still need to figure out how the directory system works:
 
-* How directories & sub directories are composed (to get `<dir>/<sub dir>/<sub sub dir>/` paths)
+* How directories & subdirectories are composed (to get `<dir>/<sub dir>/<sub sub dir>/` paths)
 * How the path goes back to the root (`/`)
 
 We will not look at it here, but that's something to keep in mind.
@@ -271,7 +271,7 @@ WOWS_INDEX_FOOTER *footer = (WOWS_INDEX_FOOTER *)(contents + header->offset_idx_
 print_footer(footer);
 ```
 
-The results were incorrect due to offset miscalculation.
+The results were incorrect due to an offset miscalculation.
 
 ```
 Index Footer Content:
@@ -280,7 +280,7 @@ Index Footer Content:
 * unknown_6:                 0x15
 ```
 
-A file name size of `50b0bd0300002d0b` ? I don't think so.
+A file name size of `50b0bd0300002d0b`? I don't think so.
 
 So let's look at it more closely.
 
@@ -310,10 +310,10 @@ If our previous interpretation was correct, a simple offset from the start of th
 
 Maybe we are missing some fields in the footer, but given the previous 128 bits at offset `0x7136` really look like the end of a pkg metadata entry, I doubt it.
 
-A more plausible explaination is that the offset is relative to the header `id` field at `0x10`.
-Maybe the `magic` + `unknown_1 bits`, i.e. the first 128 bits are considered to be a separate section.
+A more plausible explanation is that the offset is relative to the header `id` field at `0x10`.
+Maybe the `magic` + `unknown_1` bits, i.e., the first 128 bits, are considered to be a separate section.
 
-Anyway, lets just offset by 128 bits.
+Anyway, let's just offset by 128 bits.
 
 ```C
 #define MAGIC_SECTION_OFFSET sizeof(uint32_t) * 4
@@ -433,9 +433,9 @@ Data file entry [2]:
 
 That's much better.
 
-But this small issue raises a number of issues with my method of parsing. Casting to structs comes with numerous issues, from overflows to endianess.
+But this small issue raises a number of issues with my method of parsing. Casting to structs comes with numerous issues, from overflows to endianness.
 
-This is not that critical here since we are just trying to have a rough prototype, but on a more critical software, that's not a good idea.
+This is not that critical here since we are just trying to have a rough prototype, but on more critical software, that's not a good idea.
 
 After this prototype, it might be a good idea to start learning Rust ^^.
 
@@ -473,13 +473,13 @@ Data file entry [285]:
 * padding:                   0x0
 ```
 
-The entry `283` is ok. This is 284th entry since we start at `0`, which is exactly `header->file_count`. The next one has weird values and the rest just `0`.
+The entry `283` is OK. This is the 284th entry since we start at `0`, which is exactly `header->file_count`. The next one has weird values and the rest just `0`.
 
 So `header->file_count` is indeed the number of entries in this section.
 
 #### Entry Matching
 
-The fact that from one side we have `header->file_count` and `header->file_plus_dir_count` on the other means it's not a simple index matching.
+The fact that on one side we have `header->file_count` and on the other `header->file_plus_dir_count` means it's not a simple index matching.
 
 Lets investigate the unknown fields:
 
@@ -511,7 +511,7 @@ kakwa@linux GitHub/wows-depack (main) » ./wows-depack-cli -i ~/Games/World\ of\
 [...]
 ```
 
-The values however are present two times, one in the Metadata entry, the other in the data file entry:
+The values, however, are present two times—one in the metadata entry, the other in the data file entry:
 
 ```
 Metadata entry [72]:
@@ -527,7 +527,7 @@ Data file entry [65]:
 [...]
 ```
 
-So the link is established through these fields. These are simply random, unique ID for each entry.
+So the link is established through these fields. These are simply random, unique IDs for each entry.
 
 In fact `unknown_4` and `unknown_5` are not the only fields leveraging this.
 
@@ -576,11 +576,11 @@ kakwa@linux GitHub/wows-depack (main *) » ./wows-depack-cli -i ~/Games/World\ o
 [...]
 ```
 
-Ok, `file_type_2` is not a file type at all, it's the `id` (`unknown_4` right now) of just one node that really looks like a directory.
+Ok, `file_type_2` is not a file type at all; it's the `id` (`unknown_4` right now) of just one node that really looks like a directory.
 
-`file_type_2` should probably renamed `parent_id` or something.
+`file_type_2` should probably be renamed `parent_id` or something.
 
-Also, `unknown_6` follows the same logic, it's the id of the footer entry (side note: maybe the format supports having one index for several files).
+Also, `unknown_6` follows the same logic: it's the id of the footer entry (side note: maybe the format supports having one index for several files).
 
 
 ### Recap of the format
@@ -977,9 +977,9 @@ Or that in (ugly) tree form:
 
 # Recap (Part 3)
 
-- We define the C Struct for the metadata/index
+- We defined the C structs for the metadata/index
 - We resolved a few loose ends: filename lengths, parent IDs, unique identifiers for linking
-- We implemented file tree using hashmaps and parent-child relationships
+- We implemented a file tree using hashmaps and parent-child relationships
 - We identified compression type patterns
 
 

@@ -19,7 +19,7 @@ In Part 1, we discovered:
 - Each `.pkg` is a sequence of DEFLATE-compressed blobs separated by 64-bit IDs with zero padding.
 - No file names inside `.pkg`; names/paths must exist elsewhere (in indexes).
 
-Now we need to find where and how the file and directory structure.
+Now we need to find where and how the file and directory structure is stored.
 
 ## Back To File Exploration
 
@@ -27,7 +27,7 @@ The metadata hopefully isn't embedded in executables. Let's search:
 
 ```shell
 # List all files
-# then remove uninteresting bits like replays, crash, dlls, logs, .pkg or cef stuff (embedded Chrome used for the armory, inventory dockyard and clan base))
+# then remove uninteresting bits like replays, crashes, DLLs, logs, .pkg or CEF stuff (embedded Chrome used for the armory, inventory, dockyard and clan base))
 
 kakwa@linux Games/World of Warships » find ./ -type f | grep -v cef | grep -v replays | grep -v crashes | grep -v '.pkg' | grep -v '.dll' | grep -v '.log'  | grep -v '\.exe' | less
 [...]
@@ -226,10 +226,10 @@ kakwa@linux 6775398/idx » hexdump -C system_data.idx | less
 The general layout of the file appears to be at least in 3 chunks:
 
 * A first chunk of metadata
-* A all the file name strings `\0` separated, but also a few strings without extensions, probably directory names.
+* All the file name strings `\0`-separated, but also a few strings without extensions, probably directory names
 * A second chunk of metadata
 
-Lets look for the IDs we found in the corresponding `.pkg` (here `system_data_0001.pkg`), for example `00 00 00 00 | bf 00 45 5c | 6c 36 00 00 | 00 00 00 00`.
+Let's look for the IDs we found in the corresponding `.pkg` (here `system_data_0001.pkg`), for example `00 00 00 00 | bf 00 45 5c | 6c 36 00 00 | 00 00 00 00`.
 
 ```
 [......................] 00 8f 0c  9a ba 4f 40 b6 93 70 11  |0.dds.....O@..p.|
@@ -240,7 +240,7 @@ Lets look for the IDs we found in the corresponding `.pkg` (here `system_data_00
 
 Ok, it's there, in the second chunk. And it also works if we test for other IDs. We have at least a link by ID between the `.idx` and the `.pkg` file.
 
-We will come back later to the second chunk, remembering that, but lets focus on the first chunk for now.
+We will come back later to the second chunk, remembering that, but let's focus on the first chunk for now.
 
 ## Metadata Chunk Format
 
@@ -291,10 +291,10 @@ kakwa@linux 6775398/idx » hexdump -C system_data.idx | less
 
 Staring at the hexdump long enough and we can start to see some patterns.
 
-At regular interval, every 256 bits, we get a 64 bits integer with a relatively low value, hinting at individual metadata sets of 256 bits.
+At regular intervals, every 256 bits, we get a 64-bit integer with a relatively low value, hinting at individual metadata sets of 256 bits.
 
-This look suspeciously like some kind of constant enum coded into a 64 bits integer.
-My best guess right now would be some kind of file type code, itself define as a constant in the game engine like that:
+This looks suspiciously like some kind of constant enum coded into a 64-bit integer.
+My best guess right now would be some kind of file type code, itself defined as a constant in the game engine like this:
 
 ```C
 #define FILE_TYPE_1 0x01
@@ -306,15 +306,15 @@ Let's call it `file_type` for now.
 
 Looking at the end of the first chunk (right before we get `KDStorage.bin`), we have to go back 4 x 64 bits to get something that looks like a `file_type`.
 
-This means `file_type` is the first field in the 256 bits structure.
+This means `file_type` is the first field in the 256-bit structure.
 
 Let's look at the next 64 bits: `ce 26 00 00 00 00 00 00`, `c1 26 00 00 00 00 00 00`, `80 26 00 00 00 00 00 00`, etc. These values are again rather small.
 
-Also these values, at least for the first ones, are suspeciously close to `00002718`, e.i right where the section containing the file names starts.
+Also these values, at least for the first ones, are suspiciously close to `00002718`, i.e. right where the section containing the file names starts.
 
-The last ones, `01 15 00 00 00 00 00 00`, `fb 14 00 00 00 00 00 00`, etc, are smaller, and suspiciously, they have similar value to the lenght of the file name section (approximately `0x00003c00 - 0x00002710 = 0x0000014f0`).
+The last ones, `01 15 00 00 00 00 00 00`, `fb 14 00 00 00 00 00 00`, etc., are smaller, and suspiciously, they have similar values to the length of the file name section (approximately `0x00003c00 - 0x00002710 = 0x0000014f0`).
 
-The second field is then probably some kind of offset. Most likely from the start of one 256 bits chunk to the start of one of the file names.
+The second field is then probably some kind of offset. Most likely from the start of one 256-bit chunk to the start of one of the file names.
 
 Looking at other `.idx` files seems to confirm that.
 
@@ -331,19 +331,19 @@ ad 70 a2 e7 ac 2c 4f 6b | 27 b9 08 b1 d1 a1 b1 db
 8e c7 6a 58 7c 86 62 33 | 27 b9 08 b1 d1 a1 b1 db
 ```
 
-First thing to note, all the bits are used. which disqualifies offsets or simple enum ids like before.
+First thing to note: all the bits are used, which disqualifies offsets or simple enum IDs like before.
 
-Right now, we are not even if sure these 128 bits are part of one 128 bits field (for example a hash), two 64 bits integers, four 32 integers, or any combination of 16, 32 or 64 bits that ends-up making a 128 bits chunk.
+Right now, we are not even sure these 128 bits are part of one 128-bit field (for example a hash), two 64-bit integers, four 32-bit integers, or any combination of 16, 32 or 64 bits that ends up making a 128-bit chunk.
 
 Looking at it more closely, the first 64 bits looks rather random, the last 64 bits however? we see quite a few values repeating themselves (ex: `27 b9 08 b1 d1 a1 b1 db`).
 
-Lets check the whole file:
+Let's check the whole file:
 
 
 ```shell
 kakwa@linux 6775398/idx » hexdump -C system_data.idx| grep '00 00 00 00 00 00 00' | sed 's/^..........//' | sed 's/  .*//' | sort  | uniq -c | sort -n
 
-# note: first number is the number of occurance
+# note: first number is the number of occurrences
       1 00 00 00 00 00 00 00 af
       1 1c 6a 8d 7f df 8e b3 35
       1 28 00 00 00 00 00 00 00
@@ -378,7 +378,7 @@ kakwa@linux 6775398/idx » hexdump -C system_data.idx| grep '00 00 00 00 00 00 0
      38 62 f5 aa 4b 5e 15 7f 93
 ```
 
-Indeed, the repetitions are quite frequent, and running the same command on other files yeild roughly the same values:
+Indeed, the repetitions are quite frequent, and running the same command on other files yields roughly the same values:
 
 ```shell
 kakwa@linux 6775398/idx » hexdump -C particles.idx| grep '00 00 00 00 00 00 00' | sed 's/^..........//' | sed 's/  .*//' | sort  | uniq -c | sort -n
@@ -394,18 +394,18 @@ kakwa@linux 6775398/idx » hexdump -C particles.idx| grep '00 00 00 00 00 00 00'
     317 66 52 00 d6 89 64 1d 2e
 ```
 
-More over, `sound_music.idx` wchi as the name implies probably only contains sound files returns mostly one type:
+Moreover, `sound_music.idx`, which as the name implies probably only contains sound files, returns mostly one type:
 
 ```shell
 kakwa@linux 6775398/idx » hexdump -C sound_music.idx| grep '00 00 00 00 00 00 00' | sed 's/^..........//' | sed 's/  .*//' | sort  | uniq -c | sort -n
     513 93 63 67 56 c2 97 75 69
 ```
 
-Note: these commands are by no mean accurate, they are likely to catch garbage and miscount. But these are quick and dirty ways to validate hypothesis.
+Note: these commands are by no means accurate; they are likely to catch garbage and miscount. But these are quick and dirty ways to validate hypotheses.
 
 So it seems we are dealing with another `file_type` field. Let's call it `file_type2`, and rename the first one `file_type1`.
 
-So in the end, making a few assumptions, for now, we have figured out that the rough format of this section:
+So in the end, making a few assumptions for now, we have figured out the rough format of this section:
 
 ```
 +====+====+====+====+====+====+====+====++====+====+====+====+====+====+====+====+
@@ -437,19 +437,19 @@ The `.idx` file header contains:
 00000090  27 b9 08 b1 d1 a1 b1 db  0e 00 00 00 00 00 00 00  |'...............|
 ````
 
-These first bytes don't look like the `section` previously mentionned, we have a magic number (`ISFP`) and then the content doesn't look like a `section` at first (too many low value 32 bits integers).
+These first bytes don't look like the `section` previously mentioned; we have a magic number (`ISFP`), and then the content doesn't look like a `section` at first (too many low-value 32-bit integers).
 
-This means we most likely have an header section containing things like:
+This means we most likely have a header section containing things like:
 * magic numbers
 * types
 * sizes
 * number of entries/files
 
-The first thing to determine is the size of the header. Looking at it, the first `section` starts at `0x38` (recognisable by they full 64 bits integers).
+The first thing to determine is the size of the header. Looking at it, the first `section` starts at `0x38` (recognisable by the full 64-bit integers).
 
-This means the header is 7 x 64 bits.
+This means the header is 7 × 64 bits.
 
-Lets analyze the content.
+Let's analyze the content.
 
 Looking at all the files, for the first 128 bits, we get:
 
@@ -470,14 +470,14 @@ kakwa@linux 6775398/idx » for i in *;do hexdump -C $i | head -n 1;done
 [...]
 ```
 
-As we can see, the 1st, 2nd, and 4th 32 bits chunck are always the same, and looking at the values, we have respectively:
+As we can see, the 1st, 2nd, and 4th 32-bit chunks are always the same, and looking at the values, we have respectively:
 * a magic number (`ISFP`),
-* `00 00 00 02` which is rather weird (it could be some kind of id, if we were little endian, but the format is big endian). Maybe it is actually part of the magic number. As it doesn't vary, it's not too important for the task at end there.
-* `40 00 00 00` which like `type 1` looks like a low value enum, and given its position in the index file, within the header, we are most likely dealing with an archive type. Again, as it doesn't vary, it's not really important.
+* `00 00 00 02` which is rather weird (it could be some kind of ID if we were little-endian, but the format is big-endian). Maybe it is actually part of the magic number. As it doesn't vary, it's not too important for the task at hand here.
+* `40 00 00 00` which, like `type 1`, looks like a low-value enum, and given its position in the index file, within the header, we are most likely dealing with an archive type. Again, as it doesn't vary, it's not really important.
 
-The 3rd 32 bits integer uses all the available bits, so it's unlikely a size. Maybe it's a CRC32 or a unique ID for the archives.
+The 3rd 32-bit integer uses all the available bits, so it's unlikely a size. Maybe it's a CRC32 or a unique ID for the archives.
 
-Edit: the `40 00 00 00` value upon closer inspection might not be an archive type, its value is 64 in decimal, which might be an header size, or simply storing the size of an integer.
+Edit: the `40 00 00 00` value upon closer inspection might not be an archive type; its value is 64 in decimal, which might be a header size, or simply storing the size of an integer.
 
 So we have:
 ```
@@ -487,7 +487,7 @@ So we have:
 |<----- magic ----->||<----- ???? ------>||<---- id/crc ----->||<----- ??????? --->|
 ```
 
-Now, lets look at the next 128 bits (second line in hexdump).
+Now, let's look at the next 128 bits (second line in the hexdump).
 
 ```shell
 kakwa@linux 6775398/idx » for i in *;do hexdump -C $i | head -n 2 | tail -n 1;done                                                                                                                                                                                                                                    130 ↵
@@ -504,9 +504,9 @@ kakwa@linux 6775398/idx » for i in *;do hexdump -C $i | head -n 2 | tail -n 1;d
 00000010  79 03 00 00 a9 02 00 00  01 00 00 00 00 00 00 00  |y...............|
 ```
 
-So here, we recognize two 32 bits integers due to the `00 00`,  and then either a fixed 64 bits integer with always a `01 00 00 00 00 00 00 00` value, or something like two 32 bits integers with value `01 00 00 00` and `00 00 00 00` (as the value never varies, again, it's not that important).
+So here, we recognize two 32-bit integers due to the `00 00`, and then either a fixed 64-bit integer with always a `01 00 00 00 00 00 00 00` value, or something like two 32-bit integers with value `01 00 00 00` and `00 00 00 00` (as the value never varies, again, it's not that important).
 
-Lets try to determine the two 32 bits values. Let's look at one of the files in particular:
+Let's try to determine the two 32-bit values. Let's look at one of the files in particular:
 
 ```shell
 kakwa@linux 6775398/idx » hexdump -C system_data.idx | less
@@ -514,13 +514,13 @@ kakwa@linux 6775398/idx » hexdump -C system_data.idx | less
 00000010  37 01 00 00 1c 01 00 00  01 00 00 00 00 00 00 00  |7...............|
 [...]
 
-The first value is `37 01 00 00`, i.e. converted to decimal, `311`. Doing a strings `strings system_data.idx >listing` and remove manually the garbage (ex: `w6~n`) as best as possible, plus the `.pkg` file name, only keeping files and directory names, we get `310` entries, a remarquably close value.
+The first value is `37 01 00 00`, i.e. converted to decimal, `311`. Doing a `strings system_data.idx > listing` and removing the garbage (ex: `w6~n`) as best as possible, plus the `.pkg` file name, only keeping files and directory names, we get `310` entries, a remarkably close value.
 
 Looking at other files, story is similar, this field roughly matches the number of strings we get from `strings` (never perfectly however, but if the names are too short, `strings` will ignore them, most likely explaining the small delta we have each time).
 
 Consequently we can deduce it's most likely the number of entries (files and directories) in the index file.
 
-Next, we have `1c 01 00 00`, i.e. converted to decimal, `284`. This value is suspisiously close to the previous value. As we have both directories and file names, this number probably represents the number of items which are actual files.
+Next, we have `1c 01 00 00`, i.e. converted to decimal, `284`. This value is suspiciously close to the previous value. As we have both directories and file names, this number probably represents the number of items that are actual files.
 
 Let's validate that:
 
@@ -565,23 +565,23 @@ kakwa@linux 6775398/idx » for i in *;do hexdump -C $i | head -n 3 | tail -n 1;d
 [...]
 ```
 
-So here, we have 2 64 bits integers, the first one is `28 00 00 00 00 00 00 00` and always has the same value, not sure what it represents, the value is somewhat close to the header size in bytes: 40 for this value, 56 for the full header size.
+So here, we have two 64-bit integers. The first one is `28 00 00 00 00 00 00 00` and always has the same value. Not sure what it represents; the value is somewhat close to the header size in bytes: 40 for this value, 56 for the full header size.
 
-Maybe the header could vary in size in certain situations, and this represents its size minus some fixed part (like the first 16 bytes/128 bits). I'm also kind of betting that if the previous 64 bits integer (`01 00 00 00 00 00 00 00` changes, this will also change.
+Maybe the header could vary in size in certain situations, and this represents its size minus some fixed part (like the first 16 bytes/128 bits). I'm also kind of betting that if the previous 64-bit integer (`01 00 00 00 00 00 00 00`) changes, this will also change.
 
-But as it never varies in the set of index files we have here, we cannot really make any deduction, only guesses. So once again, lets ignore it.
+But as it never varies in the set of index files we have here, we cannot really make any deduction, only guesses. So once again, let's ignore it.
 
-At this point, the idea of downloading other Wargaming games like World of Tanks or World of Warplanes popped-up, maybe this will give complementary information regarding the unknown fields that starts to pile-up.
+At this point, the idea of downloading other Wargaming games like World of Tanks or World of Warplanes popped up; maybe this will give complementary information regarding the unknown fields that start to pile up.
 
-But lets continue for now.
+But let's continue for now.
 
-EDIT: It's no help, World of Tanks and World of Warplanes simply pack their resources in `.zip` files...
-It's a wild guess, but I kind of expect WoWs to be the same in the futur.
-The WoWs packing format feels in fact somewhat legacy, custom and far less efficient than a standard & run of the mill `.zip` file. Not to mention using `.zip` files means removing one bit of code to maintain.
+EDIT: It's no help; World of Tanks and World of Warplanes simply pack their resources in `.zip` files...
+It's a wild guess, but I kind of expect WoWs to be the same in the future.
+The WoWs packing format feels, in fact, somewhat legacy, custom, and far less efficient than a standard run-of-the-mill `.zip` file. Not to mention using `.zip` files means removing one bit of code to maintain.
 
-The next value is again a 64 bits integer, it changes between each files.
+The next value is again a 64-bit integer; it changes between each file.
 
-lets focus on one file:
+Let's focus on one file:
 
 ```
 [...]
@@ -589,16 +589,16 @@ lets focus on one file:
 [...]
 ```
 
-At first, I though it might be a file size, but quickly checking the index file size, I got:
+At first, I thought it might be a file size, but quickly checking the index file size, I got:
 
 * index file size: 29043
 * value of this field in decimal: 15350
 
 Checking another file, I got 77461 and 44807.
 
-So no, it's not the index size. However it is suspisously ~1/2 of the file size, and after having stared at hexdumps for hours, I had another idea.
+So no, it's not the index size. However it is suspiciously ~1/2 of the file size, and after having stared at hexdumps for hours, I had another idea.
 
-The third chunk of the file is right after the bundle of dir/file name strings which varies in length wildly (e.i, it's not fixed length or a multiple of a fix length).
+The third chunk of the file is right after the bundle of dir/file name strings which varies in length wildly (i.e., it's not a fixed length or a multiple of a fixed length).
 
 We probably need an offset pointing to the start of this section in the header.
 
@@ -612,9 +612,9 @@ And sure enough, looking where the bundle of strings stops, we get:
 00003c10  03 07 0d 33 ed 77 1e 9b  ef 05 00 00 00 00 05 00  |...3.w..........|
 ```
 
-Okay, the string bundle ends at 00003c05, that's quite near 3b f6, so this is certainly the offset to this third section or the end of the bundle of strings.
+Okay, the string bundle ends at 00003c05; that's quite near 3bf6, so this is certainly the offset to this third section or the end of the bundle of strings.
 
-Most likely, the offset is not from the start of the file, but from a specific in the header (this field? end of header?), that's why we get a -15 difference (0x00003c05 - 0x3bf6 = 0xF = 15). This -15 value is constant between file.
+Most likely, the offset is not from the start of the file but from a specific point in the header (this field? end of header?); that's why we get a -15 difference (0x00003c05 - 0x3bf6 = 0xF = 15). This -15 value is constant between files.
 
 So we have:
 ```
@@ -637,7 +637,7 @@ kakwa@linux 6623042/idx » for i in *;do hexdump -C $i | head -n 4 | tail -n 1;d
 [...]
 ```
 
-So, we have a 64 bits integer, which is relatively low value. This means it's most like a size or an offset.
+So, we have a 64-bit integer, which is a relatively low value. This means it's most likely a size or an offset.
 
 If we pick one:
 
@@ -650,13 +650,13 @@ hexdump -C system_data.idx | less
 
 We can see that the `36 71 00 00 00 00 00 00`, 28982 once converted to decimal, is remarkably close to the file size (29043 bytes).
 
-From their, we can guess it might be three things:
+From there, we can guess it might be three things:
 
 * the actual index file size
 * an offset to something at the end of the file
 * pointer to the end of the third section
 
-Lets note that for now, and figure out the finer details at implementation time.
+Let's note that for now, and figure out the finer details at implementation time.
 
 So, to recap, here is the header section format:
 
@@ -686,7 +686,7 @@ So, to recap, here is the header section format:
 
 Not much to say there.
 
-Here what it looks like:
+Here's what it looks like:
 
 ```shell
 kakwa@linux 6775398/idx » hexdump -C system_data.idx| less
@@ -759,7 +759,7 @@ This section contains 384-bit records (48 bytes each) linking files to their dat
 Each record contains metadata IDs, PKG file offsets, data sizes, and compression types.
 
 ```shell
-# lets skip the first 6 bytes to allign hexdump output
+# let's skip the first 6 bytes to align hexdump output
 kakwa@linux 6775398/idx » hexdump -s 6 -C system_data.idx| less
 [...]
 00003be6  6f 6e 5f 64 75 6d 6d 79  2e 64 64 73 00 77 61 76  |on_dummy.dds.wav|
@@ -776,17 +776,17 @@ kakwa@linux 6775398/idx » hexdump -s 6 -C system_data.idx| less
 
 Much nicer!
 
-With that, we immediately notice some cycle, with the `70 11 03 07 0d 33 ed 77` value.
+With that, we immediately notice a cycle, with the `70 11 03 07 0d 33 ed 77` value.
 
-There are 6 x 64 = 384 bits between each `70 11 03 07 0d 33 ed 77` value.
+There are 6 × 64 = 384 bits between each `70 11 03 07 0d 33 ed 77` value.
 
-let's try to confirm that with the IDs.
+Let's try to confirm that with the IDs.
 
 We are spotting the `bf 00 45 5c 6c 36` seen previously in the `.pkg` file. 384 bits later, we see `03 77 63 97 3e ab 02`.
 
-With a bit of digging (it's right in the middle of the `.pkg` file, and this ID is not neetly in a 64 bits aligned chunk because of the variable size of the Deflate blocks), we indeed find it.
+With a bit of digging (it's right in the middle of the `.pkg` file, and this ID is not neatly in a 64-bit aligned chunk because of the variable size of the DEFLATE blocks), we indeed find it.
 
-We have indeed a 384 bits cycle, which neetly fits in 3 lines of hexdump!
+We have indeed a 384-bit cycle, which neatly fits in 3 lines of hexdump!
 
 So each of these is one record:
 
@@ -822,7 +822,7 @@ So each of these is one record:
 
 All these records are from the same file,
 
-lets grab a few from other files:
+let's grab a few from other files:
 
 File 2:
 
@@ -971,9 +971,9 @@ So to recap, we have:
 
 ## The Last Bits
 
-So, okay, we have the core of the 3 part of the file.
+So, okay, we have the core of the 3 parts of the file.
 
-But we can see the last few bits don't follow this pattern (specially with the `.pkg` file name), which means we have a footer:
+But we can see the last few bits don't follow this pattern (especially with the `.pkg` file name), which means we have a footer:
 
 ```
 # Last block
@@ -986,20 +986,20 @@ But we can see the last few bits don't follow this pattern (specially with the `
 00007166  61 74 61 5f 30 30 30 31  2e 70 6b 67 00           |ata_0001.pkg.|
 ```
 
-If we look at the content, we have 3 * 64 bits before the name starts (`73 79 73 74 65 6d 5f 64` for `system_d` in)
+If we look at the content, we have 3 × 64 bits before the name starts (`73 79 73 74 65 6d 5f 64` for `system_d`)
 
-Looking at it more closely, given all the `00`, it seems we have three 64 bits integers there.
+Looking at it more closely, given all the `00`, it seems we have three 64-bit integers there.
 
 * `15 00 00 00 00 00 00 00`
 * `18 00 00 00 00 00 00 00`
 * `70 11 03 07 0d 33 ed 77`
 
-`70 11 03 07 0d 33 ed 77` is the "unknown 2" we saw previously, so still no luck, but lets name it the same way.
+`70 11 03 07 0d 33 ed 77` is the "unknown 2" we saw previously, so still no luck, but let's name it the same way.
 
 
-`18 00 00 00 00 00 00 00` seems to have the same value accross all files, so probably not that important.
+`18 00 00 00 00 00 00 00` seems to have the same value across all files, so probably not that important.
 
-The only one that varies accross files is the `15 00 00 00 00 00 00 00`, but always in the same kind of values around 0x15. in decimal it's 21.
+The only one that varies across files is the `15 00 00 00 00 00 00 00`, but always in the same kind of values around 0x15. In decimal it's 21.
 
 Strangely, `system_data_0001.pkg` is 20 chars long, 21 if we include the `\0` at the end.
 
@@ -1028,6 +1028,6 @@ So we have
   - Names: `\0`-separated file and directory names.
   - Records section (per-record 384 bits): two 64-bit unknowns (likely ids, one enabling parent/child hierarchy), 64-bit start offset in `.pkg`, 2×32-bit types, 32-bit relative end size, 64-bit `.pkg` chunk id, and padding.
   - Footer: `.pkg` filename length, an unknown 64-bit value, a repeated 64-bit constant, then the `.pkg` filename string.
-- Established the link between names and `.pkg` chunks via ids and offsets, enough to reconstruct directories and locate data.
+- Established the link between names and `.pkg` chunks via IDs and offsets, enough to reconstruct directories and locate data.
 
-In [the next part](/posts/wows_depack_part2/) of this series we will start the actual implementation.
+In [the next part](/posts/wows_depack_part3/) of this series we will start the actual implementation.

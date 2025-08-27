@@ -13,17 +13,17 @@ draft = true
 
 # Introduction
 
-Firstly, a disclaimer, this is the first time I'm doing this kind of exercise, so the process described here is far from ideal, and the tools used less than adequate.
+Firstly, a disclaimer: this is the first time I'm doing this kind of exercise, so the process described here is far from ideal, and the tools used are probably less than adequate.
 
-Also, I'm writing this after various findings, so the process seems quite straight forward. In reality, it was full of dead ends and flows of ideas (good and bad) that came up while staring at hexdumps for hours.
+Also, I'm writing this after various findings, so the process seems quite straightforward. In reality, it was full of dead ends and flows of ideas (good and bad) that came up while staring at hexdumps for hours.
 
 ## Motivation
 
-I've always wanted to play around World of Warships game content for various reasons, from extracting things like armor layouts or in game parameters to the 3D models themselves.
+I've always wanted to play around with World of Warships game content for various reasons, from extracting things like armor layouts or in-game parameters to the 3D models themselves.
 
-There is already a closed-sources Windows tool doing that: [wows-unpack](https://forum.worldofwarships.eu/topic/113847-all-wows-unpack-tool-unpack-game-client-resources/)
+There is already a closed-source Windows tool doing that: [wows-unpack](https://forum.worldofwarships.eu/topic/113847-all-wows-unpack-tool-unpack-game-client-resources/)
 
-But being an pro-OSS Linux user, this tool doesn't suite me well as it annoying to use (`Wine`) and cannot be readily integrated in other programs.
+But being a pro-OSS Linux user, this tool doesn't suit me well as it is annoying to use (`Wine`) and cannot be readily integrated into other programs.
 
 I also wanted to do it as an intellectual & learning exercise of reverse engineering.
 
@@ -31,7 +31,7 @@ I also wanted to do it as an intellectual & learning exercise of reverse enginee
 
 * Reverse engineer the format sufficiently for data extraction
 * Document the specification for others to build upon
-* Create a OSS CLI tool
+* Create an OSS CLI tool
 * Develop a reusable OSS library
 
 # Reverse Engineering Process
@@ -68,7 +68,7 @@ kakwa@linux Games/World of Warships » du -hd 1 | sort -h
 73G  .
 ```
 
-So here, the most of the data is in the `res_packages/` directory. Let's take a closer look:
+So here, most of the data is in the `res_packages/` directory. Let's take a closer look:
 
 ```shell
 kakwa@linux Games/World of Warships » ls res_packages
@@ -79,7 +79,7 @@ vehicles_level8_it_0001.pkg           z_vehicles_events_0001.pkg
 [...]
 ```
 
-Let's use `file` to see if what type of files we are dealing with:
+Let's use `file` to see what type of files we are dealing with:
 
 ```shell
 kakwa@linux Games/World of Warships » cd res_packages
@@ -101,11 +101,11 @@ spaces_naval_defense_0001.pkg:        data
 [...]
 ```
 
-So mostly `data` i.e. unknown binary format, and looking at the files which are not `data`, they are in fact most likely false positives. So we are dealing with a custom format.
+So mostly `data` (i.e., unknown binary format), and looking at the files which are not `data`, they are in fact most likely false positives. So we are dealing with a custom format.
 
 ### File Analysis
 
-Next, let's try to see if we have some clear text strings in the files using the `strings` utility:
+Next, let's try to see if we have some clear-text strings in the files using the `strings` utility:
 
 ```shell
 kakwa@linux World of Warships/res_packages » strings *
@@ -148,7 +148,7 @@ ls -l vehicles_level4_usa_0001.pkg.gz
 -rwxr-xr-x 1 kakwa kakwa 15332196 Jan 17 19:01 vehicles_level4_usa_0001.pkg.gz
 ```
 
-Ok, barely any change in size, which means the data is probably compressed (not a big surprise there since a lot of formats such as images are compressed).
+Ok, barely any change in size, which means the data is probably compressed (not a big surprise since a lot of formats such as images are compressed).
 
 Then, the process is a little fuzzy in my memory. But if I recall correctly, I did the following:
 
@@ -166,16 +166,16 @@ kakwa@linux World of Warships/res_packages » hexdump -C vehicles_level4_usa_000
 [...]
 ```
 
-I hexdumped one of the file, looking for some pattern that would help me determine the type of compression used. I was looking for things like padding or signatures repeating within the .pkg file. I'm not sure how, but I finally determined the compression used was `DEFLATE` (RFC 1951) (I vaguely remember `7f f0` being a marker, but I might be very well mistaken).
+I hexdumped one of the files, looking for some pattern that would help me determine the type of compression used. I was looking for things like padding or signatures repeating within the `.pkg` file. I'm not sure how, but I finally determined the compression used was `DEFLATE` (RFC 1951) (I vaguely remember `7f f0` being a marker, but I might be mistaken).
 
 In any case, [The Wikipedia page listing file signatures](https://en.wikipedia.org/wiki/List_of_file_signatures) is really useful, as well as Googling around candidate patterns.
 
-I ended-up creating [this tool](https://github.com/kakwa/brute-force-deflate) which tries to brute force deflate all the sections of the file, and sure enough, I was able to extract some interesting files:
+I ended up creating [this tool](https://github.com/kakwa/brute-force-deflate) which tries to brute-force deflate all the sections of the file, and sure enough, I was able to extract some interesting files:
 
 ```shell
 # Extracting stuff
 kakwa@linux World of Warships/res_packages » bf-deflate -i system_data_0001.pkg -o systemout
-# look the file types we just extracted
+# Look at the file types we just extracted
 kakwa@linux World of Warships/res_packages » file systemout/* | tail
 
 systemout/000A15D8ED-000A15D8F3: ISO-8859 text, with no line terminators
@@ -206,17 +206,17 @@ kakwa@linux World of Warships/res_packages » cat systemout/000A15EFAA-000A15F91
 </root>
 ```
 
-Okay, we actually are able to extract actual files!
+Okay, we actually are able to extract real files!
 
 ...But without the names, it's not that interesting.
 
-Note that in my "brute-force deflate" tool, I chose to name the files I managed to extract with the (approximate) corresponding start and end offsets of what my tool managed to uncompress (ex: `000A165D8C-000A16C774`, start offset is `000A165D8C`, end is `000A16C774`). This makes it simpler to correlate each extracted files to section in the original file.
+Note that in my "brute-force deflate" tool, I chose to name the files I managed to extract with the (approximate) corresponding start and end offsets of what my tool managed to uncompress (ex: `000A165D8C-000A16C774`, start offset is `000A165D8C`, end is `000A16C774`). This makes it simpler to correlate each extracted file to a section in the original file.
 
-Going back to the reverse engineering, that was progress, but I then lost I interest, and didn't follow-up for two years.
+Going back to the reverse engineering, that was progress, but I then lost interest and didn't follow up for two years.
 
 ### Follow-up
 
-Two years later, I regained interest when I finally tested the Windows `wows_unpack` tool. It revealed that files have individual names and paths—indicating a custom archive format probably similar to `.zip` file and most likely containing:
+Two years later, I regained interest when I finally tested the Windows `wows_unpack` tool. It revealed that files have individual names and paths—indicating a custom archive format probably similar to a `.zip` file and most likely containing:
 
 * Compressed data blobs
 * Index containing file paths, types, IDs, and offsets
@@ -256,7 +256,7 @@ kakwa@linux World of Warships/res_unpack » hexdump -C system_data_0001.pkg | le
 
 I noticed the 128 bits pattern `00 00 00 00 | xx xx xx xx | xx xx 00 00 | 00 00 00 00` repeating within the file (`|` used to cut every 32 bits).
 
-The starts and end of these small sections line-up pretty well with the data sections I managed to extract:
+The starts and ends of these small sections line up pretty well with the data sections I managed to extract:
 
 ```
 0000000001-00000021F6
@@ -265,10 +265,10 @@ The starts and end of these small sections line-up pretty well with the data sec
 0000002456-00000031C8
 ```
 
-We indeed have the first `00 00 [...]` pattern staring at offset 000021f4 and ending 00002205 which nearly matches 00000021F6 (end of first extracted file) and 0000002206 (start of second extracted file).
-The next pattern starts at 000023d0 and ends at 000023df, which again lines-up roughly with 00000023D1 and 00000023E1. And so on for all the sections.
+We indeed have the first `00 00 [...]` pattern starting at offset 000021f4 and ending 00002205, which nearly matches 00000021F6 (end of first extracted file) and 0000002206 (start of second extracted file).
+The next pattern starts at 000023d0 and ends at 000023df, which again lines up roughly with 00000023D1 and 00000023E1. And so on for all the sections.
 
-Note, my brute-force tool is most likely a bit buggy and probably adds a few +1 offsets here and there, also it is likely that the uncompressions overflows a bit beyond the actual compressed data. But it is good enough for purpose.
+Note, my brute-force tool is most likely a bit buggy and probably adds a few +1 offsets here and there; also it is likely that the uncompression overflows a bit beyond the actual compressed data. But it is good enough for the purpose.
 
 Looking at the end of the file, we have this pattern repeating one final time at the very end:
 
@@ -290,7 +290,7 @@ Furthermore, the first uncompressed block seems to start right at the beginning 
 
 Looking at a few other `.pkg`, this pattern seems to be shared across all files.
 
-So we can deduce the format `.pkg` is a concatenated list of sections like the following:
+So we can deduce the `.pkg` format is a concatenated list of sections like the following:
 
 ```
 +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
@@ -306,9 +306,9 @@ So we can deduce the format `.pkg` is a concatenated list of sections like the f
 
 Note that by this point, I'm making a lot of assumptions:
 
-* I'm assuming that `0 padding` 32 bits blocks are actually padding, but they could be fields which happened to be set to 0 most of the time
-* I'm a bit puzzled by the 16 bits  `00 00` at the end of `some kind of ID`
-* I'm also not completely sure if the block containing the data is always compressed using Deflate
+* I'm assuming that `0 padding` 32-bit blocks are actually padding, but they could be fields that happened to be set to 0 most of the time
+* I'm a bit puzzled by the 16-bit `00 00` at the end of `some kind of ID`
+* I'm also not completely sure if the block containing the data is always compressed using DEFLATE
 * I'm not even sure if this general file format is actually shared across all files.
 
 But let's go forward, this format seems common enough to still yield good results. Plus we can always go back and revisit this interpretation.
@@ -329,10 +329,10 @@ The 64-bit values between data blocks appear random and high-value—too short f
 
 We've identified the data storage format:
 - Game data resides in `res_packages/` directory
-- `.pkg` files are custom archives containing DEFLATE-compressed blobs separated by 64-bit IDs
+- `.pkg` files are custom archives containing (mostly) DEFLATE-compressed blobs separated by 64-bit IDs
 - File names and paths are probably stored separately
 
-Getting the file metadata will be explored in [the next part](/posts/wows_depack_part2/) of this series. 
+Getting the file metadata will be explored in [the next part](/posts/wows_depack_part2/) of this series.
 
 ---
 
