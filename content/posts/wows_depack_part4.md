@@ -1,6 +1,6 @@
 +++
 title = 'Reversing WoWs Resource Format - Part 4: Tidying-Up The Project'
-date = 2025-08-27T00:00:00+02:00
+date = 2025-08-27T00:04:00+02:00
 draft = false
 +++
 
@@ -427,8 +427,8 @@ The `.pkg` format is rather simple, it's bunch of concatenated compressed (RFC 1
 
 #### Field descriptions
 
-| Field       | Size    | Description         |
-|-------------|---------|---------------------|
-| `padding_1` | 32 bits | Always `0x00000000` |
+| Field         | Size    | Description         |
+|---------------|---------|---------------------|
+| `padding_1`   | 32 bits | Always `0x00000000` |
 | `id_pkg_data` | 64 bits | ID of the data blob |
-| `padding_2` | 32 bits | Always `0x00000000` |
+| `padding_2`   | 32 bits | Always `0x00000000` |
