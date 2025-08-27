@@ -4,21 +4,23 @@ date = 2024-06-29T22:50:48+02:00
 draft = true
 +++
 
-> Series navigation
-> - All parts: [/posts/wows_depack_index/](/posts/wows_depack_index/)
-> - Previous: Part 2 — Getting The Metadata → [/posts/wows_depack_part2/](/posts/wows_depack_part2/)
-> - Next: Part 4 — Putting It All Together → [/posts/wows_depack_part4/](/posts/wows_depack_part4/)
-> Quick recap (from Part 2)
-> - `.idx` files provide names, parent relationships, and pointers to `.pkg` chunks.
-> - Header holds counts and offsets; middle section holds `\0`-separated names; third section links metadata IDs to `.pkg` offsets and IDs; footer stores the `.pkg` filename.
 
-# Starting The Actual Coding
+# Parts
 
-### Defining the structures
+- Part 1 — Searching The Data → [/posts/wows_depack_part1/](/posts/wows_depack_part1/)
+- Part 2 — Getting The Metadata → [/posts/wows_depack_part2/](/posts/wows_depack_part2/)
+- Part 3 — Reading The Database → [/posts/wows_depack_part3/](/posts/wows_depack_part3/)
+- Part 4 — Putting It All Together → [/posts/wows_depack_part4/](/posts/wows_depack_part4/)
 
-The first step is to define the structure matching what we saw previously.
+# The Implementation
 
-I will not copy all the structures here (see `inc/wows-depack.h` for that), but it looks like that:
+In the last part, we discovered and got a fairly good idea of the metadata/idx format.
+
+In this part, we will create a rough implementation to extract the content.
+
+## Data Structures
+
+First, define C structures matching our reverse-engineered format:
 
 ```
 // INDEX file header
@@ -36,15 +38,13 @@ typedef struct {
 } WOWS_INDEX_HEADER;
 ```
 
-### Start Parsing
+## Parser Implementation
 
-Important disclaimer: the code presented here is extremely unsafe for clarity. It has no error handling and is very susceptible to buffer overflows. This will be fixed in the final code, but don't copy the examples presented here.
+**Note:** These examples omit error handling for clarity. Production code requires bounds checking and validation.
 
-Initially we will parse the index file and implement a human-readable output. We will determine later what to do with the metadata we extract; for now, let's just display it.
+### File Mapping
 
-#### Mapping the file
-
-The first step is memory mapping the file content with `mmap`:
+Memory map the index file:
 
 ```C
 // Open the index file
@@ -70,7 +70,7 @@ The second is to have an entry point to actually parse the thing:
 
 Here, I pass the memory mapped content of the index, its size (will be used in the futur to avoid overflows) and a `context` which will be used to pass parsing options and maintain "states" in the parsing if necessary.
 
-#### Parsing the header section
+### Parsing the Header Section
 
 
 ```C
@@ -141,7 +141,7 @@ int print_metadata_entry(WOWS_INDEX_METADATA_ENTRY *entry, int index) {
 }
 ```
 
-#### Re-interpreting/validating some field significations
+#### Re-Evaluating some of the fields meaning:
 
 Once done, it gives us more confortable read:
 
@@ -262,18 +262,16 @@ Also, we still need to figure out how the directory system works:
 
 We will not look at it here, but that's something to keep in mind.
 
-#### Recovering the footer
+#### Footer Parsing
 
-Now, lets try to recover the pieces of informations from the footer and the metadata chunks.
-
-First, I tried:
+Extracting footer information:
 
 ```C
 WOWS_INDEX_FOOTER *footer = (WOWS_INDEX_FOOTER *)(contents + header->offset_idx_footer_section);
 print_footer(footer);
 ```
 
-But the results seemed off:
+The results were incorrect due to offset miscalculation.
 
 ```
 Index Footer Content:
@@ -341,15 +339,13 @@ printf("* pkg filename:              %.*s\n",
        (int)footer->size_pkg_file_name, pkg_filename);
 ```
 
-#### Mid-implementation though
+#### Safety Considerations
 
-The code starts to be extremely unsafe for my tastes, in way too many sections, I trust the offsets and sizes provided by the index file.
+The current implementation lacks bounds checking and trusts all offsets—this needs fixing in production code.
 
-Once I'm finished with the first parsing implementation/dump, I really need to implement boundary checks.
+#### PKG Data Entries
 
-#### WOWS INDEX DATA FILE entries
-
-So, we basically do the same thing we did with the footer, but with the `offset_idx_data_section` field.
+Similar process for the data section:
 
 And lets add the 128 bits from the start (hexdump gives us `0x3c06`, which is again a `0x10` difference with `0x3bf6`).
 
@@ -481,7 +477,7 @@ The entry `283` is ok. This is 284th entry since we start at `0`, which is exact
 
 So `header->file_count` is indeed the number of entries in this section.
 
-#### Matching the metadata entries with the pkg file entries
+#### Entry Matching
 
 The fact that from one side we have `header->file_count` and `header->file_plus_dir_count` on the other means it's not a simple index matching.
 
@@ -539,7 +535,7 @@ Looking at `file_type_2` values, we get something like that:
 
 
 ```shell
-kakwa@linux GitHub/wows-depack (main *) » ./wows-depack-cli -i ~/Games/World\ of\ Warships/bin/6775398/idx/system_data.idx | grep '0x937f155e4baaf562\|filename:' | grep -A 1 '0x937f155e4baaf562'           
+kakwa@linux GitHub/wows-depack (main *) » ./wows-depack-cli -i ~/Games/World\ of\ Warships/bin/6775398/idx/system_data.idx | grep '0x937f155e4baaf562\|filename:' | grep -A 1 '0x937f155e4baaf562'
 
 [...]
 --
@@ -599,7 +595,7 @@ The index file is composed of 5 sections:
 
 ```
 |~~~~~~~~~~~~~~~~~~~~~~~~~~~~| ^
-|           Header           | } index header (number of files, pointers to sections, etc)                                     
+|           Header           | } index header (number of files, pointers to sections, etc)
 |~~~~~~~~~~~~~~~~~~~~~~~~~~~~| v
 
 |~~~~~~~~~~~~~~~~~~~~~~~~~~~~| ^
@@ -607,7 +603,7 @@ The index file is composed of 5 sections:
 |----------------------------| |
 |           [...]            | } metadata section (pointer to name, type, etc)
 |----------------------------| |
-|      File metadata Nfd     | |       
+|      File metadata Nfd     | |
 |~~~~~~~~~~~~~~~~~~~~~~~~~~~~| v
 
 |~~~~~~~~~~~~~~~~~~~~~~~~~~~~| ^
@@ -627,35 +623,35 @@ The index file is composed of 5 sections:
 |~~~~~~~~~~~~~~~~~~~~~~~~~~~~| v
 
 |~~~~~~~~~~~~~~~~~~~~~~~~~~~~| ^
-|           Footer           | } index footer (corresponding `.pkg` file name)    
+|           Footer           | } index footer (corresponding `.pkg` file name)
 |~~~~~~~~~~~~~~~~~~~~~~~~~~~~| V
 ```
 
 #### Header
 
-```   
+```
 +====+====+====+====++====+====+====+====++====+====+====+====++====+====+====+====+
 | MA | MA | MA | MA || 00 | 00 | 00 | 02 || ID | ID | ID | ID || 40 | 00 | 00 | 00 |
 +====+====+====+====++====+====+====+====++====+====+====+====++====+====+====+====+
-|<----- magic ----->||<--- unknown_1 --->||<------- id ------>||<--- unknown_2 --->|            
+|<----- magic ----->||<--- unknown_1 --->||<------- id ------>||<--- unknown_2 --->|
 |     32 bits       ||      32 bits      ||     32 bits       ||      32 bits      |
 
 +====+====+====+====++====+====+====+====++====+====+====+====++====+====+====+====+
 | FD | FD | FD | FD || FO | FO | FO | FO || 01 | 00 | 00 | 00 || 00 | 00 | 00 | 00 |
-+====+====+====+====++====+====+====+====++====+====+====+====++====+====+====+====+            
-|<- file_dir_count >||<-- file_count --->||<-------------- unknown_3 ------------->|            
++====+====+====+====++====+====+====+====++====+====+====+====++====+====+====+====+
+|<- file_dir_count >||<-- file_count --->||<-------------- unknown_3 ------------->|
 |     32 bits       ||      32 bits      ||                64 bits                 |
 
-+====+====+====+====+====+====+====+=====++=====+====+====+====+====+====+====+====+            
++====+====+====+====+====+====+====+=====++=====+====+====+====+====+====+====+====+
 | HS | HS | HS | HS | HS | HS | HS | HS  ||  OF | OF | OF | OF | OF | OF | OF | OF |
 +====+====+====+====+====+====+====+=====++=====+====+====+====+====+====+====+====+
 |<------------- header_size ------------>||<------- offset_idx_data_section ------>|
 |                64 bits                 ||             64 bits                    |
 
-+====+====+====+====+====+====+====+=====+  
++====+====+====+====+====+====+====+=====+
 | OE | OE | OE | OE | OE | OE | OE | OE  |
 +====+====+====+====+====+====+====+=====+
-|<----- offset_idx_footer_section ------>|                
+|<----- offset_idx_footer_section ------>|
 |               64 bits                  |
 ```
 
@@ -672,11 +668,11 @@ The index file is composed of 5 sections:
 | `offset_idx_data_section`  | 64 bits | Offset to the pkg data section, the offset is computed from `file_plus_dir_count` so `0x10` needs to be added                                   |
 | `offset_idx_footer_section`| 64 bits | Offset to the footer section, the offset is computed from `file_plus_dir_count` so  `0x10` needs to be added                                    |
 
-#### File metadata 
+#### File metadata
 
 This section is repeated for each file and directory (`header->file_dir_count`).
 
-```                                                                               
+```
 +====+====+====+====+====+====+====+=====++=====+====+====+====+====+====+====+====+
 | NS | NS | NS | NS | NS | NS | NS | NS  ||  OF | OF | OF | OF | OF | OF | OF | OF |
 +====+====+====+====+====+====+====+=====++=====+====+====+====+====+====+====+====+
@@ -689,7 +685,7 @@ This section is repeated for each file and directory (`header->file_dir_count`).
 |<----------------- id ----------------->||<------------- parent_id  ------------->|
 |                64 bits                 ||                64 bits                 |
 
-[...repeat...]      
+[...repeat...]
 ```
 
 | Field                  | Size    | Description                                                                               |
@@ -921,35 +917,15 @@ However, it raises an interesting question: how this `id` is generated? Is it co
 
 It's not really critical to read files, but might be important to write content if we ever get to that.
 
-### Quick recap (this part)
-- Defined C structs for `.idx` and started a parser with `mmap`.
-- Validated header, metadata, and data-file entry parsing; handled struct packing.
-- Linked entries via IDs to reconstruct paths; printed a simple tree.
+### File System Tree
 
-### Implementing a pseudo-inode system
+Build a tree structure using:
 
-The next step in the implementation was to implement a pseudo inode system.
+1. **HashMap** for fast ID lookups ([hashmap.c](https://github.com/tidwall/hashmap.c))
+2. **Inode types**: files and directories
+3. **Tree construction**: Start with PKG data chunks (files), resolve names via metadata, build directory hierarchy using `parent_id` relationships
 
-The first step was to have a convenient way to recover a `metadata` or `pkg_data` chunk by id.
-
-To do so, I simply used an [hashmap](https://github.com/tidwall/hashmap.c).
-
-Then, I created two inode types:
-
-* directory
-* file
-
-Then, I created a function that starts with the `pkg_data` chunks. These are our files.
-
-Then I jumped into the metadata section, gather a few bits about the file, mainly its name.
-
-From the file metadata, I do a look-up for its `parent_id`, and then recursively for the parents of the parent. This are our directories.
-
-The recursion ends when the `parent_id` doesn't match any metadata `id` (weirdly enough, root is not identified by a specific id).
-
-In the end, it gives us a `root` inode, with childrens, file or directory. The directory themselves can also have childrens.
-
-That's our archive tree represented.
+The result: a complete archive tree with root node and children.
 
 With a bit more work, adding a path/tree printer function, I now get something like that:
 
@@ -999,21 +975,12 @@ Or that in (ugly) tree form:
 [...]
 ```
 
-## Recap (Part 3)
+# Recap (Part 3)
 
-- Implemented a minimal C parser: `mmap` `.idx`, parse header, metadata, pkg-pointer, and footer sections.
-- Fixed struct packing and accounted for relative offsets (`+0x10` from the magic block) to match hexdumps.
-- Clarified fields: `file_name_size`, `offset_idx_file_name`, `id`, `parent_id`; matched pkg-pointer entries via shared IDs.
-- Confirmed counts: metadata uses file+dir count (Nfd); pkg-pointer section uses file count (Nf).
-- Reconstructed full paths by chaining `parent_id` up to root; printed flat list and tree.
-- Observed `(type_1,type_2)` pairs likely reflect compression mode; common `(0x5,0x1)` vs `(0x0,0x0)`.
-- Ready to extract `.pkg` blobs and write files next.
+- We define the C Struct for the metadata/index
+- We resolved a few loose ends: filename lengths, parent IDs, unique identifiers for linking
+- We implemented file tree using hashmaps and parent-child relationships
+- We identified compression type patterns
 
----
 
-Parts:
-- Part 1 — Searching The Data → [/posts/wows_depack_part1/](/posts/wows_depack_part1/)
-- Part 2 — Getting The Metadata → [/posts/wows_depack_part2/](/posts/wows_depack_part2/)
-- Part 3 — Reading The Database → [/posts/wows_depack_part3/](/posts/wows_depack_part3/)
-- Part 4 — Putting It All Together → [/posts/wows_depack_part4/](/posts/wows_depack_part4/)
-- Back to Series Index → [/posts/wows_depack_index/](/posts/wows_depack_index/)
+In the [next and last part](/posts/wows_depack_part4/) we will tie things together and wrap up the implementation.
