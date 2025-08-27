@@ -1,6 +1,6 @@
 title = "Technically some technical stuff, or not."
-baseurl = "http://technically.kakwalab.ovh/"
-baseURL = "http://technically.kakwalab.ovh/"
+baseurl = "https://technically.kakwalab.ovh/"
+baseURL = "https://technically.kakwalab.ovh/"
 languageCode = "en"
 theme = "kiss"
 copyright = "&copy; <a href=\"https://github.com/kakwa\">Pierre-Francois Carpentier</a> 2024"
@@ -20,7 +20,7 @@ googleFonts = []
 [params.info]
 adsense = "" # Adsense ID (ID only, without ca-pub-)
 enableSocial = true # Adds OpenGraph and Twitter cards
-homeTitle = "" # Title for home page
+homeTitle = "Technical stuff I write about" # Title for home page
 poweredby = false # Adds powered by hugo and kiss below Copyright
 related = true # Includes related articles at the bottom of the article
 codeCopy = true # Add copy button above code blocks
@@ -31,9 +31,6 @@ disqusOnDemand = false  # Load Disqus comments on click
 mathjax = false
 katex = false
 
-[params.opengraph.twitter]
-page = "" # Twitter Page username. If not set, params.social.twitter will be used.
-
 [params.social]
 mastodon = "mastodon.instance/@kakwa"
 github = "kakwa"
@@ -42,7 +39,7 @@ linkedin = "pfcarpentier"
 rss = "index.xml" # Add this to show RSS button in social.
 
 [params.social.config]
-platforms = ["github","facebook","twitter","instagram","email","codepen","linkedin"]
+platforms = ["github", "mastodon", "linkedin"]
 
 [taxonomies]
 tag ="tags"
