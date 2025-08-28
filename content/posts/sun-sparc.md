@@ -20,7 +20,7 @@ It will not run a k8s cluster, but generally these old machines generally still 
 - Test Machines
 - Firewalls/Routers
 
-## The Little Server That Could (not)
+## The Little Server That Could (Not)
 
 Enters the Sun v100, the entry level server from 2001 sold by Sun Microsystems.
 
@@ -35,7 +35,9 @@ It boasts impressive specs such as:
 In truth, this beast is a little asthmatic, but I find the Sparc CPU interesting, particularly for testing endianess and alignment issues. And it doesn't need huge amounts of power (~15 Watts TDP) to run unlike many other servers.
 
 I bought this v100 about 15 years ago secondhand, but in truth, never did something really useful with it.
-This thing is simply a bit too big and too loud and it sat in my cupboard for ages. But let's try to change that.
+This thing is simply a bit too big and too loud and it sat in my cupboard for ages.
+
+But let's try to change that and learn a few stuff along the way.
 
 ## A Two Fronts Project
 
@@ -48,13 +50,75 @@ But to acheive that, two main topics needs to be addressed:
 
 # The Hardware Side
 
+## Starting Point & End Goal
+
+This tiny server is well... a server. If it fits onto a small and standard 1U height (44.50mm), it's also kind of big in the other dimensions: 19"/482.60mm by 17.55"/445mm.
+
+However, once inside, the content look like this:
+
+TODO photo inside of V100 CASE
+
+We are in luck, this cute beast could probably be a lot more compact. In particular the main board, including the RAM sticks, is 250x190mm.
+If ditch the original (and noisy) Hard Drives & PSU, and cheat a little we could even make it fit into a 254mm(/10") case able to be used in these fancy small [10 inch racks](https://mini-rack.jeffgeerling.com/).
+
+Aside from that, We also need to silence this small beast.
+
+In particular we need to take care of these little bastards:
+
+TODO photo small 40x40 FAN
+
+Replacing these with Noctua fans could probably help.
+
+## New Parts
+
+To make it fit, I'm replacing the following parts:
+
+* The original IDE HDs are too big & noisy, so I'm replacing them with a [SanDisk 32GB CF Card](https://shop.sandisk.com/products/memory-cards/cfast-cfexpress-compactflash/sandisk-extreme-compactflash?sku=SDCFXSB-032G-G46) + [adapter thinggy](https://www.startech.com/en-us/hdd/35baycf2ide) (CF cards are generally pin-compatible with IDE, giving good odds of it working with decent performances).
+* The original PSU is quite bulky, but relatively small at 80 Watts. So I will also try my luck with a [Pico PSU](https://www.rgeek.com/portfolio-item/rgeek-pico-dc-psu-rp-120lq-dc-12v-24pin-power-supply-module/) + external 12V Power Brick.
+* Let's also try our luck with a GaN USB-C charger + [trigger board](https://www.aliexpress.com/p/tesla-landing/index.html?scenario=c_ppc_item_bridge&productId=1005004356272196&_immersiveMode=true&withMainCard=true&src=google&aff_platform=true&isdl=y). On paper, it could provide us with a great little PSU instead of a rather large and sketchy black brick from an unknown manufacturer.
+* The original 40x40mm 12V fans are getting the [Noctua treatment](https://noctua.at/en/products/fan?size=2645&connector=10&voltage=12).
+
+Note: I'm not doing this project to save money. Secondhand micro PCs like ThinkCentre Ms or RPi like SBC are cheaper.
+
+## Modeling
+
+### Case
+
+TODO
+
+### Brackets
+
+TODO
+
+### Bezel
+
+TODO
+
+### Logo
+
+TODO
+
+## Mistakes & Reworks
+
 TODO
 
 # The Software Side
 
 ## Operating System Choice
 
-TODO: explain choice of OpenBSD.
+The sad reality is Sparc is a dying architecture. So our choices, as of 2025, are limited:
+
+* (Open)Solaris -> dead
+* Illumos (OpenSolaris successor) -> [Support is being dropped](https://github.com/illumos/ipd/blob/master/ipd/0019/README.md)
+* Linux -> Sparc64 is still supported by the kernel, but nearly no mainstream distribution supports it ([Debian unofficially](https://wiki.debian.org/Sparc64), and [Gentoo](https://wiki.gentoo.org/wiki/Project:SPARC)).
+* FreeBSD -> Support dropped with [FreeBSD 13](https://www.freebsd.org/platforms/sparc/)
+
+This leaves more or less two choices:
+
+* [NetBSD](https://wiki.netbsd.org/ports/sparc64/)
+* [OpenBSD](https://www.openbsd.org/sparc64.html)
+
+Let's go with OpenBSD.
 
 ## Installation
 
@@ -66,19 +130,23 @@ Also mention the `#.` keys combo.
 
 ### Factory Reset
 
-I initially had issue getting to [Open Firmware](https://en.wikipedia.org/wiki/Open_Firmware). In its past life, it seems this server was configured to not share LOM and tty onto the same Serial port. I was getting the LOM onto the upper port all right, but the OF/OS on lower Port remained silent.
+I initially had issue getting to [Open Firmware](https://en.wikipedia.org/wiki/Open_Firmware).
+In its past life, it seems this server was configured to not share LOM and tty onto the same Serial port.
+I was getting LOM access via the upper port all right, but the Open Firmware/OS on lower Port remained silent.
 
 ```
-lom> console
-Console not shared.
 lom> break
+Console not shared.
+lom> console -f
 Console not shared.
 ```
 
 I tried a few things to make it talk, but ended-up settling on trying to reset the server firmware to factory default.
-However even that prove to be challenging. I tried to use procedures [like this one](https://dogemicrosystems.ca/pub/Sun/System_Handbook/Sun_syshbk_V3.4/collections/PROBLEMRESOLUTIONSURE/1-72-1018251.1-1.html), without luck. I also tried using the `bootmode -u` flag, against, without luck.
+However even that prove to be challenging. I tried to use procedures [like this one](https://dogemicrosystems.ca/pub/Sun/System_Handbook/Sun_syshbk_V3.4/collections/PROBLEMRESOLUTIONSURE/1-72-1018251.1-1.html), without luck.
+I also tried using the `bootmode -u` and `console -f` flags, again, without luck.
 
-I was about to give-up when I stubbled [uppon this email](https://marc.info/?l=classiccmp&m=123195610818394) from a former Sun employee. (Thanks Mr. Andy for posting this on a random mailing 16 years ago, the internet is truly amazing sometimes).
+I was about to give-up when I stubbled [uppon this email](https://marc.info/?l=classiccmp&m=123195610818394) from a former Sun employee.
+(Thanks Mr. Andy for posting this on a random mailing 16 years ago, the Internet is truly amazing sometimes).
 
 So as indicated by this mail, I ran the following commands to reset the eeprom:
 
