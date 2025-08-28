@@ -1,6 +1,6 @@
 <!doctype html><html lang=en itemscope itemtype=http://schema.org/WebPage><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><title>Reversing WoWs Resource Format - Part 3: Reading The Database - </title><meta name=description content="Parts Part 1 — Searching The Data → /posts/wows_depack_part1/ Part 2 — Getting The Metadata → /posts/wows_depack_part2/ Part 3 — Reading The Database → /posts/wows_depack_part3/ Part 4 — Tidying-Up The Project → /posts/wows_depack_part4/ The Implementation In the last part, we discovered and got a fairly good idea of the metadata/IDX format.
 In this part, we will create a rough implementation to extract the content.
-Data Structures First, define C structures matching our reverse-engineered format:"><script type=application/ld+json>{"@context":"http://schema.org","@type":"WebSite","name":"Technically some technical stuff.","url":"https:\/\/technically.kakwalab.ovh\/"}</script><script type=application/ld+json>{"@context":"http://schema.org","@type":"Organization","name":"","url":"https:\/\/technically.kakwalab.ovh\/"}</script><script type=application/ld+json>{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"https:\/\/technically.kakwalab.ovh\/","name":"home"}},{"@type":"ListItem","position":3,"item":{"@id":"https:\/\/technically.kakwalab.ovh\/posts\/wows_depack_part3\/","name":"Reversing wo ws resource format part 3 reading the database"}}]}</script><script type=application/ld+json>{"@context":"http://schema.org","@type":"Article","author":{"name":""},"headline":"Reversing WoWs Resource Format - Part 3: Reading The Database","description":"Parts Part 1 — Searching The Data → \/posts\/wows_depack_part1\/ Part 2 — Getting The Metadata → \/posts\/wows_depack_part2\/ Part 3 — Reading The Database → \/posts\/wows_depack_part3\/ Part 4 — Tidying-Up The Project → \/posts\/wows_depack_part4\/ The Implementation In the last part, we discovered and got a fairly good idea of the metadata\/IDX format.\nIn this part, we will create a rough implementation to extract the content.\nData Structures First, define C structures matching our reverse-engineered format:","inLanguage":"en","wordCount":2901,"datePublished":"2025-08-26T00:03:00\u002b02:00","dateModified":"2025-08-26T00:03:00\u002b02:00","image":"https:\/\/technically.kakwalab.ovh\/","keywords":[""],"mainEntityOfPage":"https:\/\/technically.kakwalab.ovh\/posts\/wows_depack_part3\/","publisher":{"@type":"Organization","name":"https:\/\/technically.kakwalab.ovh\/","logo":{"@type":"ImageObject","url":"https:\/\/technically.kakwalab.ovh\/","height":60,"width":60}}}</script><meta property="og:title" content="Reversing WoWs Resource Format - Part 3: Reading The Database"><meta property="og:description" content="Parts Part 1 — Searching The Data → /posts/wows_depack_part1/ Part 2 — Getting The Metadata → /posts/wows_depack_part2/ Part 3 — Reading The Database → /posts/wows_depack_part3/ Part 4 — Tidying-Up The Project → /posts/wows_depack_part4/ The Implementation In the last part, we discovered and got a fairly good idea of the metadata/IDX format.
+Data Structures First, define C structures matching our reverse-engineered format:"><script type=application/ld+json>{"@context":"http://schema.org","@type":"WebSite","name":"Technically some technical stuff.","url":"https:\/\/technically.kakwalab.ovh\/"}</script><script type=application/ld+json>{"@context":"http://schema.org","@type":"Organization","name":"","url":"https:\/\/technically.kakwalab.ovh\/"}</script><script type=application/ld+json>{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"https:\/\/technically.kakwalab.ovh\/","name":"home"}},{"@type":"ListItem","position":3,"item":{"@id":"https:\/\/technically.kakwalab.ovh\/posts\/wows_depack_part3\/","name":"Reversing wo ws resource format part 3 reading the database"}}]}</script><script type=application/ld+json>{"@context":"http://schema.org","@type":"Article","author":{"name":""},"headline":"Reversing WoWs Resource Format - Part 3: Reading The Database","description":"Parts Part 1 — Searching The Data → \/posts\/wows_depack_part1\/ Part 2 — Getting The Metadata → \/posts\/wows_depack_part2\/ Part 3 — Reading The Database → \/posts\/wows_depack_part3\/ Part 4 — Tidying-Up The Project → \/posts\/wows_depack_part4\/ The Implementation In the last part, we discovered and got a fairly good idea of the metadata\/IDX format.\nIn this part, we will create a rough implementation to extract the content.\nData Structures First, define C structures matching our reverse-engineered format:","inLanguage":"en","wordCount":2878,"datePublished":"2025-08-26T00:03:00\u002b02:00","dateModified":"2025-08-26T00:03:00\u002b02:00","image":"https:\/\/technically.kakwalab.ovh\/","keywords":[""],"mainEntityOfPage":"https:\/\/technically.kakwalab.ovh\/posts\/wows_depack_part3\/","publisher":{"@type":"Organization","name":"https:\/\/technically.kakwalab.ovh\/","logo":{"@type":"ImageObject","url":"https:\/\/technically.kakwalab.ovh\/","height":60,"width":60}}}</script><meta property="og:title" content="Reversing WoWs Resource Format - Part 3: Reading The Database"><meta property="og:description" content="Parts Part 1 — Searching The Data → /posts/wows_depack_part1/ Part 2 — Getting The Metadata → /posts/wows_depack_part2/ Part 3 — Reading The Database → /posts/wows_depack_part3/ Part 4 — Tidying-Up The Project → /posts/wows_depack_part4/ The Implementation In the last part, we discovered and got a fairly good idea of the metadata/IDX format.
 In this part, we will create a rough implementation to extract the content.
 Data Structures First, define C structures matching our reverse-engineered format:"><meta property="og:url" content="https://technically.kakwalab.ovh/posts/wows_depack_part3/"><meta property="og:type" content="website"><meta property="og:site_name" content="Technically some technical stuff."><meta name=twitter:title content="Reversing WoWs Resource Format - Part 3: Reading The Database"><meta name=twitter:description content="Parts Part 1 — Searching The Data → /posts/wows_depack_part1/ Part 2 — Getting The Metadata → /posts/wows_depack_part2/ Part 3 — Reading The Database → /posts/wows_depack_part3/ Part 4 — Tidying-Up …"><meta name=twitter:card content="summary_large_image"><meta name=generator content="Hugo 0.128.0"><link rel=alternate href=https://technically.kakwalab.ovh/index.xml type=application/rss+xml title="Technically some technical stuff."><link rel=stylesheet href=https://technically.kakwalab.ovh/css/katex.min.css><link rel=stylesheet href=https://technically.kakwalab.ovh/fontawesome/css/all.css><link rel=stylesheet href=https://technically.kakwalab.ovh/css/bootstrap.min.css><link rel=stylesheet href=https://technically.kakwalab.ovh/css/main.css><link rel=stylesheet href=https://technically.kakwalab.ovh/css/fonts.css><link rel=stylesheet href=https://technically.kakwalab.ovh/css/syntax.css><link rel=stylesheet href=https://technically.kakwalab.ovh/css/codeblock.css><link rel=stylesheet href=https://technically.kakwalab.ovh/css/photoswipe.min.css><link rel=stylesheet href=https://technically.kakwalab.ovh/css/photoswipe.default-skin.min.css></head><body><nav class="navbar navbar-default navbar-fixed-top navbar-custom"><div class=container-fluid><div class=navbar-header><button type=button class=navbar-toggle data-toggle=collapse data-target=#main-navbar>
 <span class=sr-only>Toggle navigation</span>
@@ -51,7 +51,7 @@ typedef struct {
 </span></span><span style=display:flex><span>    [...]
 </span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></div><p>Output</p><pre tabindex=0><code>Index Header Content:
+</span></span></code></pre></div><p>Output:</p><pre tabindex=0><code>Index Header Content:
 * magic:                     ISFP
 * unknown_1:                 0x2000000
 * id:                        0xb4399d91
@@ -110,24 +110,17 @@ Metadata entry 310:
 </code></pre><p>This permits us to review our previous reverse and right away there are two interesting things to note:</p><ul><li>There was a bit of an unknown regarding the number of metadata chunks: was it <code>file_count</code> or <code>file_plus_dir_count</code>? Now we are more certain it&rsquo;s <code>file_plus_dir_count</code> as it&rsquo;s the larger value. If it was not, we would try to parse a section past the metadatas as metadata with funky results (garbage or crash). This is not the case.</li><li><code>file_type</code> in metadata is not a file type/enum. The values are small but quite varied; it&rsquo;s more likely the length of the file name.</li></ul><p>Lets check with the last entry:</p><pre tabindex=0><code>Metadata entry 310:
 * file_type:                 19
 [...]
-</code></pre><p><code>hexdump -C system_data.idx| less</code>
-[&mldr;]
-00003be0 61 72 69 61 74 69 6f 6e 5f 64 75 6d 6d 79 2e 64 |ariation_dummy.d|
-00003bf0 64 73 00 77 61 76 65 73 5f 68 65 69 67 68 74 73 |ds.waves_heights|
-00003c00 30 2e 64 64 73 00 8f 0c 9a ba 4f 40 b6 93 70 11 |0.dds&mldr;..O@..p.|
-00003c10 03 07 0d 33 ed 77 00 00 00 00 00 00 00 00 05 00 |&mldr;3.w&mldr;&mldr;&mldr;.|</p><pre tabindex=0><code>
-The last file name is `waves_heights0.dds`, 18 characters long, with the `\0`, we have our 19 value.
-
-So let&#39;s rename this field.
-
-Now that we have fixed that, we can recover the file names of each entry:
-
-```C
-char *filename = (char *)entry;
-filename += entry-&gt;offset_idx_file_name;
-
-printf(&#34;* filename: %.*s\n&#34;, (int)entry-&gt;file_name_size, filename);
-</code></pre><p>Nice:</p><pre tabindex=0><code>Metadata entry 0:
+</code></pre><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>kakwa@linux 6775398/idx » hexdump -C system_data.idx | less
+</span></span></code></pre></div><pre tabindex=0><code>[...]
+00003be0  61 72 69 61 74 69 6f 6e  5f 64 75 6d 6d 79 2e 64  |ariation_dummy.d|
+00003bf0  64 73 00 77 61 76 65 73  5f 68 65 69 67 68 74 73  |ds.waves_heights|
+00003c00  30 2e 64 64 73 00 8f 0c  9a ba 4f 40 b6 93 70 11  |0.dds.....O@..p.|
+00003c10  03 07 0d 33 ed 77 00 00  00 00 00 00 00 00 05 00  |...3.w..........|
+</code></pre><p>The last file name is <code>waves_heights0.dds</code>, 18 characters long, with the <code>\0</code>, we have our 19 value.</p><p>So let&rsquo;s rename this field.</p><p>Now that we have fixed that, we can recover the file names of each entry:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-C data-lang=C><span style=display:flex><span><span style=color:#66d9ef>char</span> <span style=color:#f92672>*</span>filename <span style=color:#f92672>=</span> (<span style=color:#66d9ef>char</span> <span style=color:#f92672>*</span>)entry;
+</span></span><span style=display:flex><span>filename <span style=color:#f92672>+=</span> entry<span style=color:#f92672>-&gt;</span>offset_idx_file_name;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;* filename: %.*s</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, (<span style=color:#66d9ef>int</span>)entry<span style=color:#f92672>-&gt;</span>file_name_size, filename);
+</span></span></code></pre></div><p>Nice:</p><pre tabindex=0><code>Metadata entry 0:
 * file_name_size:            14
 * offset_idx_file_name:      0x26e0
 * unknown_4:                 0x93b6404fba9a0c8f
@@ -173,15 +166,14 @@ Metadata entry 12:
 * offset_idx_footer_section: 0x7136
 [...]
 </code></pre><p>The hexdump gives:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>kakwa@linux 6775398/idx » hexdump -s <span style=color:#ae81ff>6</span> -C system_data.idx| less
-</span></span><span style=display:flex><span><span style=color:#f92672>[</span>...<span style=color:#f92672>]</span>
-</span></span><span style=display:flex><span><span style=color:#ae81ff>00007116</span>  <span style=color:#ae81ff>21</span> <span style=color:#ae81ff>67</span> ac <span style=color:#ae81ff>70</span> <span style=color:#ae81ff>22</span> ec ca b8  <span style=color:#ae81ff>70</span> <span style=color:#ae81ff>11</span> <span style=color:#ae81ff>03</span> <span style=color:#ae81ff>07</span> 0d <span style=color:#ae81ff>33</span> ed <span style=color:#ae81ff>77</span>  |!g.p<span style=color:#e6db74>&#34;...p....3.w|
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>00007126  28 f9 15 0a 00 00 00 00  05 00 00 00 01 00 00 00  |(...............|
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>00007136  0b 2d 00 00 03 bd b0 50  67 e9 00 00 00 00 00 00  |.-.....Pg.......|
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>00007146  15 00 00 00 00 00 00 00  18 00 00 00 00 00 00 00  |................|
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>00007156  70 11 03 07 0d 33 ed 77  73 79 73 74 65 6d 5f 64  |p....3.wsystem_d|
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>00007166  61 74 61 5f 30 30 30 31  2e 70 6b 67 00           |ata_0001.pkg.|
-</span></span></span></code></pre></div><p>If our previous interpretation was correct, a simple offset from the start of the index file should be <code>0x7146</code>, not <code>0x7136</code>.</p><p>Maybe we are missing some fields in the footer, but given the previous 128 bits at offset <code>0x7136</code> really look like the end of a pkg metadata entry, I doubt it.</p><p>A more plausible explanation is that the offset is relative to the header <code>id</code> field at <code>0x10</code>.
+</span></span></code></pre></div><pre tabindex=0><code>[...]
+00007116  21 67 ac 70 22 ec ca b8  70 11 03 07 0d 33 ed 77  |!g.p&#34;...p....3.w|
+00007126  28 f9 15 0a 00 00 00 00  05 00 00 00 01 00 00 00  |(...............|
+00007136  0b 2d 00 00 03 bd b0 50  67 e9 00 00 00 00 00 00  |.-.....Pg.......|
+00007146  15 00 00 00 00 00 00 00  18 00 00 00 00 00 00 00  |................|
+00007156  70 11 03 07 0d 33 ed 77  73 79 73 74 65 6d 5f 64  |p....3.wsystem_d|
+00007166  61 74 61 5f 30 30 30 31  2e 70 6b 67 00           |ata_0001.pkg.|
+</code></pre><p>If our previous interpretation was correct, a simple offset from the start of the index file should be <code>0x7146</code>, not <code>0x7136</code>.</p><p>Maybe we are missing some fields in the footer, but given the previous 128 bits at offset <code>0x7136</code> really look like the end of a pkg metadata entry, I doubt it.</p><p>A more plausible explanation is that the offset is relative to the header <code>id</code> field at <code>0x10</code>.
 Maybe the <code>magic</code> + <code>unknown_1</code> bits, i.e., the first 128 bits, are considered to be a separate section.</p><p>Anyway, let&rsquo;s just offset by 128 bits.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-C data-lang=C><span style=display:flex><span><span style=color:#75715e>#define MAGIC_SECTION_OFFSET sizeof(uint32_t) * 4
 </span></span></span><span style=display:flex><span><span style=color:#75715e></span>
 </span></span><span style=display:flex><span><span style=color:#75715e>// Get the footer section
@@ -287,7 +279,9 @@ Data file entry [280]:
 * unknown_5:                 0x199e99feb0c986f8
 * unknown_6:                 0x77ed330d07031170
 [...]
-</code></pre><p><code>unknown_6</code> is always the same, not really interesting.</p><p><code>unknown_5</code> on the contrary is specific to each entry:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>kakwa@linux GitHub/wows-depack <span style=color:#f92672>(</span>main<span style=color:#f92672>)</span> » ./wows-depack-cli -i ~/Games/World<span style=color:#ae81ff>\ </span>of<span style=color:#ae81ff>\ </span>Warships/bin/6775398/idx/system_data.idx | grep <span style=color:#e6db74>&#39;unknown_5&#39;</span> | sort | uniq -c
+</code></pre><p><code>unknown_6</code> is always the same, not really interesting.</p><p><code>unknown_5</code> on the contrary is specific to each entry:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>kakwa@linux GitHub/wows-depack <span style=color:#f92672>(</span>main<span style=color:#f92672>)</span> » ./wows-depack-cli <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    -i ~/Games/World<span style=color:#ae81ff>\ </span>of<span style=color:#ae81ff>\ </span>Warships/bin/6775398/idx/system_data.idx | <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    grep <span style=color:#e6db74>&#39;unknown_5&#39;</span> | sort | uniq -c
 </span></span><span style=display:flex><span><span style=color:#f92672>[</span>...<span style=color:#f92672>]</span>
 </span></span><span style=display:flex><span>      <span style=color:#ae81ff>1</span> * unknown_5:                 0x14b002d7c2835863
 </span></span><span style=display:flex><span>      <span style=color:#ae81ff>1</span> * unknown_5:                 0x15a7b41a61f65f9c
@@ -303,52 +297,55 @@ Data file entry [280]:
 [...]
 * unknown_5:                 0x1011b17d9304bb39
 [...]
-</code></pre><p>So the link is established through these fields. These are simply random, unique IDs for each entry.</p><p>In fact <code>unknown_4</code> and <code>unknown_5</code> are not the only fields leveraging this.</p><p>Looking at <code>file_type_2</code> values, we get something like that:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>kakwa@linux GitHub/wows-depack <span style=color:#f92672>(</span>main *<span style=color:#f92672>)</span> » ./wows-depack-cli -i ~/Games/World<span style=color:#ae81ff>\ </span>of<span style=color:#ae81ff>\ </span>Warships/bin/6775398/idx/system_data.idx | grep <span style=color:#e6db74>&#39;0x937f155e4baaf562\|filename:&#39;</span> | grep -A <span style=color:#ae81ff>1</span> <span style=color:#e6db74>&#39;0x937f155e4baaf562&#39;</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#f92672>[</span>...<span style=color:#f92672>]</span>
-</span></span><span style=display:flex><span>--
-</span></span><span style=display:flex><span>* file_type_2:               0x937f155e4baaf562
-</span></span><span style=display:flex><span>* filename:                  LowerAftTrans.dds
-</span></span><span style=display:flex><span>--
-</span></span><span style=display:flex><span>* file_type_2:               0x937f155e4baaf562
-</span></span><span style=display:flex><span>* filename:                  MidBarbette.dds
-</span></span><span style=display:flex><span>--
-</span></span><span style=display:flex><span>* file_type_2:               0x937f155e4baaf562
-</span></span><span style=display:flex><span>* filename:                  Bulkhead.dds
-</span></span><span style=display:flex><span>--
-</span></span><span style=display:flex><span>* file_type_2:               0x937f155e4baaf562
-</span></span><span style=display:flex><span>* filename:                  MidBelt.dds
-</span></span><span style=display:flex><span>--
-</span></span><span style=display:flex><span><span style=color:#f92672>[</span>...<span style=color:#f92672>]</span>
-</span></span><span style=display:flex><span>--
-</span></span><span style=display:flex><span>* unknown_4:                 0x937f155e4baaf562
-</span></span><span style=display:flex><span>* filename:                  armour
-</span></span><span style=display:flex><span>--
-</span></span><span style=display:flex><span><span style=color:#f92672>[</span>...<span style=color:#f92672>]</span>
-</span></span><span style=display:flex><span>--
-</span></span><span style=display:flex><span>* file_type_2:               0x937f155e4baaf562
-</span></span><span style=display:flex><span>* filename:                  Bottom.dds
-</span></span><span style=display:flex><span>--
-</span></span><span style=display:flex><span>* file_type_2:               0x937f155e4baaf562
-</span></span><span style=display:flex><span>* filename:                  ConstrBig.dds
-</span></span><span style=display:flex><span>--
-</span></span><span style=display:flex><span>* file_type_2:               0x937f155e4baaf562
-</span></span><span style=display:flex><span>* filename:                  ConstrMid.dds
-</span></span><span style=display:flex><span>--
-</span></span><span style=display:flex><span>* file_type_2:               0x937f155e4baaf562
-</span></span><span style=display:flex><span>* filename:                  ConstrSm.dds
-</span></span><span style=display:flex><span>--
-</span></span><span style=display:flex><span>* file_type_2:               0x937f155e4baaf562
-</span></span><span style=display:flex><span>* filename:                  DoubleBottom.dds
-</span></span><span style=display:flex><span>--
-</span></span><span style=display:flex><span><span style=color:#f92672>[</span>...<span style=color:#f92672>]</span>
-</span></span></code></pre></div><p>Ok, <code>file_type_2</code> is not a file type at all; it&rsquo;s the <code>id</code> (<code>unknown_4</code> right now) of just one node that really looks like a directory.</p><p><code>file_type_2</code> should probably be renamed <code>parent_id</code> or something.</p><p>Also, <code>unknown_6</code> follows the same logic: it&rsquo;s the id of the footer entry (side note: maybe the format supports having one index for several files).</p><h4 id=small-tangent>Small tangent</h4><p>By this point, I was a bit intrigued by the <code>type_1</code> and <code>type_2</code> fields in the <code>pkg</code> pointer sections.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>kakwa@linux GitHub/wows-depack <span style=color:#f92672>(</span>main<span style=color:#f92672>)</span> » <span style=color:#66d9ef>for</span> i in ~/Games/World<span style=color:#ae81ff>\ </span>of<span style=color:#ae81ff>\ </span>Warships/bin/6775398/idx/*;<span style=color:#66d9ef>do</span> ./wows-depack-cli -i <span style=color:#e6db74>&#34;</span>$i<span style=color:#e6db74>&#34;</span>| grep <span style=color:#e6db74>&#39;type_[12]:&#39;</span>  ;<span style=color:#66d9ef>done</span> | sort -n | uniq -c | sort -n
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>  <span style=color:#ae81ff>57265</span> * type_1:                    0x0
-</span></span><span style=display:flex><span>  <span style=color:#ae81ff>57265</span> * type_2:                    0x0
-</span></span><span style=display:flex><span> <span style=color:#ae81ff>232089</span> * type_1:                    0x5
-</span></span><span style=display:flex><span> <span style=color:#ae81ff>232089</span> * type_2:                    0x1
-</span></span></code></pre></div><p>Ok, it seems that <code>(type_1, type_2)</code> can either have the <code>(0x0, 0x0)</code> values, or the <code>(0x5, 0x1)</code> values. In most cases, it&rsquo;s the latter.</p><p>Looking at a few <code>(0x0, 0x0)</code>, a common file with such values are <code>.png</code>.</p><p>It&rsquo;s a bit of a wild guess, but these might be compression levels. <code>(0x0, 0x0)</code>, i.e. no compression would be logical for <code>.png</code> as these files are already compressed. Compressing them would actually only cost CPU resources with no space gains.</p><p>For now, lets just keep that in mind, we will revisit it later.</p><h4 id=glueing-the-entries-together>Glueing the entries together</h4><p>So, we have metadata entries which can be linked together, we have pkg pointer entries which are linked to metadata entries and footer entries.</p><p>It&rsquo;s time to link all that together.</p><p>To do that, the obvious choice is to feed these IDs into an hash map, this will make look-ups easier and quicker.</p><p>Once done, the output now looks like that:</p><pre tabindex=0><code>File entry [259]:
+</code></pre><p>So the link is established through these fields. These are simply random, unique IDs for each entry.</p><p>In fact <code>unknown_4</code> and <code>unknown_5</code> are not the only fields leveraging this.</p><p>Looking at <code>file_type_2</code> values, we get something like that:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>kakwa@linux GitHub/wows-depack <span style=color:#f92672>(</span>main *<span style=color:#f92672>)</span> » ./wows-depack-cli <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    -i ~/Games/World<span style=color:#ae81ff>\ </span>of<span style=color:#ae81ff>\ </span>Warships/bin/6775398/idx/system_data.idx | <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    grep <span style=color:#e6db74>&#39;0x937f155e4baaf562\|filename:&#39;</span> | grep -A <span style=color:#ae81ff>1</span> <span style=color:#e6db74>&#39;0x937f155e4baaf562&#39;</span>
+</span></span></code></pre></div><pre tabindex=0><code>[...]
+--
+* file_type_2:               0x937f155e4baaf562
+* filename:                  LowerAftTrans.dds
+--
+* file_type_2:               0x937f155e4baaf562
+* filename:                  MidBarbette.dds
+--
+* file_type_2:               0x937f155e4baaf562
+* filename:                  Bulkhead.dds
+--
+* file_type_2:               0x937f155e4baaf562
+* filename:                  MidBelt.dds
+--
+[...]
+--
+* unknown_4:                 0x937f155e4baaf562
+* filename:                  armour
+--
+[...]
+--
+* file_type_2:               0x937f155e4baaf562
+* filename:                  Bottom.dds
+--
+* file_type_2:               0x937f155e4baaf562
+* filename:                  ConstrBig.dds
+--
+* file_type_2:               0x937f155e4baaf562
+* filename:                  ConstrMid.dds
+--
+* file_type_2:               0x937f155e4baaf562
+* filename:                  ConstrSm.dds
+--
+* file_type_2:               0x937f155e4baaf562
+* filename:                  DoubleBottom.dds
+--
+[...]
+</code></pre><p>Ok, <code>file_type_2</code> is not a file type at all; it&rsquo;s the <code>id</code> (<code>unknown_4</code> right now) of just one node that really looks like a directory.</p><p><code>file_type_2</code> should probably be renamed <code>parent_id</code> or something.</p><p>Also, <code>unknown_6</code> follows the same logic: it&rsquo;s the id of the footer entry (side note: maybe the format supports having one index for several files).</p><h4 id=small-tangent>Small Tangent</h4><p>By this point, I was a bit intrigued by the <code>type_1</code> and <code>type_2</code> fields in the <code>pkg</code> pointer sections.</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>kakwa@linux GitHub/wows-depack <span style=color:#f92672>(</span>main<span style=color:#f92672>)</span> » <span style=color:#66d9ef>for</span> i in ~/Games/World<span style=color:#ae81ff>\ </span>of<span style=color:#ae81ff>\ </span>Warships/bin/6775398/idx/*;<span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span><span style=color:#66d9ef>do</span>
+</span></span><span style=display:flex><span>    ./wows-depack-cli -i <span style=color:#e6db74>&#34;</span>$i<span style=color:#e6db74>&#34;</span> | grep <span style=color:#e6db74>&#39;type_[12]:&#39;</span>;
+</span></span><span style=display:flex><span><span style=color:#66d9ef>done</span> | sort -n | uniq -c | sort -n
+</span></span></code></pre></div><pre tabindex=0><code>  57265 * type_1:                    0x0
+  57265 * type_2:                    0x0
+ 232089 * type_1:                    0x5
+ 232089 * type_2:                    0x1
+</code></pre><p>Ok, it seems that <code>(type_1, type_2)</code> can either have the <code>(0x0, 0x0)</code> values, or the <code>(0x5, 0x1)</code> values. In most cases, it&rsquo;s the latter.</p><p>Looking at a few <code>(0x0, 0x0)</code>, a common file with such values are <code>.png</code>.</p><p>It&rsquo;s a bit of a wild guess, but these might be compression levels. <code>(0x0, 0x0)</code>, i.e. no compression would be logical for <code>.png</code> as these files are already compressed. Compressing them would actually only cost CPU resources with no space gains.</p><p>For now, lets just keep that in mind, we will revisit it later.</p><h4 id=glueing-the-entries-together>Glueing the entries together</h4><p>So, we have metadata entries which can be linked together, we have pkg pointer entries which are linked to metadata entries and footer entries.</p><p>It&rsquo;s time to link all that together.</p><p>To do that, the obvious choice is to feed these IDs into an hash map, this will make look-ups easier and quicker.</p><p>Once done, the output now looks like that:</p><pre tabindex=0><code>File entry [259]:
 * metadata_id:               0xc90b3d356989c551
 * footer_id:                 0x77ed330d07031170
 * offset_pkg_data:           0x5d30db8
@@ -380,23 +377,12 @@ parent [3]:
 * id:                        0x3837637adc4586b1
 * parent_id:                 0xdbb1a1d1b108b927
 * filename:                  system
-</code></pre><p>This entry is for the following path: <code>/system/maps/weather/snow_tiles_ah.dds</code></p><p>This should be enough now to start thinking about the actual tool and how it will be implemented.</p><h4 id=another-tangent>Another tangent</h4><p>The goal is in the end is to parse all the index files, so it got me curious about the IDs across the different files.</p><p>Looking at the dumps, <code>content</code> is a fairly common directory name, present in a lot of the index files.</p><p>And if we look at these records, we get:</p><pre tabindex=0><code>kakwa@linux GitHub/wows-depack (main *%) » for i in ~/Games/World\ of\ Warships/bin/6775398/idx/*;do echo $i; ./wows-depack-cli -i &#34;$i&#34; |grep -B 5  &#39;* filename:                  content$&#39;;done|less                                                                                                                 130 ↵
-
-/home/kakwa/Games/World of Warships/bin/6775398/idx/basecontent.idx
-parent [5]:
-* file_name_size:            8
-* offset_idx_file_name:      0x470b7
-* id:                        0xa33046442d8327fc
-* parent_id:                 0xdbb1a1d1b108b927
-* filename:                  content
---
-parent [5]:
-* file_name_size:            8
-* offset_idx_file_name:      0x470b7
-* id:                        0xa33046442d8327fc
-* parent_id:                 0xdbb1a1d1b108b927
-* filename:                  content
-[...]
+</code></pre><p>This entry is for the following path: <code>/system/maps/weather/snow_tiles_ah.dds</code></p><p>This should be enough now to start thinking about the actual tool and how it will be implemented.</p><h4 id=another-tangent>Another tangent</h4><p>The goal is in the end is to parse all the index files, so it got me curious about the IDs across the different files.</p><p>Looking at the dumps, <code>content</code> is a fairly common directory name, present in a lot of the index files.</p><p>And if we look at these records, we get:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>kakwa@linux GitHub/wows-depack <span style=color:#f92672>(</span>main *%<span style=color:#f92672>)</span> » <span style=color:#66d9ef>for</span> i in ~/Games/World<span style=color:#ae81ff>\ </span>of<span style=color:#ae81ff>\ </span>Warships/bin/6775398/idx/*;<span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span><span style=color:#66d9ef>do</span> <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    echo $i; <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span>    ./wows-depack-cli -i <span style=color:#e6db74>&#34;</span>$i<span style=color:#e6db74>&#34;</span> | grep -B <span style=color:#ae81ff>5</span>  <span style=color:#e6db74>&#39;* filename:                  content$&#39;</span>; <span style=color:#ae81ff>\
+</span></span></span><span style=display:flex><span><span style=color:#ae81ff></span><span style=color:#66d9ef>done</span> | less
+</span></span></code></pre></div><pre tabindex=0><code>[...]
 /home/kakwa/Games/World of Warships/bin/6775398/idx/camouflage.idx
 parent [5]:
 * file_name_size:            8

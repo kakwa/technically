@@ -1,5 +1,5 @@
 <!doctype html><html lang=en itemscope itemtype=http://schema.org/WebPage><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1"><title>Reversing WoWs Resource Format - Part 1: Searching The Data - </title><meta name=description content="Parts Part 1 — Searching The Data → /posts/wows_depack_part1/ Part 2 — Getting The Metadata → /posts/wows_depack_part2/ Part 3 — Reading The Database → /posts/wows_depack_part3/ Part 4 — Tidying-Up The Project → /posts/wows_depack_part4/ Introduction Firstly, a disclaimer: this is the first time I&rsquo;m doing this kind of exercise, so the process described here is far from ideal, and the tools used are probably less than adequate.
-Also, I&rsquo;m writing this after various findings, so the process seems quite straightforward."><script type=application/ld+json>{"@context":"http://schema.org","@type":"WebSite","name":"Technically some technical stuff.","url":"https:\/\/technically.kakwalab.ovh\/"}</script><script type=application/ld+json>{"@context":"http://schema.org","@type":"Organization","name":"","url":"https:\/\/technically.kakwalab.ovh\/"}</script><script type=application/ld+json>{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"https:\/\/technically.kakwalab.ovh\/","name":"home"}},{"@type":"ListItem","position":3,"item":{"@id":"https:\/\/technically.kakwalab.ovh\/posts\/wows_depack_part1\/","name":"Reversing wo ws resource format part 1 searching the data"}}]}</script><script type=application/ld+json>{"@context":"http://schema.org","@type":"Article","author":{"name":""},"headline":"Reversing WoWs Resource Format - Part 1: Searching The Data","description":"Parts Part 1 — Searching The Data → \/posts\/wows_depack_part1\/ Part 2 — Getting The Metadata → \/posts\/wows_depack_part2\/ Part 3 — Reading The Database → \/posts\/wows_depack_part3\/ Part 4 — Tidying-Up The Project → \/posts\/wows_depack_part4\/ Introduction Firstly, a disclaimer: this is the first time I\u0026rsquo;m doing this kind of exercise, so the process described here is far from ideal, and the tools used are probably less than adequate.\nAlso, I\u0026rsquo;m writing this after various findings, so the process seems quite straightforward.","inLanguage":"en","wordCount":2279,"datePublished":"2025-08-24T01:00:00\u002b02:00","dateModified":"2025-08-24T01:00:00\u002b02:00","image":"https:\/\/technically.kakwalab.ovh\/","keywords":[""],"mainEntityOfPage":"https:\/\/technically.kakwalab.ovh\/posts\/wows_depack_part1\/","publisher":{"@type":"Organization","name":"https:\/\/technically.kakwalab.ovh\/","logo":{"@type":"ImageObject","url":"https:\/\/technically.kakwalab.ovh\/","height":60,"width":60}}}</script><meta property="og:title" content="Reversing WoWs Resource Format - Part 1: Searching The Data"><meta property="og:description" content="Parts Part 1 — Searching The Data → /posts/wows_depack_part1/ Part 2 — Getting The Metadata → /posts/wows_depack_part2/ Part 3 — Reading The Database → /posts/wows_depack_part3/ Part 4 — Tidying-Up The Project → /posts/wows_depack_part4/ Introduction Firstly, a disclaimer: this is the first time I&rsquo;m doing this kind of exercise, so the process described here is far from ideal, and the tools used are probably less than adequate.
+Also, I&rsquo;m writing this after various findings, so the process seems quite straightforward."><script type=application/ld+json>{"@context":"http://schema.org","@type":"WebSite","name":"Technically some technical stuff.","url":"https:\/\/technically.kakwalab.ovh\/"}</script><script type=application/ld+json>{"@context":"http://schema.org","@type":"Organization","name":"","url":"https:\/\/technically.kakwalab.ovh\/"}</script><script type=application/ld+json>{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"https:\/\/technically.kakwalab.ovh\/","name":"home"}},{"@type":"ListItem","position":3,"item":{"@id":"https:\/\/technically.kakwalab.ovh\/posts\/wows_depack_part1\/","name":"Reversing wo ws resource format part 1 searching the data"}}]}</script><script type=application/ld+json>{"@context":"http://schema.org","@type":"Article","author":{"name":""},"headline":"Reversing WoWs Resource Format - Part 1: Searching The Data","description":"Parts Part 1 — Searching The Data → \/posts\/wows_depack_part1\/ Part 2 — Getting The Metadata → \/posts\/wows_depack_part2\/ Part 3 — Reading The Database → \/posts\/wows_depack_part3\/ Part 4 — Tidying-Up The Project → \/posts\/wows_depack_part4\/ Introduction Firstly, a disclaimer: this is the first time I\u0026rsquo;m doing this kind of exercise, so the process described here is far from ideal, and the tools used are probably less than adequate.\nAlso, I\u0026rsquo;m writing this after various findings, so the process seems quite straightforward.","inLanguage":"en","wordCount":2280,"datePublished":"2025-08-24T01:00:00\u002b02:00","dateModified":"2025-08-24T01:00:00\u002b02:00","image":"https:\/\/technically.kakwalab.ovh\/","keywords":[""],"mainEntityOfPage":"https:\/\/technically.kakwalab.ovh\/posts\/wows_depack_part1\/","publisher":{"@type":"Organization","name":"https:\/\/technically.kakwalab.ovh\/","logo":{"@type":"ImageObject","url":"https:\/\/technically.kakwalab.ovh\/","height":60,"width":60}}}</script><meta property="og:title" content="Reversing WoWs Resource Format - Part 1: Searching The Data"><meta property="og:description" content="Parts Part 1 — Searching The Data → /posts/wows_depack_part1/ Part 2 — Getting The Metadata → /posts/wows_depack_part2/ Part 3 — Reading The Database → /posts/wows_depack_part3/ Part 4 — Tidying-Up The Project → /posts/wows_depack_part4/ Introduction Firstly, a disclaimer: this is the first time I&rsquo;m doing this kind of exercise, so the process described here is far from ideal, and the tools used are probably less than adequate.
 Also, I&rsquo;m writing this after various findings, so the process seems quite straightforward."><meta property="og:url" content="https://technically.kakwalab.ovh/posts/wows_depack_part1/"><meta property="og:type" content="website"><meta property="og:site_name" content="Technically some technical stuff."><meta name=twitter:title content="Reversing WoWs Resource Format - Part 1: Searching The Data"><meta name=twitter:description content="Parts Part 1 — Searching The Data → /posts/wows_depack_part1/ Part 2 — Getting The Metadata → /posts/wows_depack_part2/ Part 3 — Reading The Database → /posts/wows_depack_part3/ Part 4 — Tidying-Up …"><meta name=twitter:card content="summary_large_image"><meta name=generator content="Hugo 0.128.0"><link rel=alternate href=https://technically.kakwalab.ovh/index.xml type=application/rss+xml title="Technically some technical stuff."><link rel=stylesheet href=https://technically.kakwalab.ovh/css/katex.min.css><link rel=stylesheet href=https://technically.kakwalab.ovh/fontawesome/css/all.css><link rel=stylesheet href=https://technically.kakwalab.ovh/css/bootstrap.min.css><link rel=stylesheet href=https://technically.kakwalab.ovh/css/main.css><link rel=stylesheet href=https://technically.kakwalab.ovh/css/fonts.css><link rel=stylesheet href=https://technically.kakwalab.ovh/css/syntax.css><link rel=stylesheet href=https://technically.kakwalab.ovh/css/codeblock.css><link rel=stylesheet href=https://technically.kakwalab.ovh/css/photoswipe.min.css><link rel=stylesheet href=https://technically.kakwalab.ovh/css/photoswipe.default-skin.min.css></head><body><nav class="navbar navbar-default navbar-fixed-top navbar-custom"><div class=container-fluid><div class=navbar-header><button type=button class=navbar-toggle data-toggle=collapse data-target=#main-navbar>
 <span class=sr-only>Toggle navigation</span>
 <span class=icon-bar></span>
@@ -12,70 +12,66 @@ Also, I&rsquo;m writing this after various findings, so the process seems quite 
 <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
 </button>
 <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><header class=header-section><div class="intro-header no-img"><div class=container><div class=row><div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1"><div class=posts-heading><h1>Reversing WoWs Resource Format - Part 1: Searching The Data</h1><hr class=small></div></div></div></div></div></header><div class=container role=main><div class=row><div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1"><article role=main class=blog-post><h1 id=parts>Parts</h1><ul><li>Part 1 — Searching The Data → <a href=/posts/wows_depack_part1/>/posts/wows_depack_part1/</a></li><li>Part 2 — Getting The Metadata → <a href=/posts/wows_depack_part2/>/posts/wows_depack_part2/</a></li><li>Part 3 — Reading The Database → <a href=/posts/wows_depack_part3/>/posts/wows_depack_part3/</a></li><li>Part 4 — Tidying-Up The Project → <a href=/posts/wows_depack_part4/>/posts/wows_depack_part4/</a></li></ul><h1 id=introduction>Introduction</h1><p>Firstly, a disclaimer: this is the first time I&rsquo;m doing this kind of exercise, so the process described here is far from ideal, and the tools used are probably less than adequate.</p><p>Also, I&rsquo;m writing this after various findings, so the process seems quite straightforward. In reality, it was full of dead ends and flows of ideas (good and bad) that came up while staring at hexdumps for hours.</p><h2 id=motivation>Motivation</h2><p>I&rsquo;ve always wanted to play around with World of Warships game content for various reasons, from extracting things like armor layouts or in-game parameters to the 3D models themselves.</p><p>There is already a closed-source Windows tool doing that: <a href=https://forum.worldofwarships.eu/topic/113847-all-wows-unpack-tool-unpack-game-client-resources/>wows-unpack</a></p><p>But being a pro-OSS Linux user, this tool doesn&rsquo;t suit me well as it is annoying to use (<code>Wine</code>) and cannot be readily integrated into other programs.</p><p>I also wanted to do it as an intellectual & learning exercise of reverse engineering.</p><h2 id=goals>Goals</h2><ul><li>Reverse engineer the format sufficiently for data extraction</li><li>Document the specification for others to build upon</li><li>Create an OSS CLI tool</li><li>Develop a reusable OSS library</li></ul><h1 id=reverse-engineering-process>Reverse Engineering Process</h1><h2 id=initial-analysis>Initial Analysis</h2><h3 id=game-file-structure>Game File Structure</h3><p>Unfortunately, I only have very fuzzy memories of the initial steps I took since they came from an initial effort 2 years before the bulk of the reversing.</p><p>The gist of it was to look at the game files and see where most of the data was:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>kakwa@linux Games/World of Warships » ls
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#f92672>[</span>...<span style=color:#f92672>]</span> api-ms-win-crt-runtime-l1-1-0.dll  concrt140.dll             msvcp140_codecvt_ids.dll  Reports               vcruntime140_1.dll
-</span></span><span style=display:flex><span><span style=color:#f92672>[</span>...<span style=color:#f92672>]</span> api-ms-win-crt-stdio-l1-1-0.dll    crashes                   msvcp140.dll              res_packages          vcruntime140.dll
-</span></span><span style=display:flex><span><span style=color:#f92672>[</span>...<span style=color:#f92672>]</span> api-ms-win-crt-time-l1-1-0.dll     GameCheck                 placeholder.txt           screenshot            WorldOfWarships.exe
-</span></span><span style=display:flex><span><span style=color:#f92672>[</span>...<span style=color:#f92672>]</span> bin                                msvcp140_atomic_wait.dll  replays                   user_preferences.xml
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>kakwa@linux Games/World of Warships » du -hd <span style=color:#ae81ff>1</span> | sort -h
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>4.0K  ./Reports
-</span></span><span style=display:flex><span>12K   ./patche
-</span></span><span style=display:flex><span>2.8M  ./Wallpapers
-</span></span><span style=display:flex><span>4.2M  ./GameCheck
-</span></span><span style=display:flex><span>4.4M  ./screenshot
-</span></span><span style=display:flex><span>49M   ./replays
-</span></span><span style=display:flex><span>55M   ./lib
-</span></span><span style=display:flex><span>464M  ./profile
-</span></span><span style=display:flex><span>593M  ./crashes
-</span></span><span style=display:flex><span>1.2G  ./bin
-</span></span><span style=display:flex><span>62G   ./res_packages
-</span></span><span style=display:flex><span>73G  .
-</span></span></code></pre></div><p>So here, most of the data is in the <code>res_packages/</code> directory. Let&rsquo;s take a closer look:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>kakwa@linux Games/World of Warships » ls res_packages
-</span></span><span style=display:flex><span><span style=color:#f92672>[</span>...<span style=color:#f92672>]</span>
-</span></span><span style=display:flex><span>spaces_dock_1_april_0001.pkg          spaces_faroe_0001.pkg                spaces_ridge_0001.pkg
-</span></span><span style=display:flex><span>vehicles_level10_panamerica_0001.pkg  vehicles_level3_panasia_0001.pkg     vehicles_level6_jap_0001.pkg
-</span></span><span style=display:flex><span>vehicles_level8_it_0001.pkg           z_vehicles_events_0001.pkg
-</span></span><span style=display:flex><span><span style=color:#f92672>[</span>...<span style=color:#f92672>]</span>
-</span></span></code></pre></div><p>Let&rsquo;s use <code>file</code> to see what type of files we are dealing with:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>kakwa@linux Games/World of Warships » cd res_packages
-</span></span><span style=display:flex><span>
+</span></span></code></pre></div><pre tabindex=0><code>[...] api-ms-win-crt-runtime-l1-1-0.dll  concrt140.dll             msvcp140_codecvt_ids.dll  Reports               vcruntime140_1.dll
+[...] api-ms-win-crt-stdio-l1-1-0.dll    crashes                   msvcp140.dll              res_packages          vcruntime140.dll
+[...] api-ms-win-crt-time-l1-1-0.dll     GameCheck                 placeholder.txt           screenshot            WorldOfWarships.exe
+[...] bin                                msvcp140_atomic_wait.dll  replays                   user_preferences.xml
+</code></pre><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>kakwa@linux Games/World of Warships » du -hd <span style=color:#ae81ff>1</span> | sort -h
+</span></span></code></pre></div><pre tabindex=0><code>4.0K  ./Reports
+12K   ./patche
+2.8M  ./Wallpapers
+4.2M  ./GameCheck
+4.4M  ./screenshot
+49M   ./replays
+55M   ./lib
+464M  ./profile
+593M  ./crashes
+1.2G  ./bin
+62G   ./res_packages
+73G  .
+</code></pre><p>So here, most of the data is in the <code>res_packages/</code> directory. Let&rsquo;s take a closer look:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>kakwa@linux Games/World of Warships » ls res_packages
+</span></span></code></pre></div><pre tabindex=0><code>[...]
+spaces_dock_1_april_0001.pkg          spaces_faroe_0001.pkg                spaces_ridge_0001.pkg
+vehicles_level10_panamerica_0001.pkg  vehicles_level3_panasia_0001.pkg     vehicles_level6_jap_0001.pkg
+vehicles_level8_it_0001.pkg           z_vehicles_events_0001.pkg
+[...]
+</code></pre><p>Let&rsquo;s use <code>file</code> to see what type of files we are dealing with:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>kakwa@linux Games/World of Warships » cd res_packages
 </span></span><span style=display:flex><span>kakwa@linux World of Warships/res_packages » file *
-</span></span><span style=display:flex><span><span style=color:#f92672>[</span>...<span style=color:#f92672>]</span>
-</span></span><span style=display:flex><span>spaces_dock_ny_0001.pkg:              data
-</span></span><span style=display:flex><span>spaces_dock_ocean_0001.pkg:           data
-</span></span><span style=display:flex><span>spaces_dock_prem_0001.pkg:            Microsoft DirectDraw Surface <span style=color:#f92672>(</span>DDS<span style=color:#f92672>)</span>: <span style=color:#ae81ff>4</span> x 4, compressed using DX10
-</span></span><span style=display:flex><span>spaces_dock_rio_0001.pkg:             data
-</span></span><span style=display:flex><span>spaces_dock_spb_0001.pkg:             data
-</span></span><span style=display:flex><span>spaces_exterior_0001.pkg:             data
-</span></span><span style=display:flex><span>spaces_faroe_0001.pkg:                OpenPGP Secret Key
-</span></span><span style=display:flex><span>spaces_labyrinth_0001.pkg:            data
-</span></span><span style=display:flex><span>spaces_lepve_0001.pkg:                data
-</span></span><span style=display:flex><span>spaces_military_navigation_0001.pkg:  data
-</span></span><span style=display:flex><span>spaces_naval_base_0001.pkg:           DOS executable <span style=color:#f92672>(</span>COM<span style=color:#f92672>)</span>, maybe with interrupt 22h, start instruction 0x8cbc075c 534dd337
-</span></span><span style=display:flex><span>spaces_naval_defense_0001.pkg:        data
-</span></span><span style=display:flex><span><span style=color:#f92672>[</span>...<span style=color:#f92672>]</span>
-</span></span></code></pre></div><p>So mostly <code>data</code> (i.e., unknown binary format), and looking at the files which are not <code>data</code>, they are in fact most likely false positives. So we are dealing with a custom format.</p><h3 id=file-analysis>File Analysis</h3><p>Next, let&rsquo;s try to see if we have some clear-text strings in the files using the <code>strings</code> utility:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>kakwa@linux World of Warships/res_packages » strings *
-</span></span><span style=display:flex><span>YyHIKzR
-</span></span><span style=display:flex><span>+!?&lt;
-</span></span><span style=display:flex><span>m:C-
-</span></span><span style=display:flex><span>h4.1
-</span></span><span style=display:flex><span>~s3o
-</span></span><span style=display:flex><span><span style=color:#f92672>]</span>2bm
-</span></span><span style=display:flex><span><span style=color:#f92672>]</span>$ <span style=color:#f92672>}</span>
-</span></span><span style=display:flex><span>O<span style=color:#f92672>=</span>z$
-</span></span><span style=display:flex><span>&lt;27P
-</span></span><span style=display:flex><span><span style=color:#f92672>=</span>C<span style=color:#f92672>=</span>k<span style=color:#f92672>]</span>
-</span></span><span style=display:flex><span>dQz<span style=color:#f92672>{</span><span style=color:#ae81ff>4</span>
-</span></span><span style=display:flex><span>$Zm|
-</span></span><span style=display:flex><span>$ZOc
-</span></span><span style=display:flex><span>nV&amp;
-</span></span><span style=display:flex><span>&lt;4n5
-</span></span><span style=display:flex><span>r&gt;Zs%
-</span></span><span style=display:flex><span>6?Iw
-</span></span><span style=display:flex><span>KqM&amp;u
-</span></span><span style=display:flex><span><span style=color:#f92672>[</span>...<span style=color:#f92672>]</span>
-</span></span></code></pre></div><p>Nada, that&rsquo;s just garbage. So we are dealing with a completely binary format.</p><p>Next, let&rsquo;s try to compress a file:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#75715e># Size before</span>
+</span></span></code></pre></div><pre tabindex=0><code>[...]
+spaces_dock_ny_0001.pkg:              data
+spaces_dock_ocean_0001.pkg:           data
+spaces_dock_prem_0001.pkg:            Microsoft DirectDraw Surface (DDS): 4 x 4, compressed using DX10
+spaces_dock_rio_0001.pkg:             data
+spaces_dock_spb_0001.pkg:             data
+spaces_exterior_0001.pkg:             data
+spaces_faroe_0001.pkg:                OpenPGP Secret Key
+spaces_labyrinth_0001.pkg:            data
+spaces_lepve_0001.pkg:                data
+spaces_military_navigation_0001.pkg:  data
+spaces_naval_base_0001.pkg:           DOS executable (COM), maybe with interrupt 22h, start instruction 0x8cbc075c 534dd337
+spaces_naval_defense_0001.pkg:        data
+[...]
+</code></pre><p>So mostly <code>data</code> (i.e., unknown binary format), and looking at the files which are not <code>data</code>, they are in fact most likely false positives. So we are dealing with a custom format.</p><h3 id=file-analysis>File Analysis</h3><p>Next, let&rsquo;s try to see if we have some clear-text strings in the files using the <code>strings</code> utility:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>kakwa@linux World of Warships/res_packages » strings *
+</span></span></code></pre></div><pre tabindex=0><code>YyHIKzR
++!?&lt;
+m:C-
+h4.1
+~s3o
+]2bm
+]$ }
+O=z$
+&lt;27P
+=C=k]
+dQz{4
+$Zm|
+$ZOc
+nV&amp;
+&lt;4n5
+r&gt;Zs%
+6?Iw
+KqM&amp;u
+[...]
+</code></pre><p>Nada, that&rsquo;s just garbage. So we are dealing with a completely binary format.</p><p>Next, let&rsquo;s try to compress a file:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#75715e># Size before</span>
 </span></span><span style=display:flex><span>kakwa@linux World of Warships/res_packages » ls -l vehicles_level4_usa_0001.pkg
 </span></span><span style=display:flex><span>-rwxr-xr-x <span style=color:#ae81ff>1</span> kakwa kakwa <span style=color:#ae81ff>15356139</span> Jan <span style=color:#ae81ff>17</span> 19:01 vehicles_level4_usa_0001.pkg
 </span></span><span style=display:flex><span>
@@ -99,62 +95,61 @@ Also, I&rsquo;m writing this after various findings, so the process seems quite 
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>[...]
 </span></span></span></code></pre></div><p>I hexdumped one of the files, looking for some pattern that would help me determine the type of compression used. I was looking for things like padding or signatures repeating within the <code>.pkg</code> file. I&rsquo;m not sure how, but I finally determined the compression used was <code>DEFLATE</code> (RFC 1951) (I vaguely remember <code>7f f0</code> being a marker, but I might be mistaken).</p><p>In any case, <a href=https://en.wikipedia.org/wiki/List_of_file_signatures>The Wikipedia page listing file signatures</a> is really useful, as well as Googling around candidate patterns.</p><p>I ended up creating <a href=https://github.com/kakwa/brute-force-deflate>this tool</a> which tries to brute-force deflate all the sections of the file, and sure enough, I was able to extract some interesting files:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#75715e># Extracting stuff</span>
 </span></span><span style=display:flex><span>kakwa@linux World of Warships/res_packages » bf-deflate -i system_data_0001.pkg -o systemout
+</span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#75715e># Look at the file types we just extracted</span>
 </span></span><span style=display:flex><span>kakwa@linux World of Warships/res_packages » file systemout/* | tail
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>systemout/000A15D8ED-000A15D8F3: ISO-8859 text, with no line terminators
-</span></span><span style=display:flex><span>systemout/000A15D8F7-000A15EF9A: XML 1.0 document, ASCII text
-</span></span><span style=display:flex><span>systemout/000A15EF9E-000A15EFA7: ISO-8859 text, with CR line terminators
-</span></span><span style=display:flex><span>systemout/000A15EFAA-000A15F919: XML 1.0 document, ASCII text
-</span></span><span style=display:flex><span>systemout/000A15F929-000A162634: exported SGML document, Unicode text, UTF-8 text, with CRLF line terminators
-</span></span><span style=display:flex><span>systemout/000A162644-000A165D7C: ASCII text, with CRLF line terminators
-</span></span><span style=display:flex><span>systemout/000A165D8C-000A16C774: ASCII text, with CRLF line terminators
-</span></span><span style=display:flex><span>systemout/000A16C784-000A16D41A: exported SGML document, ASCII text, with CRLF line terminators
-</span></span><span style=display:flex><span>systemout/000A16D41E-000A16D426: data
-</span></span><span style=display:flex><span>systemout/bf-Xe4fzss:            empty
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e># Look if we indeed got what &#34;file&#34; says it is</span>
-</span></span><span style=display:flex><span>kakwa@linux World of Warships/res_packages » cat systemout/000A15EFAA-000A15F919
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>&lt;?xml version<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;1.0&#34;</span> encoding<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;UTF-8&#34;</span> standalone<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;no&#34;</span>?&gt;
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>&lt;root&gt;
-</span></span><span style=display:flex><span>    &lt;Implements&gt;
-</span></span><span style=display:flex><span>        &lt;Interface&gt;VisionOwner&lt;/Interface&gt;
-</span></span><span style=display:flex><span>        &lt;Interface&gt;AtbaOwner&lt;/Interface&gt;
-</span></span><span style=display:flex><span>        &lt;Interface&gt;AirDefenceOwner&lt;/Interface&gt;
-</span></span><span style=display:flex><span>        &lt;Interface&gt;BattleLogicEntityOwner&lt;/Interface&gt;
-</span></span><span style=display:flex><span>        &lt;Interface&gt;DamageDealerOwner&lt;/Interface&gt;
-</span></span><span style=display:flex><span>        &lt;Interface&gt;DebugDrawEntity&lt;/Interface&gt;
-</span></span><span style=display:flex><span>    &lt;/Implements&gt;
-</span></span><span style=display:flex><span>&lt;/root&gt;
-</span></span></code></pre></div><p>Okay, we actually are able to extract real files!</p><p>&mldr;But without the names, it&rsquo;s not that interesting.</p><p>Note that in my &ldquo;brute-force deflate&rdquo; tool, I chose to name the files I managed to extract with the (approximate) corresponding start and end offsets of what my tool managed to uncompress (ex: <code>000A165D8C-000A16C774</code>, start offset is <code>000A165D8C</code>, end is <code>000A16C774</code>). This makes it simpler to correlate each extracted file to a section in the original file.</p><p>Going back to the reverse engineering, that was progress, but I then lost interest and didn&rsquo;t follow up for two years.</p><h3 id=follow-up>Follow-up</h3><p>Two years later, I regained interest when I finally tested the Windows <code>wows_unpack</code> tool. It revealed that files have individual names and paths—indicating a custom archive format probably similar to a <code>.zip</code> file and most likely containing:</p><ul><li>Compressed data blobs</li><li>Index containing file paths, types, IDs, and offsets</li></ul><h3 id=pkg-file-format>PKG File Format</h3><p>Let&rsquo;s stare at more hexdumps:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>kakwa@linux World of Warships/res_unpack » hexdump -C system_data_0001.pkg | less
-</span></span><span style=display:flex><span><span style=color:#f92672>[</span>...<span style=color:#f92672>]</span>
-</span></span><span style=display:flex><span>000021e0  b7 df f2 d7 ff e4 4f bd  <span style=color:#ae81ff>52</span> f6 <span style=color:#ae81ff>39</span> be f5 4a <span style=color:#ae81ff>92</span> 2f  |......O.R.9..J./|
-</span></span><span style=display:flex><span>000021f0  d9 8a f4 ff <span style=color:#ae81ff>01</span> <span style=color:#ae81ff>00</span> <span style=color:#ae81ff>00</span> <span style=color:#ae81ff>00</span>  <span style=color:#ae81ff>00</span> bf <span style=color:#ae81ff>00</span> <span style=color:#ae81ff>45</span> 5c 6c <span style=color:#ae81ff>36</span> <span style=color:#ae81ff>00</span>  |...........E<span style=color:#ae81ff>\l</span>6.|
-</span></span><span style=display:flex><span><span style=color:#ae81ff>00002200</span>  <span style=color:#ae81ff>00</span> <span style=color:#ae81ff>00</span> <span style=color:#ae81ff>00</span> <span style=color:#ae81ff>00</span> <span style=color:#ae81ff>00</span> dd <span style=color:#ae81ff>97</span> cf  6e e2 <span style=color:#ae81ff>30</span> <span style=color:#ae81ff>10</span> c6 cf <span style=color:#ae81ff>54</span> ea  |........n.0...T.|
-</span></span><span style=display:flex><span><span style=color:#ae81ff>00002210</span>  3b <span style=color:#ae81ff>44</span> <span style=color:#ae81ff>79</span> <span style=color:#ae81ff>00</span> <span style=color:#ae81ff>20</span> <span style=color:#ae81ff>09</span> <span style=color:#ae81ff>09</span> <span style=color:#ae81ff>20</span>  <span style=color:#ae81ff>41</span> a5 <span style=color:#ae81ff>22</span> ca 9f <span style=color:#ae81ff>83</span> b7 <span style=color:#ae81ff>08</span>  |;Dy. .. A.<span style=color:#e6db74>&#34;.....|
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>00002220  38 ec cd 72 93 61 6b 6d  6c 47 ce a4 85 b7 5f 3b  |8..r.akmlG...._;|
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>00002230  25 0b 6d 29 d5 ae ba 12  9b 63 26 33 e3 df f7 79  |%.m).....c&amp;3...y|
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>00002240  ec 28 03 26 b9 60 08 09  e1 79 9c 37 b7 22 bd b9  |.(.&amp;.`...y.7.&#34;</span>..|
-</span></span><span style=display:flex><span><span style=color:#f92672>[</span>...<span style=color:#f92672>]</span>
-</span></span><span style=display:flex><span>000023b0  <span style=color:#ae81ff>92</span> a0 6d bc <span style=color:#ae81ff>47</span> a6 f3 <span style=color:#ae81ff>58</span>  <span style=color:#ae81ff>03</span> <span style=color:#ae81ff>13</span> <span style=color:#ae81ff>17</span> <span style=color:#ae81ff>37</span> f7 <span style=color:#ae81ff>16</span> d0 3b  |..m.G..X...7...;|
-</span></span><span style=display:flex><span>000023c0  <span style=color:#ae81ff>06</span> 1c <span style=color:#ae81ff>31</span> <span style=color:#ae81ff>44</span> f3 <span style=color:#ae81ff>55</span> fa 2f  dd af <span style=color:#ae81ff>44</span> bf fe 2f f9 <span style=color:#ae81ff>05</span>  |..1D.U./..D../..|
-</span></span><span style=display:flex><span>000023d0  <span style=color:#ae81ff>00</span> <span style=color:#ae81ff>00</span> <span style=color:#ae81ff>00</span> <span style=color:#ae81ff>00</span> 6d b9 de c1  ad 0c <span style=color:#ae81ff>00</span> <span style=color:#ae81ff>00</span> <span style=color:#ae81ff>00</span> <span style=color:#ae81ff>00</span> <span style=color:#ae81ff>00</span> <span style=color:#ae81ff>00</span>  |....m...........|
-</span></span><span style=display:flex><span>000023e0  7d cf cd 0d <span style=color:#ae81ff>80</span> <span style=color:#ae81ff>20</span> 0c <span style=color:#ae81ff>80</span>  d1 b3 <span style=color:#ae81ff>26</span> ce c2 <span style=color:#ae81ff>02</span> <span style=color:#ae81ff>84</span> 8b  |<span style=color:#f92672>}</span>.... ....&amp;.....|
-</span></span><span style=display:flex><span>000023f0  c6 <span style=color:#ae81ff>01</span> dc <span style=color:#ae81ff>00</span> b5 fe <span style=color:#ae81ff>24</span> <span style=color:#ae81ff>85</span>  <span style=color:#ae81ff>12</span> 5a f6 <span style=color:#ae81ff>57</span> 8c <span style=color:#ae81ff>92</span> <span style=color:#ae81ff>70</span> f1  |......$..Z.W..p.|
-</span></span><span style=display:flex><span><span style=color:#ae81ff>00002400</span>  f8 b5 ef d0 ea <span style=color:#ae81ff>48</span> <span style=color:#ae81ff>24</span> a6  6b 1b 0d de ce <span style=color:#ae81ff>08</span> ab <span style=color:#ae81ff>19</span>  |.....H$.k.......|
-</span></span><span style=display:flex><span><span style=color:#ae81ff>00002410</span>  2d <span style=color:#ae81ff>32</span> <span style=color:#ae81ff>68</span> f5 e5 b3 <span style=color:#ae81ff>42</span> <span style=color:#ae81ff>70</span>  e0 <span style=color:#ae81ff>85</span> <span style=color:#ae81ff>73</span> <span style=color:#ae81ff>94</span> <span style=color:#ae81ff>32</span> 5b 4c 2c  |-2h...Bp..s.2<span style=color:#f92672>[</span>L,|
-</span></span><span style=display:flex><span><span style=color:#ae81ff>00002420</span>  c9 f5 <span style=color:#ae81ff>78</span> <span style=color:#ae81ff>86</span> 9b bf c3 4a  2c e4 <span style=color:#ae81ff>82</span> <span style=color:#ae81ff>65</span> fe <span style=color:#ae81ff>11</span> 7c 9c  |..x....J,..e..|.|
-</span></span><span style=display:flex><span><span style=color:#ae81ff>00002430</span>  <span style=color:#ae81ff>61</span> <span style=color:#ae81ff>20</span> c4 1f b2 <span style=color:#ae81ff>27</span> 3f <span style=color:#ae81ff>91</span>  <span style=color:#ae81ff>58</span> a1 <span style=color:#ae81ff>98</span> <span style=color:#ae81ff>11</span> <span style=color:#ae81ff>57</span> aa <span style=color:#ae81ff>44</span> 3e  |a ...<span style=color:#960050;background-color:#1e0010>&#39;</span>?.X...W.D&gt;|
-</span></span><span style=display:flex><span><span style=color:#ae81ff>00002440</span>  4d ab e7 <span style=color:#ae81ff>97</span> 0b <span style=color:#ae81ff>00</span> <span style=color:#ae81ff>00</span> <span style=color:#ae81ff>00</span>  <span style=color:#ae81ff>00</span> f1 d2 <span style=color:#ae81ff>87</span> 5a d2 <span style=color:#ae81ff>00</span> <span style=color:#ae81ff>00</span>  |M...........Z...|
-</span></span><span style=display:flex><span><span style=color:#ae81ff>00002450</span>  <span style=color:#ae81ff>00</span> <span style=color:#ae81ff>00</span> <span style=color:#ae81ff>00</span> <span style=color:#ae81ff>00</span> <span style=color:#ae81ff>00</span> ad 9c db  6e db b8 <span style=color:#ae81ff>16</span> <span style=color:#ae81ff>86</span> af <span style=color:#ae81ff>67</span> <span style=color:#ae81ff>03</span>  |........n.....g.|
-</span></span><span style=display:flex><span><span style=color:#ae81ff>00002460</span>  fb 1d 3c b9 2f 3a 3e e4  <span style=color:#ae81ff>50</span> <span style=color:#ae81ff>20</span> 0d c0 <span style=color:#ae81ff>48</span> 8c ad <span style=color:#ae81ff>89</span>  |..&lt;./:&gt;.P ..H...|
-</span></span><span style=display:flex><span><span style=color:#ae81ff>00002470</span>  2c <span style=color:#ae81ff>69</span> <span style=color:#ae81ff>28</span> c9 4e 7a <span style=color:#ae81ff>23</span> b8  <span style=color:#ae81ff>89</span> 3b <span style=color:#ae81ff>35</span> <span style=color:#ae81ff>26</span> <span style=color:#ae81ff>89</span> <span style=color:#ae81ff>03</span> c7 <span style=color:#ae81ff>99</span>  |,i<span style=color:#f92672>(</span>.Nz#..;5&amp;....|
-</span></span><span style=display:flex><span><span style=color:#ae81ff>00002480</span>  ee be fd <span style=color:#ae81ff>26</span> <span style=color:#ae81ff>75</span> <span style=color:#ae81ff>32</span> <span style=color:#ae81ff>29</span> 2e  <span style=color:#ae81ff>52</span> 4b <span style=color:#ae81ff>72</span> 2f 0a a4 <span style=color:#ae81ff>16</span> fd  |...&amp;u2<span style=color:#f92672>)</span>.RKr/....|
-</span></span><span style=display:flex><span><span style=color:#ae81ff>00002490</span>  7f bf <span style=color:#ae81ff>28</span> <span style=color:#ae81ff>72</span> <span style=color:#ae81ff>69</span> f1 e4 cb  d7 dd fa 6d bd bf fa ef  |..<span style=color:#f92672>(</span>ri......m....|
-</span></span><span style=display:flex><span><span style=color:#f92672>[</span>...<span style=color:#f92672>]</span>
-</span></span></code></pre></div><p>I noticed the 128 bits pattern <code>00 00 00 00 | xx xx xx xx | xx xx 00 00 | 00 00 00 00</code> repeating within the file (<code>|</code> used to cut every 32 bits).</p><p>The starts and ends of these small sections line up pretty well with the data sections I managed to extract:</p><pre tabindex=0><code>0000000001-00000021F6
+</span></span></code></pre></div><pre tabindex=0><code>systemout/000A15D8ED-000A15D8F3: ISO-8859 text, with no line terminators
+systemout/000A15D8F7-000A15EF9A: XML 1.0 document, ASCII text
+systemout/000A15EF9E-000A15EFA7: ISO-8859 text, with CR line terminators
+systemout/000A15EFAA-000A15F919: XML 1.0 document, ASCII text
+systemout/000A15F929-000A162634: exported SGML document, Unicode text, UTF-8 text, with CRLF line terminators
+systemout/000A162644-000A165D7C: ASCII text, with CRLF line terminators
+systemout/000A165D8C-000A16C774: ASCII text, with CRLF line terminators
+systemout/000A16C784-000A16D41A: exported SGML document, ASCII text, with CRLF line terminators
+systemout/000A16D41E-000A16D426: data
+systemout/bf-Xe4fzss:            empty
+
+```shell
+# Look if we indeed got what &#34;file&#34; says it is
+kakwa@linux World of Warships/res_packages » cat systemout/000A15EFAA-000A15F919
+</code></pre><pre tabindex=0><code>&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34; standalone=&#34;no&#34;?&gt;
+&lt;root&gt;
+    &lt;Implements&gt;
+        &lt;Interface&gt;VisionOwner&lt;/Interface&gt;
+        &lt;Interface&gt;AtbaOwner&lt;/Interface&gt;
+        &lt;Interface&gt;AirDefenceOwner&lt;/Interface&gt;
+        &lt;Interface&gt;BattleLogicEntityOwner&lt;/Interface&gt;
+        &lt;Interface&gt;DamageDealerOwner&lt;/Interface&gt;
+        &lt;Interface&gt;DebugDrawEntity&lt;/Interface&gt;
+    &lt;/Implements&gt;
+&lt;/root&gt;
+</code></pre><p>Okay, we actually are able to extract real files!</p><p>&mldr;But without the names, it&rsquo;s not that interesting.</p><p>Note that in my &ldquo;brute-force deflate&rdquo; tool, I chose to name the files I managed to extract with the (approximate) corresponding start and end offsets of what my tool managed to uncompress (ex: <code>000A165D8C-000A16C774</code>, start offset is <code>000A165D8C</code>, end is <code>000A16C774</code>). This makes it simpler to correlate each extracted file to a section in the original file.</p><p>Going back to the reverse engineering, that was progress, but I then lost interest and didn&rsquo;t follow up for two years.</p><h3 id=follow-up>Follow-up</h3><p>Two years later, I regained interest when I finally tested the Windows <code>wows_unpack</code> tool. It revealed that files have individual names and paths—indicating a custom archive format probably similar to a <code>.zip</code> file and most likely containing:</p><ul><li>Compressed data blobs</li><li>Index containing file paths, types, IDs, and offsets</li></ul><h3 id=pkg-file-format>PKG File Format</h3><p>Let&rsquo;s stare at more hexdumps:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>kakwa@linux World of Warships/res_unpack » hexdump -C system_data_0001.pkg | less
+</span></span></code></pre></div><pre tabindex=0><code>[...]
+000021e0  b7 df f2 d7 ff e4 4f bd  52 f6 39 be f5 4a 92 2f  |......O.R.9..J./|
+000021f0  d9 8a f4 ff 01 00 00 00  00 bf 00 45 5c 6c 36 00  |...........E\l6.|
+00002200  00 00 00 00 00 dd 97 cf  6e e2 30 10 c6 cf 54 ea  |........n.0...T.|
+00002210  3b 44 79 00 20 09 09 20  41 a5 22 ca 9f 83 b7 08  |;Dy. .. A.&#34;.....|
+00002220  38 ec cd 72 93 61 6b 6d  6c 47 ce a4 85 b7 5f 3b  |8..r.akmlG...._;|
+00002230  25 0b 6d 29 d5 ae ba 12  9b 63 26 33 e3 df f7 79  |%.m).....c&amp;3...y|
+00002240  ec 28 03 26 b9 60 08 09  e1 79 9c 37 b7 22 bd b9  |.(.&amp;.`...y.7.&#34;..|
+[...]
+000023b0  92 a0 6d bc 47 a6 f3 58  03 13 17 37 f7 16 d0 3b  |..m.G..X...7...;|
+000023c0  06 1c 31 44 f3 55 fa 2f  dd af 44 bf fe 2f f9 05  |..1D.U./..D../..|
+000023d0  00 00 00 00 6d b9 de c1  ad 0c 00 00 00 00 00 00  |....m...........|
+000023e0  7d cf cd 0d 80 20 0c 80  d1 b3 26 ce c2 02 84 8b  |}.... ....&amp;.....|
+000023f0  c6 01 dc 00 b5 fe 24 85  12 5a f6 57 8c 92 70 f1  |......$..Z.W..p.|
+00002400  f8 b5 ef d0 ea 48 24 a6  6b 1b 0d de ce 08 ab 19  |.....H$.k.......|
+00002410  2d 32 68 f5 e5 b3 42 70  e0 85 73 94 32 5b 4c 2c  |-2h...Bp..s.2[L,|
+00002420  c9 f5 78 86 9b bf c3 4a  2c e4 82 65 fe 11 7c 9c  |..x....J,..e..|.|
+00002430  61 20 c4 1f b2 27 3f 91  58 a1 98 11 57 aa 44 3e  |a ...&#39;?.X...W.D&gt;|
+00002440  4d ab e7 97 0b 00 00 00  00 f1 d2 87 5a d2 00 00  |M...........Z...|
+00002450  00 00 00 00 00 ad 9c db  6e db b8 16 86 af 67 03  |........n.....g.|
+00002460  fb 1d 3c b9 2f 3a 3e e4  50 20 0d c0 48 8c ad 89  |..&lt;./:&gt;.P ..H...|
+00002470  2c 69 28 c9 4e 7a 23 b8  89 3b 35 26 89 03 c7 99  |,i(.Nz#..;5&amp;....|
+00002480  ee be fd 26 75 32 29 2e  52 4b 72 2f 0a a4 16 fd  |...&amp;u2).RKr/....|
+00002490  7f bf 28 72 69 f1 e4 cb  d7 dd fa 6d bd bf fa ef  |..(ri......m....|
+[...]
+</code></pre><p>I noticed the 128 bits pattern <code>00 00 00 00 | xx xx xx xx | xx xx 00 00 | 00 00 00 00</code> repeating within the file (<code>|</code> used to cut every 32 bits).</p><p>The starts and ends of these small sections line up pretty well with the data sections I managed to extract:</p><pre tabindex=0><code>0000000001-00000021F6
 0000002206-00000023D1
 00000023E1-0000002446
 0000002456-00000031C8
@@ -168,21 +163,21 @@ The next pattern starts at 000023d0 and ends at 000023df, which again lines up r
 0a16d420  70 eb 6c 00 00 00 00 00  00                       |p.l......|
 0a16d429
 (END)
-</code></pre><p>Furthermore, the first uncompressed block seems to start right at the beginning of the file, so there is probably no header section.</p><h3 id=pkg-structure>PKG Structure</h3><p>Looking at a few other <code>.pkg</code>, this pattern seems to be shared across all files.</p><p>So we can deduce the <code>.pkg</code> format is a concatenated list of sections like the following:</p><pre tabindex=0><code>+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
-|                                                                                             |
-|                             Compressed Data (RFC 1951/Deflate)                              |
-|                                                                                             |
-+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
-+====++====++====++====++====++====++====++====+====++====++====++====++====++====++====++====+
-| 00 || 00 || 00 || 00 || XX || XX || XX || XX | XX || XX || 00 || 00 || 00 || 00 || 00 || 00 |
-+====++====++====++====++====++====++====++====+====++====++====++====++====++====++====++====+
-|&lt;----- 0 padding ----&gt;||&lt;----------- some kind of ID ---------------&gt;||&lt;---- 0 padding -----&gt;|
+</code></pre><p>Furthermore, the first uncompressed block seems to start right at the beginning of the file, so there is probably no header section.</p><h3 id=pkg-structure>PKG Structure</h3><p>Looking at a few other <code>.pkg</code>, this pattern seems to be shared across all files.</p><p>So we can deduce the <code>.pkg</code> format is a concatenated list of sections like the following:</p><pre tabindex=0><code>+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
+|                                                                               |
+|                       Compressed Data (RFC 1951/Deflate)                      |
+|                                                                               |
++~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
++====+====+====+====+====+====+====+====+====+====+====+====+====+====+====+====+
+| 00 | 00 | 00 | 00 | XX | XX | XX | XX | XX | XX | 00 | 00 | 00 | 00 | 00 | 00 |
++====+====+====+====+====+====+====+====+====+====+====+====+====+====+====+====+
+|&lt;---- 0 padding --&gt;|&lt;--------- some kind of ID -----------&gt;|&lt;--- 0 padding ---&gt;|
 </code></pre><p>Note that by this point, I&rsquo;m making a lot of assumptions:</p><ul><li>I&rsquo;m assuming that <code>0 padding</code> 32-bit blocks are actually padding, but they could be fields that happened to be set to 0 most of the time</li><li>I&rsquo;m a bit puzzled by the 16-bit <code>00 00</code> at the end of <code>some kind of ID</code></li><li>I&rsquo;m also not completely sure if the block containing the data is always compressed using DEFLATE</li><li>I&rsquo;m not even sure if this general file format is actually shared across all files.</li></ul><p>But let&rsquo;s go forward, this format seems common enough to still yield good results. Plus we can always go back and revisit this interpretation.</p><h3 id=understanding-ids>Understanding IDs</h3><p>The 64-bit values between data blocks appear random and high-value—too short for hashes, too large for offsets. These are likely simple random unique identifiers:</p><pre tabindex=0><code>00 00 00 00 | bf 00 45 5c | 6c 36 00 00 | 00 00 00 00
 00 00 00 00 | 6d b9 de c1 | ad 0c 00 00 | 00 00 00 00
 00 00 00 00 | f1 d2 87 5a | d2 00 00 00 | 00 00 00 00
 00 00 00 00 | 83 0a 72 88 | a3 5c 00 00 | 00 00 00 00
 00 00 00 00 | 92 ab 31 63 | 91 2a 00 00 | 00 00 00 00
-</code></pre><h3 id=recap>Recap</h3><p>We&rsquo;ve identified the data storage format:</p><ul><li>Game data resides in <code>res_packages/</code> directory</li><li><code>.pkg</code> files are custom archives containing (mostly) DEFLATE-compressed blobs separated by 64-bit IDs</li><li>File names and paths are probably stored separately</li></ul><p>Getting the file metadata will be explored in <a href=/posts/wows_depack_part2/>the next part</a> of this series.</p><hr></article><ul class="pager blog-pager"><li class=next><a href=https://technically.kakwalab.ovh/posts/wows_depack_part2/ data-toggle=tooltip data-placement=top title="Reversing WoWs Resource Format - Part 2: Getting The Metadata">Next Post &rarr;</a></li></ul></div></div></div><footer><div class=container><div class=row><div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1"><ul class="list-inline text-center footer-links"></ul><p class="credits copyright text-muted">&nbsp;&bull;&nbsp;&copy;
+</code></pre><h3 id=recap>Recap</h3><p>We&rsquo;ve identified the data storage format:</p><ul><li>Game data resides in <code>res_packages/</code> directory</li><li><code>.pkg</code> files are custom archives containing (mostly) DEFLATE-compressed blobs separated by 64-bit IDs</li><li>File names and paths are probably stored separately</li></ul><p>Getting the file metadata will be explored in <a href=/posts/wows_depack_part2/>the next part</a> of this series.</p></article><ul class="pager blog-pager"><li class=next><a href=https://technically.kakwalab.ovh/posts/wows_depack_part2/ data-toggle=tooltip data-placement=top title="Reversing WoWs Resource Format - Part 2: Getting The Metadata">Next Post &rarr;</a></li></ul></div></div></div><footer><div class=container><div class=row><div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1"><ul class="list-inline text-center footer-links"></ul><p class="credits copyright text-muted">&nbsp;&bull;&nbsp;&copy;
 2025
 &nbsp;&bull;&nbsp;
 <a href=https://technically.kakwalab.ovh/>Technically some technical stuff.</a></p><p class="credits theme-by text-muted"><a href=https://gohugo.io>Hugo v0.128.0</a> powered &nbsp;&bull;&nbsp; Theme <a href=https://github.com/halogenica/beautifulhugo>Beautiful Hugo</a> adapted from <a href=https://deanattali.com/beautiful-jekyll/>Beautiful Jekyll</a></p></div></div></div></footer><script defer src=https://technically.kakwalab.ovh/js/katex.min.js></script><script defer src=https://technically.kakwalab.ovh/js/auto-render.min.js onload=renderMathInElement(document.body)></script><script src=https://technically.kakwalab.ovh/js/jquery-3.7.0.slim.min.js></script><script src=https://technically.kakwalab.ovh/js/bootstrap.min.js></script><script src=https://technically.kakwalab.ovh/js/main.js></script><script src=https://technically.kakwalab.ovh/js/photoswipe.min.js></script><script src=https://technically.kakwalab.ovh/js/photoswipe-ui-default.min.js></script><script src=https://technically.kakwalab.ovh/js/load-photoswipe.js></script></body></html>
