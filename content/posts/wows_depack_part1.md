@@ -168,7 +168,9 @@ Then, the process is a little fuzzy in my memory. But if I recall correctly, I d
 
 ```shell
 kakwa@linux World of Warships/res_packages » hexdump -C vehicles_level4_usa_0001.pkg | less
+```
 
+```
 00000000  95 58 7f 50 9b e7 7d 7f  f4 2a 24 e2 55 64 7c bb  |.X.P..}..*$.Ud|.|
 00000010  a4 be 5b 77 8d e6 45 0e  08 83 ba 5d b1 b7 b8 35  |..[w..E....]...5|
 00000020  4a 2f e9 71 d9 3f c4 e5  45 2a 05 a1 92 eb 9d 2a  |J/.q.?..E*.....*|
@@ -205,6 +207,7 @@ systemout/000A165D8C-000A16C774: ASCII text, with CRLF line terminators
 systemout/000A16C784-000A16D41A: exported SGML document, ASCII text, with CRLF line terminators
 systemout/000A16D41E-000A16D426: data
 systemout/bf-Xe4fzss:            empty
+```
 
 ```shell
 # Look if we indeed got what "file" says it is
