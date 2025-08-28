@@ -46,14 +46,20 @@ The gist of it was to look at the game files and see where most of the data was:
 
 ```shell
 kakwa@linux Games/World of Warships » ls
+```
 
+```
 [...] api-ms-win-crt-runtime-l1-1-0.dll  concrt140.dll             msvcp140_codecvt_ids.dll  Reports               vcruntime140_1.dll
 [...] api-ms-win-crt-stdio-l1-1-0.dll    crashes                   msvcp140.dll              res_packages          vcruntime140.dll
 [...] api-ms-win-crt-time-l1-1-0.dll     GameCheck                 placeholder.txt           screenshot            WorldOfWarships.exe
 [...] bin                                msvcp140_atomic_wait.dll  replays                   user_preferences.xml
+```
 
+```shell
 kakwa@linux Games/World of Warships » du -hd 1 | sort -h
+```
 
+```
 4.0K  ./Reports
 12K   ./patche
 2.8M  ./Wallpapers
@@ -72,6 +78,9 @@ So here, most of the data is in the `res_packages/` directory. Let's take a clos
 
 ```shell
 kakwa@linux Games/World of Warships » ls res_packages
+```
+
+```
 [...]
 spaces_dock_1_april_0001.pkg          spaces_faroe_0001.pkg                spaces_ridge_0001.pkg
 vehicles_level10_panamerica_0001.pkg  vehicles_level3_panasia_0001.pkg     vehicles_level6_jap_0001.pkg
@@ -83,8 +92,10 @@ Let's use `file` to see what type of files we are dealing with:
 
 ```shell
 kakwa@linux Games/World of Warships » cd res_packages
-
 kakwa@linux World of Warships/res_packages » file *
+```
+
+```
 [...]
 spaces_dock_ny_0001.pkg:              data
 spaces_dock_ocean_0001.pkg:           data
@@ -109,6 +120,9 @@ Next, let's try to see if we have some clear-text strings in the files using the
 
 ```shell
 kakwa@linux World of Warships/res_packages » strings *
+```
+
+```
 YyHIKzR
 +!?<
 m:C-
@@ -175,9 +189,12 @@ I ended up creating [this tool](https://github.com/kakwa/brute-force-deflate) wh
 ```shell
 # Extracting stuff
 kakwa@linux World of Warships/res_packages » bf-deflate -i system_data_0001.pkg -o systemout
+
 # Look at the file types we just extracted
 kakwa@linux World of Warships/res_packages » file systemout/* | tail
+```
 
+```
 systemout/000A15D8ED-000A15D8F3: ISO-8859 text, with no line terminators
 systemout/000A15D8F7-000A15EF9A: XML 1.0 document, ASCII text
 systemout/000A15EF9E-000A15EFA7: ISO-8859 text, with CR line terminators
@@ -189,11 +206,13 @@ systemout/000A16C784-000A16D41A: exported SGML document, ASCII text, with CRLF l
 systemout/000A16D41E-000A16D426: data
 systemout/bf-Xe4fzss:            empty
 
+```shell
 # Look if we indeed got what "file" says it is
 kakwa@linux World of Warships/res_packages » cat systemout/000A15EFAA-000A15F919
+```
 
+```
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-
 <root>
     <Implements>
         <Interface>VisionOwner</Interface>
@@ -227,6 +246,9 @@ Let's stare at more hexdumps:
 
 ```shell
 kakwa@linux World of Warships/res_unpack » hexdump -C system_data_0001.pkg | less
+```
+
+```
 [...]
 000021e0  b7 df f2 d7 ff e4 4f bd  52 f6 39 be f5 4a 92 2f  |......O.R.9..J./|
 000021f0  d9 8a f4 ff 01 00 00 00  00 bf 00 45 5c 6c 36 00  |...........E\l6.|
@@ -293,15 +315,15 @@ Looking at a few other `.pkg`, this pattern seems to be shared across all files.
 So we can deduce the `.pkg` format is a concatenated list of sections like the following:
 
 ```
-+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
-|                                                                                             |
-|                             Compressed Data (RFC 1951/Deflate)                              |
-|                                                                                             |
-+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
-+====++====++====++====++====++====++====++====+====++====++====++====++====++====++====++====+
-| 00 || 00 || 00 || 00 || XX || XX || XX || XX | XX || XX || 00 || 00 || 00 || 00 || 00 || 00 |
-+====++====++====++====++====++====++====++====+====++====++====++====++====++====++====++====+
-|<----- 0 padding ---->||<----------- some kind of ID --------------->||<---- 0 padding ----->|
++~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
+|                                                                               |
+|                       Compressed Data (RFC 1951/Deflate)                      |
+|                                                                               |
++~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
++====+====+====+====+====+====+====+====+====+====+====+====+====+====+====+====+
+| 00 | 00 | 00 | 00 | XX | XX | XX | XX | XX | XX | 00 | 00 | 00 | 00 | 00 | 00 |
++====+====+====+====+====+====+====+====+====+====+====+====+====+====+====+====+
+|<---- 0 padding -->|<--------- some kind of ID ----------->|<--- 0 padding --->|
 ```
 
 Note that by this point, I'm making a lot of assumptions:
@@ -333,7 +355,3 @@ We've identified the data storage format:
 - File names and paths are probably stored separately
 
 Getting the file metadata will be explored in [the next part](/posts/wows_depack_part2/) of this series.
-
----
-
-

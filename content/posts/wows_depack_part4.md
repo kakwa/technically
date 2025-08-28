@@ -47,6 +47,7 @@ make
 INDEX_DIR="/path/to/WoWs/bin/6831266/idx/"
 afl-fuzz -i "$INDEX_DIR" -o ./out -t 10000 -- ./wows-depack-cli -i '@@'
 ```
+
 Crashes go to `out/crashes/` and can then be investigated using `gdb`, and potentially used as test/non-regression tests.
 
 

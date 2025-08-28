@@ -27,9 +27,15 @@ The metadata hopefully isn't embedded in executables. Let's search:
 
 ```shell
 # List all files
-# then remove uninteresting bits like replays, crashes, DLLs, logs, .pkg or CEF stuff (embedded Chrome used for the armory, inventory, dockyard and clan base))
+# then remove uninteresting bits like replays, crashes, DLLs, logs, .pkg
+# or CEF stuff (embedded Chrome used for the armory, inventory, dockyard and clan base))
 
-kakwa@linux Games/World of Warships » find ./ -type f | grep -v cef | grep -v replays | grep -v crashes | grep -v '.pkg' | grep -v '.dll' | grep -v '.log'  | grep -v '\.exe' | less
+kakwa@linux Games/World of Warships » find ./ -type f | grep -v cef | grep -v replays \
+    | grep -v crashes | grep -v '.pkg' | grep -v '.dll' | grep -v '.log'  
+    | grep -v '\.exe' | less
+```
+
+```
 [...]
 ./bin/6775398/res/texts/pl/LC_MESSAGES/global.mo
 ./bin/6775398/res/texts/zh_tw/LC_MESSAGES/global.mo
@@ -62,6 +68,9 @@ Let's take a look:
 
 ```shell
 kakwa@linux bin/6775398/idx » strings -n 5 system_data.idx
+```
+
+```
 #%B'E
 #%B'E
 #%B'E
@@ -119,7 +128,9 @@ Let's examine an index file:
 
 ```shell
 kakwa@linux 6775398/idx » hexdump -C system_data.idx | less
+```
 
+```
 00000000  49 53 46 50 00 00 00 02  91 9d 39 b4 40 00 00 00  |ISFP......9.@...|
 00000010  37 01 00 00 1c 01 00 00  01 00 00 00 00 00 00 00  |7...............|
 00000020  28 00 00 00 00 00 00 00  f6 3b 00 00 00 00 00 00  |(........;......|
@@ -149,12 +160,6 @@ kakwa@linux 6775398/idx » hexdump -C system_data.idx | less
 000001a0  3f 26 00 00 00 00 00 00  e0 99 68 5e 2d 70 13 72  |?&........h^-p.r|
 000001b0  4c d1 2e 30 73 38 d9 13  10 00 00 00 00 00 00 00  |L..0s8..........|
 [...]
-00002660  53 15 00 00 00 00 00 00  a4 eb 1b 3e 50 21 d8 74  |S..........>P!.t|
-00002670  38 e6 83 3c 74 a7 20 b2  0a 00 00 00 00 00 00 00  |8..<t. .........|
-00002680  37 15 00 00 00 00 00 00  e7 c6 0b ae d5 31 51 55  |7............1QU|
-00002690  a4 eb 1b 3e 50 21 d8 74  0c 00 00 00 00 00 00 00  |...>P!.t........|
-000026a0  21 15 00 00 00 00 00 00  00 40 cc c7 49 c4 54 09  |!........@..I.T.|
-000026b0  a4 eb 1b 3e 50 21 d8 74  14 00 00 00 00 00 00 00  |...>P!.t........|
 000026c0  0d 15 00 00 00 00 00 00  ce 6a 28 bc cf e7 79 c8  |.........j(...y.|
 000026d0  a4 eb 1b 3e 50 21 d8 74  1a 00 00 00 00 00 00 00  |...>P!.t........|
 000026e0  01 15 00 00 00 00 00 00  6c c0 c9 f7 7e 00 03 05  |........l...~...|
@@ -165,25 +170,6 @@ kakwa@linux 6775398/idx » hexdump -C system_data.idx | less
 00002730  68 74 73 31 2e 64 64 73  00 61 6e 69 6d 61 74 65  |hts1.dds.animate|
 00002740  64 4d 69 73 63 73 2e 78  6d 6c 00 4c 6f 77 65 72  |dMiscs.xml.Lower|
 00002750  44 65 63 6b 2e 64 64 73  00 63 6f 6d 6d 61 6e 64  |Deck.dds.command|
-00002760  5f 6d 61 70 70 69 6e 67  00 61 75 74 6f 74 65 73  |_mapping.autotes|
-00002770  74 73 5f 64 72 61 77 5f  67 75 69 5f 73 65 74 74  |ts_draw_gui_sett|
-00002780  69 6e 67 73 2e 78 6d 6c  00 48 6f 75 73 65 46 72  |ings.xml.HouseFr|
-00002790  6f 6e 74 2e 64 64 73 00  70 72 65 73 65 74 5f 6b  |ont.dds.preset_k|
-000027a0  65 79 62 6f 61 72 64 5f  31 2e 78 6d 6c 00 69 6e  |eyboard_1.xml.in|
-000027b0  74 65 72 66 61 63 65 73  00 76 65 72 64 61 6e 61  |terfaces.verdana|
-000027c0  5f 73 6d 61 6c 6c 2e 66  6f 6e 74 00 73 70 61 63  |_small.font.spac|
-000027d0  65 5f 64 65 66 73 00 61  69 64 5f 6e 75 6c 6c 2e  |e_defs.aid_null.|
-000027e0  64 64 73 00 63 61 6d 6f  75 66 6c 61 67 65 73 2e  |dds.camouflages.|
-000027f0  78 6d 6c 00 63 68 75 6e  6b 2e 64 64 73 00 66 6f  |xml.chunk.dds.fo|
-00002800  6e 74 63 6f 6e 66 69 67  2e 78 6d 6c 00 46 6f 61  |ntconfig.xml.Foa|
-00002810  6d 4d 61 70 2e 64 64 73  00 42 75 69 6c 64 69 6e  |mMap.dds.Buildin|
-00002820  67 2e 64 65 66 00 63 6f  6e 66 69 67 2e 78 6d 6c  |g.def.config.xml|
-00002830  00 67 61 6d 65 5f 77 69  6e 64 5f 6e 6f 69 73 65  |.game_wind_noise|
-00002840  2e 64 64 73 00 47 61 6d  65 50 61 72 61 6d 73 2e  |.dds.GameParams.|
-00002850  64 61 74 61 00 44 65 62  75 67 44 72 61 77 45 6e  |data.DebugDrawEn|
-00002860  74 69 74 79 2e 64 65 66  00 63 6f 6e 74 65 6e 74  |tity.def.content|
-00002870  00 4c 6f 77 65 72 46 6f  72 77 61 72 64 54 72 61  |.LowerForwardTra|
-00002880  6e 73 2e 64 64 73 00 55  49 50 61 72 61 6d 73 2e  |ns.dds.UIParams.|
 [...]
 00003bc0  2e 64 64 73 00 68 69 67  68 6c 69 67 68 74 5f 6e  |.dds.highlight_n|
 00003bd0  6f 69 73 65 2e 64 64 73  00 73 70 61 63 65 5f 76  |oise.dds.space_v|
@@ -198,14 +184,6 @@ kakwa@linux 6775398/idx » hexdump -C system_data.idx | less
 00003c60  02 00 00 00 00 00 ad 70  a2 e7 ac 2c 4f 6b 70 11  |.......p...,Okp.|
 00003c70  03 07 0d 33 ed 77 05 22  00 00 00 00 00 00 05 00  |...3.w."........|
 00003c80  00 00 01 00 00 00 cb 01  00 00 6d b9 de c1 ad 0c  |..........m.....|
-00003c90  00 00 00 00 00 00 8e c7  6a 58 7c 86 62 33 70 11  |........jX|.b3p.|
-00003ca0  03 07 0d 33 ed 77 e0 23  00 00 00 00 00 00 05 00  |...3.w.#........|
-00003cb0  00 00 01 00 00 00 65 00  00 00 f1 d2 87 5a d2 00  |......e......Z..|
-00003cc0  00 00 00 00 00 00 8e 43  3d e9 cf 49 52 a4 70 11  |.......C=..IR.p.|
-00003cd0  03 07 0d 33 ed 77 4d 1f  6a 05 00 00 00 00 05 00  |...3.wM.j.......|
-00003ce0  00 00 01 00 00 00 bb 19  00 00 f7 53 4a b1 38 ab  |...........SJ.8.|
-00003cf0  00 00 00 00 00 00 0e 3c  9a 6d 22 de 7b da 70 11  |.......<.m".{.p.|
-00003d00  03 07 0d 33 ed 77 55 24  00 00 00 00 00 00 05 00  |...3.wU$........|
 [...]
 000070a0  00 00 01 00 00 00 90 24  00 00 62 c1 d9 06 f8 d8  |.......$..b.....|
 000070b0  00 00 00 00 00 00 57 b3  82 06 56 f0 2a e6 70 11  |......W...V.*.p.|
@@ -248,7 +226,9 @@ The first section contains file metadata entries:
 
 ```shell
 kakwa@linux 6775398/idx » hexdump -C system_data.idx | less
+```
 
+```
 00000000  49 53 46 50 00 00 00 02  91 9d 39 b4 40 00 00 00  |ISFP......9.@...|
 00000010  37 01 00 00 1c 01 00 00  01 00 00 00 00 00 00 00  |7...............|
 00000020  28 00 00 00 00 00 00 00  f6 3b 00 00 00 00 00 00  |(........;......|
@@ -341,8 +321,11 @@ Let's check the whole file:
 
 
 ```shell
-kakwa@linux 6775398/idx » hexdump -C system_data.idx| grep '00 00 00 00 00 00 00' | sed 's/^..........//' | sed 's/  .*//' | sort  | uniq -c | sort -n
+kakwa@linux 6775398/idx » hexdump -C system_data.idx | grep '00 00 00 00 00 00 00' | \
+    sed 's/^..........//' | sed 's/  .*//' | sort  | uniq -c | sort -n
+```
 
+```
 # note: first number is the number of occurrences
       1 00 00 00 00 00 00 00 af
       1 1c 6a 8d 7f df 8e b3 35
@@ -381,7 +364,11 @@ kakwa@linux 6775398/idx » hexdump -C system_data.idx| grep '00 00 00 00 00 00 0
 Indeed, the repetitions are quite frequent, and running the same command on other files yields roughly the same values:
 
 ```shell
-kakwa@linux 6775398/idx » hexdump -C particles.idx| grep '00 00 00 00 00 00 00' | sed 's/^..........//' | sed 's/  .*//' | sort  | uniq -c | sort -n
+kakwa@linux 6775398/idx » hexdump -C particles.idx | grep '00 00 00 00 00 00 00' | \
+    sed 's/^..........//' | sed 's/  .*//' | sort  | uniq -c | sort -n
+```
+
+```
       1 27 b9 08 b1 d1 a1 b1 db
       1 28 00 00 00 00 00 00 00
       1 8e ae 00 00 00 00 00 00
@@ -397,7 +384,11 @@ kakwa@linux 6775398/idx » hexdump -C particles.idx| grep '00 00 00 00 00 00 00'
 Moreover, `sound_music.idx`, which as the name implies probably only contains sound files, returns mostly one type:
 
 ```shell
-kakwa@linux 6775398/idx » hexdump -C sound_music.idx| grep '00 00 00 00 00 00 00' | sed 's/^..........//' | sed 's/  .*//' | sort  | uniq -c | sort -n
+kakwa@linux 6775398/idx » hexdump -C sound_music.idx | grep '00 00 00 00 00 00 00' | \
+    sed 's/^..........//' | sed 's/  .*//' | sort  | uniq -c | sort -n
+```
+
+```
     513 93 63 67 56 c2 97 75 69
 ```
 
@@ -435,7 +426,7 @@ The `.idx` file header contains:
 00000070  a4 eb 1b 3e 50 21 d8 74  12 00 00 00 00 00 00 00  |...>P!.t........|
 00000080  c1 26 00 00 00 00 00 00  ad 70 a2 e7 ac 2c 4f 6b  |.&.......p...,Ok|
 00000090  27 b9 08 b1 d1 a1 b1 db  0e 00 00 00 00 00 00 00  |'...............|
-````
+```
 
 These first bytes don't look like the `section` previously mentioned; we have a magic number (`ISFP`), and then the content doesn't look like a `section` at first (too many low-value 32-bit integers).
 
@@ -455,6 +446,9 @@ Looking at all the files, for the first 128 bits, we get:
 
 ```shell
 kakwa@linux 6775398/idx » for i in *;do hexdump -C $i | head -n 1;done
+```
+
+```
 [...]
 00000000  49 53 46 50 00 00 00 02  1b 73 f9 d5 40 00 00 00  |ISFP.....s..@...|
 00000000  49 53 46 50 00 00 00 02  78 f0 2c 09 40 00 00 00  |ISFP....x.,.@...|
@@ -471,6 +465,7 @@ kakwa@linux 6775398/idx » for i in *;do hexdump -C $i | head -n 1;done
 ```
 
 As we can see, the 1st, 2nd, and 4th 32-bit chunks are always the same, and looking at the values, we have respectively:
+
 * a magic number (`ISFP`),
 * `00 00 00 02` which is rather weird (it could be some kind of ID if we were little-endian, but the format is big-endian). Maybe it is actually part of the magic number. As it doesn't vary, it's not too important for the task at hand here.
 * `40 00 00 00` which, like `type 1`, looks like a low-value enum, and given its position in the index file, within the header, we are most likely dealing with an archive type. Again, as it doesn't vary, it's not really important.
@@ -480,6 +475,7 @@ The 3rd 32-bit integer uses all the available bits, so it's unlikely a size. May
 Edit: the `40 00 00 00` value upon closer inspection might not be an archive type; its value is 64 in decimal, which might be a header size, or simply storing the size of an integer.
 
 So we have:
+
 ```
 +====+====+====+====++====+====+====+====++====+====+====+====++====+====+====+====+
 | MA | MA | MA | MA || 00 | 00 | 00 | 02 || ID | ID | ID | ID || 40 | 00 | 00 | 00 |
@@ -490,7 +486,10 @@ So we have:
 Now, let's look at the next 128 bits (second line in the hexdump).
 
 ```shell
-kakwa@linux 6775398/idx » for i in *;do hexdump -C $i | head -n 2 | tail -n 1;done                                                                                                                                                                                                                                    130 ↵
+kakwa@linux 6775398/idx » for i in *;do hexdump -C $i | head -n 2 | tail -n 1;done
+```
+
+```
 00000010  bd 01 00 00 b7 01 00 00  01 00 00 00 00 00 00 00  |................|
 00000010  35 01 00 00 1d 01 00 00  01 00 00 00 00 00 00 00  |5...............|
 00000010  5b 00 00 00 57 00 00 00  01 00 00 00 00 00 00 00  |[...W...........|
@@ -510,9 +509,13 @@ Let's try to determine the two 32-bit values. Let's look at one of the files in 
 
 ```shell
 kakwa@linux 6775398/idx » hexdump -C system_data.idx | less
+```
+
+```
 [...]
 00000010  37 01 00 00 1c 01 00 00  01 00 00 00 00 00 00 00  |7...............|
 [...]
+```
 
 The first value is `37 01 00 00`, i.e. converted to decimal, `311`. Doing a `strings system_data.idx > listing` and removing the garbage (ex: `w6~n`) as best as possible, plus the `.pkg` file name, only keeping files and directory names, we get `310` entries, a remarkably close value.
 
@@ -527,6 +530,9 @@ Let's validate that:
 ```shell
 # Q&D filtering out names without an extension (no '.')
 kakwa@linux 6775398/idx » cat listing | grep  '\.' | wc -l
+```
+
+```
 284
 ```
 
@@ -547,6 +553,9 @@ Next 128 bits:
 
 ```shell
 kakwa@linux 6775398/idx » for i in *;do hexdump -C $i | head -n 3 | tail -n 1;done | less
+```
+
+```
 [...]
 00000020  28 00 00 00 00 00 00 00  58 8d 00 00 00 00 00 00  |(.......X.......|
 00000020  28 00 00 00 00 00 00 00  7c 3f 02 00 00 00 00 00  |(.......|?......|
@@ -617,6 +626,7 @@ Okay, the string bundle ends at 00003c05; that's quite near 3bf6, so this is cer
 Most likely, the offset is not from the start of the file but from a specific point in the header (this field? end of header?); that's why we get a -15 difference (0x00003c05 - 0x3bf6 = 0xF = 15). This -15 value is constant between files.
 
 So we have:
+
 ```
 +====+====+====+====+====+====+====+====++====+====+====+====+====+====+====+====+
 | HS | HS | HS | HS | HS | HS | HS | HS || OF | OF | OF | OF | OF | OF | OF | OF |
@@ -628,6 +638,9 @@ Last 64 bits:
 
 ```shell
 kakwa@linux 6623042/idx » for i in *;do hexdump -C $i | head -n 4 | tail -n 1;done | less
+```
+
+```
 [...]
 00000030  40 af 03 00 00 00 00 00  1b 00 00 00 00 00 00 00  |@...............|
 00000030  54 8d 1f 00 00 00 00 00  21 00 00 00 00 00 00 00  |T.......!.......|
@@ -641,8 +654,11 @@ So, we have a 64-bit integer, which is a relatively low value. This means it's m
 
 If we pick one:
 
+```shell
+kakwa@linux 6623042/idx » hexdump -C system_data.idx | less
 ```
-hexdump -C system_data.idx | less
+
+```
 [...]
 00000030  36 71 00 00 00 00 00 00  13 00 00 00 00 00 00 00  |6q..............|
 [...]
@@ -690,6 +706,9 @@ Here's what it looks like:
 
 ```shell
 kakwa@linux 6775398/idx » hexdump -C system_data.idx| less
+```
+
+```
 [...]
 00002700  fb 14 00 00 00 00 00 00  74 d1 1b 8d f4 ff 7a ce  |........t.....z.|
 00002710  a4 eb 1b 3e 50 21 d8 74  4b 44 53 74 6f 72 61 67  |...>P!.tKDStorag|
@@ -716,6 +735,9 @@ Here what it looks like:
 
 ```shell
 kakwa@linux 6775398/idx » hexdump -C system_data.idx| less
+```
+
+```
 [...]
 00003bf0  64 73 00 77 61 76 65 73  5f 68 65 69 67 68 74 73  |ds.waves_heights|
 00003c00  30 2e 64 64 73 00 8f 0c  9a ba 4f 40 b6 93 70 11  |0.dds.....O@..p.|
@@ -761,6 +783,9 @@ Each record contains metadata IDs, PKG file offsets, data sizes, and compression
 ```shell
 # let's skip the first 6 bytes to align hexdump output
 kakwa@linux 6775398/idx » hexdump -s 6 -C system_data.idx| less
+```
+
+```
 [...]
 00003be6  6f 6e 5f 64 75 6d 6d 79  2e 64 64 73 00 77 61 76  |on_dummy.dds.wav|
 00003bf6  65 73 5f 68 65 69 67 68  74 73 30 2e 64 64 73 00  |es_heights0.dds.|
@@ -893,6 +918,7 @@ Next, we have two extremely low value 32 bits (0x5 and 0x1). So once again, most
 ```
 
 For the Last 128 bits, we get the following:
+
 ```
 00003c26  f5 21 00 00 bf 00 45 5c  6c 36 00 00 00 00 00 00  |.!....E\l6......|
 ```
@@ -903,23 +929,25 @@ After that, last 32 bits, we get a bunch of `00`, maybe a reserved field, but mo
 
 Before that, we get a low value 32 bits integer. When comparing with the `.pkg` file, `f5 21 00 00` is the offset where the first data chunk ends.
 
-
 So it's the end offset. But 32 bits seems rather small to store such offset (specially given the start offset is 64 bits. Also, for other data chunks, this doesn't line-up.
 
 However, it could very much be a relative offset (to the start of the data chunk).
 
-Lets validate that with the second record
+Lets validate that with the second record:
 
-Record
 ```
 00003c36  8f ec 87 4a 28 d0 f7 c7  70 11 03 07 0d 33 ed 77  |...J(...p....3.w|
 00003c46  1e 9b ef 05 00 00 00 00  05 00 00 00 01 00 00 00  |................|
 00003c56  15 15 01 00 03 77 63 97  3e ab 02 00 00 00 00 00  |.....wc.>.......|
 ```
+
 More hexdump! (searching the data chunk using the `03 77 63 97  3e ab 02` ID and the start offset `1e 9b ef 05 00 00 00 00`, or `0x05ef9b1e` once we take endianess into account):
 
 ```shell
 kakwa@linux World of Warships/res_packages » hexdump -C system_data_0001.pkg | less
+```
+
+```
 [...]
 05ef9b10  00 00 17 4b 28 42 80 40  00 00 00 00 00 00 8c 7d  |...K(B.@.......}|
 05ef9b20  3b 50 5d d9 b6 dd 7d b6  3e 76 15 b2 5f 20 89 04  |;P]...}.>v.._ ..|
@@ -1005,7 +1033,7 @@ Strangely, `system_data_0001.pkg` is 20 chars long, 21 if we include the `\0` at
 
 So we can deduce it's actually the `.pkg` file name string size.
 
-So we have
+So we have:
 
 ```
 +====+====+====+====+====+====+====+====++=====+====+====+====+====+====+====+====+

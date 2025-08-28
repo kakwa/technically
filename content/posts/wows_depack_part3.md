@@ -91,7 +91,7 @@ int print_header(WOWS_INDEX_HEADER *header) {
 }
 ```
 
-Output
+Output:
 ```
 Index Header Content:
 * magic:                     ISFP
@@ -188,7 +188,11 @@ Metadata entry 310:
 [...]
 ```
 
-`hexdump -C system_data.idx| less`
+```shell
+kakwa@linux 6775398/idx » hexdump -C system_data.idx | less
+```
+
+```
 [...]
 00003be0  61 72 69 61 74 69 6f 6e  5f 64 75 6d 6d 79 2e 64  |ariation_dummy.d|
 00003bf0  64 73 00 77 61 76 65 73  5f 68 65 69 67 68 74 73  |ds.waves_heights|
@@ -292,15 +296,18 @@ Index Header Content:
 * offset_idx_footer_section: 0x7136
 [...]
 ```
+
 The hexdump gives:
 
 ```shell
 kakwa@linux 6775398/idx » hexdump -s 6 -C system_data.idx| less
+```
+
+```
 [...]
 00007116  21 67 ac 70 22 ec ca b8  70 11 03 07 0d 33 ed 77  |!g.p"...p....3.w|
 00007126  28 f9 15 0a 00 00 00 00  05 00 00 00 01 00 00 00  |(...............|
 00007136  0b 2d 00 00 03 bd b0 50  67 e9 00 00 00 00 00 00  |.-.....Pg.......|
-
 00007146  15 00 00 00 00 00 00 00  18 00 00 00 00 00 00 00  |................|
 00007156  70 11 03 07 0d 33 ed 77  73 79 73 74 65 6d 5f 64  |p....3.wsystem_d|
 00007166  61 74 61 5f 30 30 30 31  2e 70 6b 67 00           |ata_0001.pkg.|
@@ -323,6 +330,7 @@ WOWS_INDEX_FOOTER *footer = (WOWS_INDEX_FOOTER *)(contents + header->offset_idx_
 ```
 
 That's better:
+
 ```
 Index Footer Content:
 * size_pkg_file_name:        23
@@ -501,7 +509,9 @@ Data file entry [280]:
 `unknown_5` on the contrary is specific to each entry:
 
 ```shell
-kakwa@linux GitHub/wows-depack (main) » ./wows-depack-cli -i ~/Games/World\ of\ Warships/bin/6775398/idx/system_data.idx | grep 'unknown_5' | sort | uniq -c
+kakwa@linux GitHub/wows-depack (main) » ./wows-depack-cli \
+    -i ~/Games/World\ of\ Warships/bin/6775398/idx/system_data.idx | \
+    grep 'unknown_5' | sort | uniq -c
 [...]
       1 * unknown_5:                 0x14b002d7c2835863
       1 * unknown_5:                 0x15a7b41a61f65f9c
@@ -535,8 +545,12 @@ Looking at `file_type_2` values, we get something like that:
 
 
 ```shell
-kakwa@linux GitHub/wows-depack (main *) » ./wows-depack-cli -i ~/Games/World\ of\ Warships/bin/6775398/idx/system_data.idx | grep '0x937f155e4baaf562\|filename:' | grep -A 1 '0x937f155e4baaf562'
+kakwa@linux GitHub/wows-depack (main *) » ./wows-depack-cli \
+    -i ~/Games/World\ of\ Warships/bin/6775398/idx/system_data.idx | \
+    grep '0x937f155e4baaf562\|filename:' | grep -A 1 '0x937f155e4baaf562'
+```
 
+```
 [...]
 --
 * file_type_2:               0x937f155e4baaf562
@@ -582,13 +596,18 @@ Ok, `file_type_2` is not a file type at all; it's the `id` (`unknown_4` right no
 
 Also, `unknown_6` follows the same logic: it's the id of the footer entry (side note: maybe the format supports having one index for several files).
 
-#### Small tangent
+#### Small Tangent
 
 By this point, I was a bit intrigued by the `type_1` and `type_2` fields in the `pkg` pointer sections.
 
 ```shell
-kakwa@linux GitHub/wows-depack (main) » for i in ~/Games/World\ of\ Warships/bin/6775398/idx/*;do ./wows-depack-cli -i "$i"| grep 'type_[12]:'  ;done | sort -n | uniq -c | sort -n
+kakwa@linux GitHub/wows-depack (main) » for i in ~/Games/World\ of\ Warships/bin/6775398/idx/*;\
+do
+    ./wows-depack-cli -i "$i" | grep 'type_[12]:';
+done | sort -n | uniq -c | sort -n
+```
 
+```
   57265 * type_1:                    0x0
   57265 * type_2:                    0x0
  232089 * type_1:                    0x5
@@ -662,23 +681,15 @@ Looking at the dumps, `content` is a fairly common directory name, present in a 
 And if we look at these records, we get:
 
 
+```shell
+kakwa@linux GitHub/wows-depack (main *%) » for i in ~/Games/World\ of\ Warships/bin/6775398/idx/*;\
+do \
+    echo $i; \
+    ./wows-depack-cli -i "$i" | grep -B 5  '* filename:                  content$'; \
+done | less
 ```
-kakwa@linux GitHub/wows-depack (main *%) » for i in ~/Games/World\ of\ Warships/bin/6775398/idx/*;do echo $i; ./wows-depack-cli -i "$i" |grep -B 5  '* filename:                  content$';done|less                                                                                                                 130 ↵
 
-/home/kakwa/Games/World of Warships/bin/6775398/idx/basecontent.idx
-parent [5]:
-* file_name_size:            8
-* offset_idx_file_name:      0x470b7
-* id:                        0xa33046442d8327fc
-* parent_id:                 0xdbb1a1d1b108b927
-* filename:                  content
---
-parent [5]:
-* file_name_size:            8
-* offset_idx_file_name:      0x470b7
-* id:                        0xa33046442d8327fc
-* parent_id:                 0xdbb1a1d1b108b927
-* filename:                  content
+```
 [...]
 /home/kakwa/Games/World of Warships/bin/6775398/idx/camouflage.idx
 parent [5]:
