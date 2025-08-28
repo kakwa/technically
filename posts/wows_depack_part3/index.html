@@ -13,20 +13,20 @@ Data Structures First, define C structures matching our reverse-engineered forma
 <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
 <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
 </button>
-<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><header class=header-section><div class="intro-header no-img"><div class=container><div class=row><div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1"><div class=posts-heading><h1>Reversing WoWs Resource Format - Part 3: Reading The Database</h1><hr class=small></div></div></div></div></div></header><div class=container role=main><div class=row><div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1"><article role=main class=blog-post><h1 id=parts>Parts</h1><ul><li>Part 1 — Searching The Data → <a href=/posts/wows_depack_part1/>/posts/wows_depack_part1/</a></li><li>Part 2 — Getting The Metadata → <a href=/posts/wows_depack_part2/>/posts/wows_depack_part2/</a></li><li>Part 3 — Reading The Database → <a href=/posts/wows_depack_part3/>/posts/wows_depack_part3/</a></li><li>Part 4 — Tidying-Up The Project → <a href=/posts/wows_depack_part4/>/posts/wows_depack_part4/</a></li></ul><h1 id=the-implementation>The Implementation</h1><p>In the last part, we discovered and got a fairly good idea of the metadata/IDX format.</p><p>In this part, we will create a rough implementation to extract the content.</p><h2 id=data-structures>Data Structures</h2><p>First, define C structures matching our reverse-engineered format:</p><pre tabindex=0><code>// INDEX file header
-typedef struct {
-    char magic[4];
-    uint32_t unknown_1;
-    uint32_t id;
-    uint32_t unknown_2;
-    uint32_t file_plus_dir_count;
-    uint32_t file_count;
-    uint64_t unknown_3;
-    uint64_t header_size;
-    uint64_t offset_idx_data_section;
-    uint64_t offset_idx_footer_section;
-} WOWS_INDEX_HEADER;
-</code></pre><h2 id=parser-implementation>Parser Implementation</h2><p><strong>Note:</strong> These examples omit error handling for clarity. Production code requires bounds checking and validation.</p><h3 id=file-mapping>File Mapping</h3><p>Memory map the index file:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-C data-lang=C><span style=display:flex><span><span style=color:#75715e>// Open the index file
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><header class=header-section><div class="intro-header no-img"><div class=container><div class=row><div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1"><div class=posts-heading><h1>Reversing WoWs Resource Format - Part 3: Reading The Database</h1><hr class=small></div></div></div></div></div></header><div class=container role=main><div class=row><div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1"><article role=main class=blog-post><h1 id=parts>Parts</h1><ul><li>Part 1 — Searching The Data → <a href=/posts/wows_depack_part1/>/posts/wows_depack_part1/</a></li><li>Part 2 — Getting The Metadata → <a href=/posts/wows_depack_part2/>/posts/wows_depack_part2/</a></li><li>Part 3 — Reading The Database → <a href=/posts/wows_depack_part3/>/posts/wows_depack_part3/</a></li><li>Part 4 — Tidying-Up The Project → <a href=/posts/wows_depack_part4/>/posts/wows_depack_part4/</a></li></ul><h1 id=the-implementation>The Implementation</h1><p>In the last part, we discovered and got a fairly good idea of the metadata/IDX format.</p><p>In this part, we will create a rough implementation to extract the content.</p><h2 id=data-structures>Data Structures</h2><p>First, define C structures matching our reverse-engineered format:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-C data-lang=C><span style=display:flex><span><span style=color:#75715e>// INDEX file header
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>typedef</span> <span style=color:#66d9ef>struct</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>char</span> magic[<span style=color:#ae81ff>4</span>];
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>uint32_t</span> unknown_1;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>uint32_t</span> id;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>uint32_t</span> unknown_2;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>uint32_t</span> file_plus_dir_count;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>uint32_t</span> file_count;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>uint64_t</span> unknown_3;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>uint64_t</span> header_size;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>uint64_t</span> offset_idx_data_section;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>uint64_t</span> offset_idx_footer_section;
+</span></span><span style=display:flex><span>} WOWS_INDEX_HEADER;
+</span></span></code></pre></div><h2 id=parser-implementation>Parser Implementation</h2><p><strong>Note:</strong> These examples omit error handling for clarity. Production code requires bounds checking and validation.</p><h3 id=file-mapping>File Mapping</h3><p>Memory map the index file:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-C data-lang=C><span style=display:flex><span><span style=color:#75715e>// Open the index file
 </span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>int</span> fd <span style=color:#f92672>=</span> <span style=color:#a6e22e>open</span>(args.input, O_RDONLY);
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#75715e>// Recover the file size
