@@ -2,14 +2,14 @@ title = "Technically some technical stuff."
 baseurl = "https://technically.kakwalab.ovh/"
 baseURL = "https://technically.kakwalab.ovh/"
 languageCode = "en"
-theme = "kiss"
+theme = "beautifulhugo"
 copyright = "&copy; <a href=\"https://github.com/kakwa\">Pierre-Francois Carpentier</a> 2024"
 googleAnalytics = ""
 Paginate = 10 # Number of posts per page
 enableRobotsTXT = true
 
 [params.rss] # Adding this tag enables RSS feed
-includeContent = true # Includes whole content in rss
+includeContent = false # Includes whole content in rss
 authorName = "Pierre-François Carpentier" # Author full name
 authorEmail = "carpentier.pf@gmail.com" # Author email
 
@@ -18,12 +18,10 @@ customCSS = ["css/custom.css"]
 googleFonts = []
 
 [params.info]
-adsense = "" # Adsense ID (ID only, without ca-pub-)
 enableSocial = true # Adds OpenGraph and Twitter cards
-homeTitle = "Technical stuff I write about" # Title for home page
 poweredby = false # Adds powered by hugo and kiss below Copyright
 related = true # Includes related articles at the bottom of the article
-codeCopy = true # Add copy button above code blocks
+codeCopy = false # Add copy button above code blocks
 taxonomiesCount = true # Add taxonomies count
 
 [params.features]
@@ -40,6 +38,9 @@ rss = "index.xml" # Add this to show RSS button in social.
 
 [params.social.config]
 platforms = ["github", "mastodon", "linkedin"]
+
+[params]
+selfHosted = true
 
 [taxonomies]
 tag ="tags"
