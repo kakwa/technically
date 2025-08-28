@@ -1,0 +1,19 @@
+.home-compact .home-bio { margin: 20px 0 25px; }
+.home-compact .home-bio__avatar { width: 72px; height: 72px; }
+.home-compact .home-bio__name { margin: 0 0 6px; font-size: 22px; }
+.home-compact .home-bio__text { margin: 0; color: #666; }
+
+.posts-list--compact { margin-top: 10px; }
+.post-preview--compact { padding: 8px 0; border-bottom: 1px solid #eee; }
+.post-preview--compact:last-child { border-bottom: 0; }
+.post-preview--compact .post-preview__title { font-size: 18px; font-weight: 600; display: block; color: #333; }
+.post-preview--compact .post-preview__title:hover { text-decoration: underline; }
+.post-preview--compact .post-preview__meta { font-size: 12px; color: #888; margin-top: 2px; }
+.post-preview--compact .post-preview__summary { margin: 6px 0 0; color: #555; }
+
+@media (min-width: 992px) {
+	.home-compact .home-bio__name { font-size: 24px; }
+	.post-preview--compact .post-preview__title { font-size: 19px; }
+}
+
+

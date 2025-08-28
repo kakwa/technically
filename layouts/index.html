@@ -1,0 +1,43 @@
+{{ define "main" }}
+  <div role="main" class="container home-compact">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+
+        <section class="home-bio media">
+          <div class="media-body">
+            <h1 class="home-bio__name">About the author</h1>
+            <p class="home-bio__text">{{ .Site.Params.author.bio | default "Security engineer and software tinkerer. Writing about reverse engineering, systems, and practical tooling." }}</p>
+          </div>
+        </section>
+
+        <section class="home-bio media">
+          <h1 class="home-bio__name">Blog Posts</h1>
+          <div class="posts-list posts-list--compact">
+            {{ $pag := .Paginate (where site.RegularPages "Type" "in" site.Params.mainSections) }}
+            {{ range $pag.Pages }}
+		  		<li><a href="{{.Permalink}}">{{.Title}}</a></li>
+            {{ end }}
+          </div>
+        </section>
+
+        {{ if or (.Paginator.HasPrev) (.Paginator.HasNext) }}
+          <ul class="pager main-pager">
+            {{ if .Paginator.HasPrev }}
+              <li class="previous">
+                <a href="{{ .Permalink }}page/{{ .Paginator.Prev.PageNumber }}/">&larr; {{ i18n "newerPosts" }}</a>
+              </li>
+            {{ end }}
+            {{ if .Paginator.HasNext }}
+              <li class="next">
+                <a href="{{ .Permalink }}page/{{ .Paginator.Next.PageNumber }}/">{{ i18n "olderPosts" }} &rarr;</a>
+              </li>
+            {{ end }}
+          </ul>
+        {{ end }}
+
+      </div>
+    </div>
+  </div>
+{{ end }}
+
+

@@ -13,6 +13,11 @@ includeContent = false # Includes whole content in rss
 authorName = "Pierre-François Carpentier" # Author full name
 authorEmail = "carpentier.pf@gmail.com" # Author email
 
+[params.author]
+name = "Pierre-François Carpentier"
+email = "carpentier.pf@gmail.com"
+bio = "Just another geek who likes to build stuff, from cloud infrastructure to 3D printers."
+
 [params.assets]
 customCSS = ["css/custom.css"]
 googleFonts = []
