@@ -9,11 +9,13 @@ draft = true
 ## Something Old Is New Again
 
 One of my pet peeves is to bring new life into old hardware.
+
 Here, I'm not thinking in a retro-computing kind of way, software is not exactly fine wine in my opinion: it doesn't age well.
+
 Also, old software tend to be isolated in its own bubble, amusing, but unless you are [G.R.R. Martin rocking along WordStar 4.0](https://www.youtube.com/watch?v=X5REM-3nWHg), that's not really useful.
 
 I prefer the challenge of installing modern software that can actually talk to the outside, and actually do something useful.
-It will not run a k8s cluster, but generally these old machines generally still have enough humff for light weight dedicated usecases like:
+It will not run a k8s cluster, but generally these old machines generally still have enough humff for light weight usecases like for example:
 
 - Spotify/Webradio Receiver/MPD servers hooked to old analog Hi-Fi Systems.
 - Basic (Static) Hosting
@@ -32,21 +34,23 @@ It boasts impressive specs such as:
 - Two 100Mbits/s NICs
 - LOMlite Management over Serial + second Serial Port
 
-In truth, this beast is a little asthmatic, but I find the Sparc CPU interesting, particularly for testing endianess and alignment issues. And it doesn't need huge amounts of power (~15 Watts TDP) to run unlike many other servers.
+In truth, this beast is a little asthmatic, but I find the Sparc CPU interesting, particularly for testing endianess and alignment issues.
+And it doesn't need huge amounts of power (~15 Watts TDP) to run unlike many other servers.
 
-I bought this v100 about 15 years ago secondhand, but in truth, never did something really useful with it.
-This thing is simply a bit too big and too loud and it sat in my cupboard for ages.
+I bought this v100 about 15 years ago secondhand, but in truth, never did anything really useful with it.
+It's simply a bit too big and loud and it sat in my cupboard for ages.
 
 But let's try to change that and learn a few stuff along the way.
 
 ## A Two Fronts Project
 
-So, yes, I aim to do something of this cute little server from another time. Challenging, but not undoable... probably.
+So, yes, I aim to do something of this cute little server from another time.
+Not very rational and somewhat challenging, yet fun... at least in my eyes.
 
-But to acheive that, two main topics needs to be addressed:
+But enough said! Now we need to address the two broad complains we had about this relic:
 
-1. Make this server smaller and quieter
-2. Find and install a modern OS and some up to date pieces of software for it
+1. Make this server way smaller and quieter
+2. Find and install a modern OS + up-to-date software to make it useful
 
 # The Hardware Side
 
@@ -54,7 +58,7 @@ But to acheive that, two main topics needs to be addressed:
 
 This tiny server is well... a server. If it fits onto a small and standard 1U height (44.50mm), it's also kind of big in the other dimensions: 19"/482.60mm by 17.55"/445mm.
 
-However, once inside, the content look like this:
+However, once inside, the content looks like this:
 
 TODO photo inside of V100 CASE
 
@@ -124,7 +128,7 @@ Let's go with OpenBSD.
 
 ### LOMLite access
 
-TODO Picture + Cisco Cable + Serial/USB Adapter + screen & tty settings.
+TODO Picture + Cisco Cable + Serial/USB Adapter + `screen` & tty settings.
 
 Also mention the `#.` keys combo.
 
