@@ -31,7 +31,7 @@ The metadata hopefully isn't embedded in executables. Let's search:
 # or CEF stuff (embedded Chrome used for the armory, inventory, dockyard and clan base))
 
 kakwa@linux Games/World of Warships » find ./ -type f | grep -v cef | grep -v replays \
-    | grep -v crashes | grep -v '.pkg' | grep -v '.dll' | grep -v '.log'  
+    | grep -v crashes | grep -v '.pkg' | grep -v '.dll' | grep -v '.log' \
     | grep -v '\.exe' | less
 ```
 

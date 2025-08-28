@@ -22,7 +22,7 @@ In this part, we will create a rough implementation to extract the content.
 
 First, define C structures matching our reverse-engineered format:
 
-```
+```C
 // INDEX file header
 typedef struct {
     char magic[4];
