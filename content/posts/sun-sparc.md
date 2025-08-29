@@ -17,11 +17,11 @@ draft = true
 
 One of my pet peeves is to bring new life into old hardware.
 
-Here, I'm not thinking in a retro-computing kind of way, software is not exactly fine wine in my opinion: it doesn't age well.
+Here, I'm not thinking in a retro-computing kind of way, software is not exactly like fine wine in my opinion: it doesn't age well.
 
 Also, old software tend to be isolated in its own bubble, amusing, but unless you are [G.R.R. Martin rocking along WordStar 4.0](https://www.youtube.com/watch?v=X5REM-3nWHg), that's not really useful.
 
-I prefer the challenge of installing modern software on it, being able interact with the worldwide Internet, and actually do something useful.
+I prefer the challenge of trying to install modern software on these antiquities, being able interact with the Worldwide Internet, and actually do something actually useful with them.
 
 Sure, it will not run a k8s cluster, but these old machines generally still have enough humff for light weight usecases like, for example:
 
@@ -47,9 +47,10 @@ In truth, this beast is a little asthmatic, but I find the Sparc CPU interesting
 And it doesn't need huge amounts of power (~15 Watts TDP) to run, unlike most servers from that period.
 
 I bought this v100 about 15 years ago secondhand, but in truth, never did anything really useful with it.
-It's simply a bit too big and loud and it sat in my cupboard for ages.
+While not as bad as other monsters from the era, it's still simply a bit too big and loud.
+Consequently, it sat in my cupboard for ages, in the dark, lonely and unused, away from the information highways.
 
-But let's try to change that and learn a few stuff along the way.
+But let's try to change that and maybe learn a few stuff along the way.
 
 ## A Two Fronts Project
 
@@ -93,27 +94,54 @@ To make it fit, I'm replacing the following parts:
 
 Note: I'm not doing this project to save money. Secondhand micro PCs like ThinkCentre Ms or RPi like SBC are cheaper.
 
+## PSU
+
+TODO
+
+* Say it's standard ATX.
+* PSA: Trigger Board + 12V -> Not a given
+* PSU might be a bit too weak.
+
 ## Modeling
+
+TODO intro.
+
+I'm a masochist, so FreeCAD it is. It enabled me to improve my CAD technics and play with the new Assembly Workbench.
 
 ### Case
 
 TODO
 
+* Dimension choices
+* Scanner technic for the back panel cutouts
+* 2mm PMMA (?) -> to weak -> 3mm minimum
+* Switch to 3mm + recess if necessary.
+
 ### Brackets
 
 TODO
+
+* Nut corner bracket -> bad idea
+* Switch to inserts
 
 ### Bezel
 
 TODO
 
+* Start from Photo of V210 (prettier tha V100)
+* two Outlines: front + back
+* loafting
+* finishing features
+* extend concept to other server fronts/bezel (Dell, HP, Fujitsu, IBM)
+
 ### Logo
 
 TODO
 
-## Mistakes & Reworks
-
-TODO
+* Take SVG (wikipedia)
+* Close path
+* FreeCAD
+* Print with filament change (M400).
 
 # The Software Side
 
@@ -141,7 +169,7 @@ LOM stands for Lights Out Management. Not sure if it fullfils the [IPMI](https:/
 
 It's a small Baseboard Management Controller (BMC), similar to HP's Ilo or Dell iDRAC, monitoring the hardware (fan, psus), setting the boot sequence, and of course, [turning it off and on again](https://www.youtube.com/watch?v=5UT8RkSmN4k).
 
-On this V100, we have the LOMLite2 version, which is only accessible through Serial (bigger & newer servers, like V210/T1000, have ALOM & ILOM with network & telnet/ssh capabilities).
+On this V100, we have the LOMLite2 version, which is only accessible through Serial (bigger & newer servers, like V210s or T2000s, have ALOM & ILOM with network & telnet/ssh capabilities).
 
 ### Serial Cabling
 
@@ -153,7 +181,7 @@ Connect it to the upper port on the server, and use your favorite serial termina
 
 TODO Picture of port
 
-### It's Alive! (hopefully)
+### It's Alive!
 
 The serial connections settings are the common `9600 bauds`, `no parity`, `one stop bit` and `full duplex` mode (should be the default of your prefered software).
 
@@ -184,7 +212,9 @@ LOM event: +0h0m0s LOM booted
 lom>
 ```
 
-If your box came installed, it's possible you are seeing Open Firmware (the "Bios/UEFI" of these machines) or a Solaris serial prompt.
+### Switching Between `ok>` & `lom>` Prompts
+
+If your box came installed, it's possible you are seeing an Open Firmware (the "Bios/UEFI" of these machines) or Solaris prompt.
 
 By default the Serial Port is shared between the LOM and the main server.
 
