@@ -46,6 +46,7 @@ platforms = ["github", "mastodon", "linkedin"]
 
 [params]
 selfHosted = true
+mainSections = ["post", "posts"]
 
 [taxonomies]
 tag ="tags"
