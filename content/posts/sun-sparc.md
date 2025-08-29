@@ -6,9 +6,9 @@ draft = true
 
 # Links
 
-- [Project's git (scripts & 3d models)](https://github.com/kakwa/silly-sunv100-server).
+- [Project's git (scripts & 3D models)](https://github.com/kakwa/silly-sunv100-server).
 - [Sun's official documentation](https://dogemicrosystems.ca/pub/Sun/System_Handbook/Sun_syshbk_V3.4/Systems/SunFireV100/SunFireV100.html).
-- Eerie Linux's [blog post 1](https://eerielinux.wordpress.com/2019/09/22/a-sparc-in-the-night-sunfire-v100-exploration/) and [post 2](https://eerielinux.wordpress.com/2019/10/30/illumos-v9os-on-sparc64-sunfire-v100/) about his v100.
+- Eerie Linux's [blog post 1](https://eerielinux.wordpress.com/2019/09/22/a-sparc-in-the-night-sunfire-v100-exploration/) and [post 2](https://eerielinux.wordpress.com/2019/10/30/illumos-v9os-on-sparc64-sunfire-v100/) about his V100.
 - [Obligatory ClabRetro video](https://www.youtube.com/watch?v=5OyGwbWKWZU).
 
 # Obsolete Tech In A Modern Age
@@ -19,11 +19,11 @@ One of my pet peeves is to bring new life into old hardware.
 
 Here, I'm not thinking in a retro-computing kind of way, software is not exactly like fine wine in my opinion: it doesn't age well.
 
-Also, old software tend to be isolated in its own bubble, amusing, but unless you are [G.R.R. Martin rocking along WordStar 4.0](https://www.youtube.com/watch?v=X5REM-3nWHg), that's not really useful.
+Also, old software tends to be isolated in its own bubble, amusing, but unless you are [G.R.R. Martin rocking along WordStar 4.0](https://www.youtube.com/watch?v=X5REM-3nWHg), that's not really useful.
 
-I prefer the challenge of trying to install modern software on these antiquities, being able interact with the Worldwide Internet, and actually do something actually useful with them.
+I prefer the challenge of trying to install modern software on these antiquities, make them able to interact with the Worldwide Internet, and do something useful with them.
 
-Sure, it will not run a k8s cluster, but these old machines generally still have enough humff for light weight usecases like, for example:
+Sure, it will not run a k8s cluster, but these old machines generally still have enough oomph for lightweight use cases like, for example:
 
 - Spotifyd/Webradio Receiver/MPD servers hooked to old analog Hi-Fi Systems.
 - Basic Web Hosting
@@ -33,31 +33,31 @@ Sure, it will not run a k8s cluster, but these old machines generally still have
 
 ## The Little Server That Could (Not)
 
-Enters the Sun v100, the entry level server from 2001 sold by Sun Microsystems.
+Enter the Sun V100, the entry-level server from 2001 sold by Sun Microsystems.
 
 It boasts impressive specs such as:
-- ~500MHz Sparc CPU
-- No GPU whatsover (not great for IA I guess :p)
+- ~550MHz UltraSPARC IIi/e CPU
+- No GPU whatsoever (not great for AI, I guess :p)
 - 2GB RAM (if maxed out)
 - 2x 80GB IDE Hard Drives
-- Two 100Mbits/s NICs
+- Two 100 Mbit/s NICs
 - LOMlite Management over Serial + second Serial Port
 
-In truth, this beast is a little asthmatic, but I find the Sparc CPU interesting, particularly for testing endianess and alignment issues.
+In truth, this beast is a little asthmatic, but I find the SPARC CPU interesting, particularly for testing endianness and alignment issues.
 And it doesn't need huge amounts of power (~15 Watts TDP) to run, unlike most servers from that period.
 
-I bought this v100 about 15 years ago secondhand, but in truth, never did anything really useful with it.
+I bought this V100 about 15 years ago secondhand, but in truth, never did anything really useful with it.
 While not as bad as other monsters from the era, it's still simply a bit too big and loud.
 Consequently, it sat in my cupboard for ages, in the dark, lonely and unused, away from the information highways.
 
-But let's try to change that and maybe learn a few stuff along the way.
+But let's try to change that and maybe learn a few things along the way.
 
-## A Two Fronts Project
+## A Two-Front Project
 
-So, yes, I aim to do something of this cute little server from another time.
+So, yes, I aim to do something with this cute little server from another time.
 Not very rational and somewhat challenging, yet fun... at least in my eyes.
 
-But enough said! Now we need to address the two broad complains we had about this relic:
+But enough said! Now we need to address the two broad complaints we had about this relic:
 
 1. Make this server way smaller and quieter
 2. Find and install a modern OS + up-to-date software to make it useful
@@ -73,9 +73,9 @@ However, once inside, the content looks like this:
 TODO photo inside of V100 CASE
 
 We are in luck, this cute beast could probably be a lot more compact. In particular the main board, including the RAM sticks, is 250x190mm.
-If ditch the original (and noisy) Hard Drives & PSU, and cheat a little we could even make it fit into a 254mm(/10") case able to be used in these fancy small [10 inch racks](https://mini-rack.jeffgeerling.com/).
+If we ditch the original (and noisy) Hard Drives & PSU, and cheat a little we could even make it fit into a 254mm(/10") case able to be used in these fancy small [10 inch racks](https://mini-rack.jeffgeerling.com/).
 
-Aside from that, We also need to silence this small beast.
+Aside from that, we also need to silence this small beast.
 
 In particular we need to take care of these little bastards:
 
@@ -87,7 +87,7 @@ Replacing these with Noctua fans could probably help.
 
 To make it fit, I'm replacing the following parts:
 
-* The original IDE HDs are too big & noisy, so I'm replacing them with a [SanDisk 32GB CF Card](https://shop.sandisk.com/products/memory-cards/cfast-cfexpress-compactflash/sandisk-extreme-compactflash?sku=SDCFXSB-032G-G46) + [adapter thinggy](https://www.startech.com/en-us/hdd/35baycf2ide) (CF cards are generally pin-compatible with IDE, giving good odds of it working with decent performances).
+* The original IDE HDs are too big & noisy, so I'm replacing them with a [SanDisk 32GB CF Card](https://shop.sandisk.com/products/memory-cards/cfast-cfexpress-compactflash/sandisk-extreme-compactflash?sku=SDCFXSB-032G-G46) + [adapter thingy](https://www.startech.com/en-us/hdd/35baycf2ide) (CF cards are generally pin-compatible with IDE, giving good odds of it working with decent performance).
 * The original PSU is quite bulky, but relatively small at 80 Watts. So I will also try my luck with a [Pico PSU](https://www.rgeek.com/portfolio-item/rgeek-pico-dc-psu-rp-120lq-dc-12v-24pin-power-supply-module/) + external 12V Power Brick.
 * Let's also try our luck with a GaN USB-C charger + [trigger board](https://www.aliexpress.com/p/tesla-landing/index.html?scenario=c_ppc_item_bridge&productId=1005004356272196&_immersiveMode=true&withMainCard=true&src=google&aff_platform=true&isdl=y). On paper, it could provide us with a great little PSU instead of a rather large and sketchy black brick from an unknown manufacturer.
 * The original 40x40mm 12V fans are getting the [Noctua treatment](https://noctua.at/en/products/fan?size=2645&connector=10&voltage=12).
@@ -99,22 +99,22 @@ Note: I'm not doing this project to save money. Secondhand micro PCs like ThinkC
 TODO
 
 * Say it's standard ATX.
-* PSA: Trigger Board + 12V -> Not a given
+* PSA: Trigger Board + 12V -> not a given
 * PSU might be a bit too weak.
 
 ## Modeling
 
 TODO intro.
 
-I'm a masochist, so FreeCAD it is. It enabled me to improve my CAD technics and play with the new Assembly Workbench.
+I'm a masochist, so FreeCAD it is. It enabled me to improve my CAD techniques and play with the new Assembly Workbench.
 
 ### Case
 
 TODO
 
 * Dimension choices
-* Scanner technic for the back panel cutouts
-* 2mm PMMA (?) -> to weak -> 3mm minimum
+* Scanner technique for the back panel cutouts
+* 2mm PMMA (?) -> too weak -> 3mm minimum
 * Switch to 3mm + recess if necessary.
 
 ### Brackets
@@ -128,17 +128,17 @@ TODO
 
 TODO
 
-* Start from Photo of V210 (prettier tha V100)
+* Start from Photo of V210 (prettier than V100)
 * two Outlines: front + back
-* loafting
+* lofting
 * finishing features
-* extend concept to other server fronts/bezel (Dell, HP, Fujitsu, IBM)
+* extend concept to other server fronts/bezels (Dell, HP, Fujitsu, IBM)
 
 ### Logo
 
 TODO
 
-* Take SVG (wikipedia)
+* Take SVG (Wikipedia)
 * Close path
 * FreeCAD
 * Print with filament change (M400).
@@ -147,11 +147,11 @@ TODO
 
 ## Operating System Choice
 
-The sad reality is Sparc is a dying architecture. So our choices, as of 2025, are limited:
+The sad reality is SPARC is a dying architecture. So our choices, as of 2025, are limited:
 
 * (Open)Solaris -> dead
 * Illumos (OpenSolaris successor) -> [Support is being dropped](https://github.com/illumos/ipd/blob/master/ipd/0019/README.md)
-* Linux -> Sparc64 is still supported by the kernel, but nearly no mainstream distribution supports it ([Debian unofficially](https://wiki.debian.org/Sparc64), and [Gentoo](https://wiki.gentoo.org/wiki/Project:SPARC)).
+* Linux -> SPARC64 is still supported by the kernel, but nearly no mainstream distribution supports it ([Debian unofficially](https://wiki.debian.org/Sparc64), and [Gentoo](https://wiki.gentoo.org/wiki/Project:SPARC)).
 * FreeBSD -> Support dropped with [FreeBSD 13](https://www.freebsd.org/platforms/sparc/)
 
 This leaves more or less two choices:
@@ -165,9 +165,9 @@ Let's go with OpenBSD.
 
 ### LOMLite2
 
-LOM stands for Lights Out Management. Not sure if it fullfils the [IPMI](https://en.wikipedia.org/wiki/Intelligent_Platform_Management_Interface) spec, but it has the same role.
+LOM stands for Lights Out Management. Not sure if it fulfills the [IPMI](https://en.wikipedia.org/wiki/Intelligent_Platform_Management_Interface) spec, but it has the same role.
 
-It's a small Baseboard Management Controller (BMC), similar to HP's Ilo or Dell iDRAC, monitoring the hardware (fan, psus), setting the boot sequence, and of course, [turning it off and on again](https://www.youtube.com/watch?v=5UT8RkSmN4k).
+It's a small Baseboard Management Controller (BMC), similar to HP's iLO or Dell iDRAC, monitoring the hardware (fans, PSUs), setting the boot sequence, and of course, [turning it off and on again](https://www.youtube.com/watch?v=5UT8RkSmN4k).
 
 On this V100, we have the LOMLite2 version, which is only accessible through Serial (bigger & newer servers, like V210s or T2000s, have ALOM & ILOM with network & telnet/ssh capabilities).
 
@@ -183,7 +183,7 @@ TODO Picture of port
 
 ### It's Alive!
 
-The serial connections settings are the common `9600 bauds`, `no parity`, `one stop bit` and `full duplex` mode (should be the default of your prefered software).
+The serial connection settings are the common `9600 baud`, `no parity`, `one stop bit` and `full duplex` mode (should be the default of your preferred software).
 
 Because I'm lazy, I'm using good old `screen` but you could use something else like `minicom`.
 
@@ -191,7 +191,7 @@ Because I'm lazy, I'm using good old `screen` but you could use something else l
 screen /dev/ttyUSB0
 ```
 
-You should getting something like (when plugging-in the server), or at least a `lom>` prompt:
+You should be getting something like (when plugging in the server), or at least a `lom>` prompt:
 
 ```shell
 LOMlite starting up.
@@ -214,7 +214,7 @@ lom>
 
 ### Switching Between `ok>` & `lom>` Prompts
 
-If your box came installed, it's possible you are seeing an Open Firmware (the "Bios/UEFI" of these machines) or Solaris prompt.
+If your box came installed, it's possible you are seeing an Open Firmware (the "BIOS/UEFI" of these machines) or Solaris prompt.
 
 By default the Serial Port is shared between the LOM and the main server.
 
@@ -234,10 +234,10 @@ To move between the "lom>" prompt and the "ok>" prompt type:
 
 ### Factory EEPROM Reset
 
-I initially had issue getting to [Open Firmware](https://en.wikipedia.org/wiki/Open_Firmware).
-In its past life, it seems this server was configured to not share LOM and tty onto the same Serial port.
+I initially had issues getting to [Open Firmware](https://en.wikipedia.org/wiki/Open_Firmware).
+In its past life, it seems this server was configured to not share LOM and tty on the same serial port.
 
-I was getting LOM access via the upper port all right, but the Open Firmware/OS on lower Port remained silent.
+I was getting LOM access via the upper port all right, but the Open Firmware/OS on the lower port remained silent.
 
 ```
 lom> break
@@ -251,8 +251,8 @@ I settled on attempting a factory reset, but it proved somewhat challenging. I t
 
 I also tried using the `bootmode -u` and `console -f` flags, again, without luck.
 
-I was about to give-up when I stubbled [uppon this email](https://marc.info/?l=classiccmp&m=123195610818394) from a former Sun employee.
-(Thanks Mr. Andy for posting this on a random mailing 16 years ago, the Internet is truly amazing sometimes).
+I was about to give up when I stumbled [upon this email](https://marc.info/?l=classiccmp&m=123195610818394) from a former Sun employee.
+(Thanks Mr. Andy for posting this on a random mailing list 16 years ago, the Internet is truly amazing sometimes).
 
 So, as indicated by this mail, I ran the following commands to reset the eeprom:
 
@@ -266,7 +266,7 @@ lom> eepromreset
 lom> reset -l
 ```
 
-And bingo, I was in buziness.
+And bingo, I was in business.
 
 I was getting the `ok` prompt, and was able to switch between LOM and the actual server tty with the `#.` combo.
 
