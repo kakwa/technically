@@ -29,3 +29,63 @@
 .posts-list--compact .post-preview--compact:last-child {
   border-bottom: none;
 }
+
+/* Left TOC sidebar styles */
+.toc-sidebar {
+  position: sticky;
+  top: 80px;
+  max-height: calc(100vh - 100px);
+  overflow: auto;
+  padding: 6px 0 6px 6px;
+  border-right: 1px solid #eee;
+}
+
+.toc-sidebar nav#TableOfContents {
+  font-size: 14px;
+}
+
+.toc-sidebar #TableOfContents ul {
+  list-style: none;
+  margin: 0;
+  padding-left: 8px;
+}
+
+.toc-sidebar #TableOfContents li {
+  margin: 4px 0;
+}
+
+.toc-sidebar #TableOfContents > ul > li > a {
+  font-weight: 600;
+}
+
+.toc-sidebar a {
+  color: #555;
+  text-decoration: none;
+}
+
+.toc-sidebar a:hover {
+  text-decoration: underline;
+}
+
+/* Active link styles for TOC */
+.toc-sidebar #TableOfContents a.active {
+  color: #000;
+  font-weight: 700;
+}
+
+.toc-sidebar #TableOfContents li.active > a {
+  color: #000;
+}
+
+/* Offset headings for fixed navbar so anchors don't hide under it */
+main h2, main h3, .blog-post h2, .blog-post h3 {
+  scroll-margin-top: 90px;
+}
+
+/* Improve spacing when TOC present */
+@media (min-width: 992px) {
+  .toc-sidebar + .col-lg-9 .blog-post,
+  .toc-sidebar + .col-md-9 .blog-post {
+    padding-left: 10px;
+  }
+}

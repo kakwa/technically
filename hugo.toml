@@ -34,6 +34,12 @@ disqusOnDemand = false  # Load Disqus comments on click
 mathjax = false
 katex = false
 
+[markup]
+[markup.tableOfContents]
+  endLevel = 3
+  ordered = false
+  startLevel = 1
+
 [params.social]
 mastodon = "mastodon.instance/@kakwa"
 github = "kakwa"
