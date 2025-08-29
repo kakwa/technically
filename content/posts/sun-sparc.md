@@ -161,9 +161,9 @@ This leaves more or less two choices:
 
 Let's go with OpenBSD.
 
-## Installation
+## LOMLite2
 
-### LOMLite2
+### Intro
 
 LOM stands for Lights Out Management. Not sure if it fulfills the [IPMI](https://en.wikipedia.org/wiki/Intelligent_Platform_Management_Interface) spec, but it has the same role.
 
@@ -263,6 +263,7 @@ Extra commands are reserved for SUN service personnel.
 Unauthorised use invalidates machine service warranty.
 
 lom> eepromreset
+
 lom> reset -l
 ```
 
@@ -270,6 +271,117 @@ And bingo, I was in business.
 
 I was getting the `ok` prompt, and was able to switch between LOM and the actual server tty with the `#.` combo.
 
-### Installation
+## Netboot
 
-TODO, rarp + tftp.
+### Netboot Server Setup
+
+The Open Firmware on these machines is able to boot over the network a bit like PXE boot.
+
+The major difference is the lack of DHCP support: it instead relies on rarp (static MAC -> IP mapping).
+Also the netboot server needs to be on the same lan subnet (or plugged directly to) as our cute & old server.
+
+Aside from that, we also need to put the boot image where Open Firmware expects it. 
+
+Let's setup a netboot server (Debian/Ubuntu based).
+
+First, get a `root` terminal:
+
+```shell
+# pick your poison
+sudo -i
+# or
+su -i
+```
+
+install the necessary software
+```shell
+apt install atftpd rarpd
+```
+
+```shell
+# Set Server NIC & IPs
+export BOOT_SERVER_NIC=enp0s25
+export SUN_V100_IP=172.24.42.51
+
+# Must be .150 (?)
+export BOOT_SERVER_IP=172.24.42.150
+```
+
+Download & put the boot image in the correct TFTP location (IP Address in Hexa):
+```shell
+cd /srv/tftp
+https://ftp.openbsd.org/pub/OpenBSD/7.7/sparc64/miniroot77.img
+
+# calculate the file name expected by Open Firmware
+(rarp IP address in hexadecimal)
+
+arg="`echo ${SUN_V100_IP} | sed 's/\./ /g'`"
+img_name=`printf "%.2X%.2X%.2X%.2X\n" $arg`
+
+# create hardlink to it
+ln miniroot77.img ${img_name}
+```
+
+Start the TFTP server:
+```shell
+systemctl start atftpd.service
+```
+
+Set the server IP:
+```shell
+ip addr add ${BOOT_SERVER_IP}/24 dev ${BOOT_SERVER_NIC}
+```
+
+Launch rarpd in the forground
+```
+rarpd -e -dv ${BOOT_SERVER_NIC}
+```
+
+From the LOM connected console, start the V100
+```shell
+lom>poweron
+LOM event: +0h35m39s host power on
+
+Sun Netra X1 (UltraSPARC-IIe 548MHz), No Keyboard
+OpenBoot 4.0, 2048 MB memory installed, Serial #56340147.
+Ethernet address 0:3:ba:5b:ae:b3, Host ID: 835baeb3.
+
+Boot device: net  File and args:
+Timeout waiting for ARP/RARP packet
+```
+
+You should see log messages likes:
+```shell
+rarpd[16222]: RARP request from 00:03:ba:5b:ae:b3 on enp0s25
+rarpd[16222]: not found in /etc/ethers
+```
+
+```shell
+# Replace with your MAC address
+export SUN_V100_MAC="00:03:ba:5b:ae:b3"
+
+# Normalize MAC (uppercase, no colons)
+MAC_UPPER=$(echo "$SUN_V100_MAC" | tr '[:lower:]' '[:upper:]')
+MAC_NOPUNCT=$(echo "$MAC_UPPER" | tr -d ':')
+
+# Hostname format: sparc-<MAC>
+# note: could be any name, just avoid collisions
+HOSTNAME="sparc-${MAC_NOPUNCT}"
+
+# Make sure ethers file exists
+touch /etc/ethers
+
+# Add to /etc/ethers if not already present
+grep -q -F "$MAC_UPPER $HOSTNAME" /etc/ethers || \
+    echo "$MAC_UPPER $HOSTNAME" | sudo tee -a /etc/ethers
+
+# Add to /etc/hosts if not already present
+grep -q -F "$SUN_V100_IP $HOSTNAME" /etc/hosts || \
+    echo "$SUN_V100_IP $HOSTNAME" | sudo tee -a /etc/hosts
+```
+
+```shell
+Timeout waiting for ARP/RARP packet
+Timeout waiting for ARP/RARP packet
+18e200 
+```
