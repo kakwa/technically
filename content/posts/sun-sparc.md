@@ -427,7 +427,8 @@ So I've committed blasphemy and created my [own, all in one, Golang simple netbo
 I must confess I've sinned even more by letting the twin d(a)emons
 Claude & ChatGPT do most of work, specially the network protocols implementation.
 So, expect a few bugs.
-On top of that, this netboot server is, by design, very limited
+
+On top of that, this netboot server is, by design, very limited.
 It only provides a single bootstrap path/set of file and should
 only be used in a dedicated lan segment or in a direct, one to one, connection.
 Don't use it in your DC if you are still rocking and bootstrapping hundred of SPARC servers.
