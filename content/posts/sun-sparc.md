@@ -8,7 +8,7 @@ draft = true
 
 - [Project's git (scripts & 3D models)](https://github.com/kakwa/silly-sunv100-server).
 - [Sun's V100 Official documentation](https://dogemicrosystems.ca/pub/Sun/System_Handbook/Sun_syshbk_V3.4/Systems/SunFireV100/SunFireV100.html).
-- [Sun's LOMLite2 official documenation](https://docs.oracle.com/cd/E19102-01/n20.srvr/806-7334-13/LW2+User.LOM.html)
+- [Sun's LOMLite2 official documentation](https://docs.oracle.com/cd/E19102-01/n20.srvr/806-7334-13/LW2+User.LOM.html)
 - Eerie Linux's [blog post 1](https://eerielinux.wordpress.com/2019/09/22/a-sparc-in-the-night-sunfire-v100-exploration/) and [post 2](https://eerielinux.wordpress.com/2019/10/30/illumos-v9os-on-sparc64-sunfire-v100/) about his V100.
 - [Obligatory Clabretro's video](https://www.youtube.com/watch?v=5OyGwbWKWZU).
 
@@ -37,7 +37,7 @@ Sure, it will not run a k8s cluster, but these old machines generally still have
 Enter the Sun V100, the entry-level server from 2001 sold by Sun Microsystems.
 
 It boasts impressive specs such as:
-- UltraSPARC-IIe CUP @548MHz
+- UltraSPARC-IIe CPU @548MHz
 - No GPU whatsoever (not great for AI, I guess :p)
 - 2GB RAM (if maxed out)
 - 2x 80GB IDE Hard Drives
@@ -270,7 +270,7 @@ lom> reset -l
 
 And bingo, I was in business.
 
-I was getting the `ok` prompt, switch back and forth between `lom>` and `ok>`
+I was getting the `ok>` prompt and could switch back and forth between `lom>` and `ok>`
 
 However, when trying to `boot net`, I was getting:
 ```
@@ -278,7 +278,7 @@ ok boot net
 Fast Data Access MMU Miss
 ```
 
-The following reset seems to have solve the issue:
+The following reset seems to have solved the issue:
 ```
 ok set-defaults
 Setting NVRAM parameters to default values.
@@ -290,15 +290,15 @@ ok reset-all
 
 Open Firmware on these machines is able to boot over the network a bit like PXE.
 
-The major difference is the lack of DHCP support: it instead relies on rarp (static MAC -> IP mapping).
+The major difference is the lack of DHCP support: it instead relies on RARP (static MAC -> IP mapping).
 
-Also the netboot server needs to be on the same lan subnet (or plugged directly to) as our cute sun server.
-And the netboot server must also be a tftp server hosting the boot file at a set location (derived from the IP
+Also the netboot server needs to be on the same LAN subnet (or plugged directly to) as our cute sun server.
+And the netboot server must also be a TFTP server hosting the boot file at a set location (derived from the IP
 we give to our sun server)
 
 ### Netboot Server Setup - The Annoying Way
 
-Let's setup a netboot server (Debian/Ubuntu based) as our Sunny God intended.
+Let's set up a netboot server (Debian/Ubuntu based) as our Sunny God intended.
 
 First, get a `root` terminal:
 
@@ -309,7 +309,7 @@ sudo -i
 su -i
 ```
 
-install the necessary software
+Install the necessary software
 ```shell
 apt install atftpd rarpd
 ```
@@ -323,7 +323,7 @@ export SUN_V100_IP=172.24.42.51
 export BOOT_SERVER_IP=172.24.42.150
 ```
 
-Download & put the boot image in the correct TFTP location (IP Address in Hexa):
+Download & put the boot image in the correct TFTP location (IP address in hex):
 ```shell
 cd /srv/tftp/
 wget https://technically.kakwalab.ovh/files/ofwboot.kakwa.test
@@ -346,7 +346,7 @@ Set the server IP:
 ip addr add ${BOOT_SERVER_IP}/24 dev ${BOOT_SERVER_NIC}
 ```
 
-Launch rarpd in the forground
+Launch rarpd in the foreground
 ```
 rarpd -e -dv ${BOOT_SERVER_NIC}
 ```
@@ -354,7 +354,7 @@ rarpd -e -dv ${BOOT_SERVER_NIC}
 From the LOM connected console, start the V100:
 ```shell
 # Set bootmode to ok/ofw prompt
-# Note: if notthing is installed, defaults to boot net anyway
+# Note: if nothing is installed, defaults to boot net anyway
 lom> bootmode forth
 lom> reset
 # if necessary
@@ -371,13 +371,13 @@ Type  help  for more information
 ok 
 ```
 
-From the `ok prompt`, enter the following to initiate the Netbooting
+From the `ok>` prompt, enter the following to initiate the netbooting
 ```
 ok boot net
 Timeout waiting for ARP/RARP packet
 ```
 
-You should see log messages likes:
+You should see log messages like:
 ```shell
 rarpd[16222]: RARP request from 00:03:ba:5b:ae:b3 on enp0s25
 rarpd[16222]: not found in /etc/ethers
@@ -416,25 +416,25 @@ It works! Not sure if we have created Paradise or Hell however...
 
 ### Netboot Server Setup - The Masochist Way
 
-In truth, I'm atheist, I don't believe in God, even the Sunnier ones.
+In truth, I'm an atheist, I don't believe in God, even the Sunnier ones.
 
 And I find this setup really messy, and I'm kind of sorry if you read
 through it... or worse, if you actually tried to implement it. Also, spoiler, 
 for our NetBSD/OpenBSD netbooting target, even more similar setup is likely required.
 
-So I've committed blasphemy and created my [own, all in one, Golang simple netboot server](https://github.com/kakwa/ofw-install-server) directly providing the RARP + TFTP combo (plus, spoiler, also BOOTP + NFSv2).
+So I've committed blasphemy and created my [own, all-in-one, Golang simple netboot server](https://github.com/kakwa/ofw-install-server) directly providing the RARP + TFTP combo (plus, spoiler, also BOOTP + NFSv2).
 
 I must confess I've sinned even more by letting the twin d(a)emons
-Claude & ChatGPT do most of work, specially the network protocols implementation.
+Claude & ChatGPT do most of the work, especially the network protocol implementation.
 So, expect a few bugs.
 
 On top of that, this netboot server is, by design, very limited.
 It only provides a single bootstrap path/set of boot files
-and should only be used within dedicated lan segment.
+and should only be used within a dedicated LAN segment.
 Don't rely on this server if you are still bootstrapping hundreds of SPARC servers like in the good old [Jumpstart](https://docs.oracle.com/cd/E26505_01/html/E28039/customjumpsample-5.html#scrolltoc) days.
-However for the onezzies/twozzies like here, let the temptation win you over, and give it a try.
+However for the onesies/twosies like here, let the temptation win you over, and give it a try.
 
-But enough talk, here how to setup this simplified netboot server.
+But enough talk, here is how to set up this simplified netboot server.
 
 Building the server:
 ```shell
@@ -458,7 +458,7 @@ export BOOT_SERVER_NIC=enp0s25
 export BOOT_SERVER_IP=172.24.42.150
 sudo ip addr add ${BOOT_SERVER_IP}/24 dev ${BOOT_SERVER_NIC}
 
-# Recover something to boot:
+# Retrieve something to boot:
 wget https://technically.kakwalab.ovh/files/ofwboot.kakwa.test
 
 # Start the server
