@@ -7,9 +7,10 @@ draft = true
 # Links
 
 - [Project's git (scripts & 3D models)](https://github.com/kakwa/silly-sunv100-server).
-- [Sun's official documentation](https://dogemicrosystems.ca/pub/Sun/System_Handbook/Sun_syshbk_V3.4/Systems/SunFireV100/SunFireV100.html).
+- [Sun's V100 Official documentation](https://dogemicrosystems.ca/pub/Sun/System_Handbook/Sun_syshbk_V3.4/Systems/SunFireV100/SunFireV100.html).
+- [Sun's LOMLite2 official documenation](https://docs.oracle.com/cd/E19102-01/n20.srvr/806-7334-13/LW2+User.LOM.html)
 - Eerie Linux's [blog post 1](https://eerielinux.wordpress.com/2019/09/22/a-sparc-in-the-night-sunfire-v100-exploration/) and [post 2](https://eerielinux.wordpress.com/2019/10/30/illumos-v9os-on-sparc64-sunfire-v100/) about his V100.
-- [Obligatory ClabRetro video](https://www.youtube.com/watch?v=5OyGwbWKWZU).
+- [Obligatory Clabretro's video](https://www.youtube.com/watch?v=5OyGwbWKWZU).
 
 # Obsolete Tech In A Modern Age
 
@@ -36,7 +37,7 @@ Sure, it will not run a k8s cluster, but these old machines generally still have
 Enter the Sun V100, the entry-level server from 2001 sold by Sun Microsystems.
 
 It boasts impressive specs such as:
-- ~550MHz UltraSPARC IIi/e CPU
+- UltraSPARC-IIe CUP @548MHz
 - No GPU whatsoever (not great for AI, I guess :p)
 - 2GB RAM (if maxed out)
 - 2x 80GB IDE Hard Drives
@@ -269,7 +270,20 @@ lom> reset -l
 
 And bingo, I was in business.
 
-I was getting the `ok` prompt, and was able to switch between LOM and the actual server tty with the `#.` combo.
+I was getting the `ok` prompt, switch back and forth between `lom>` and `ok>`
+
+However, when trying to `boot net`, I was getting:
+```
+ok boot net
+Fast Data Access MMU Miss
+```
+
+The following reset seems to have solve the issue:
+```
+ok set-defaults
+Setting NVRAM parameters to default values.
+ok reset-all
+```
 
 ## Netboot
 
@@ -295,7 +309,7 @@ su -i
 
 install the necessary software
 ```shell
-apt install atftpd rarpd
+apt install atftpd rarpd bootparamd
 ```
 
 ```shell
@@ -309,17 +323,16 @@ export BOOT_SERVER_IP=172.24.42.150
 
 Download & put the boot image in the correct TFTP location (IP Address in Hexa):
 ```shell
-cd /srv/tftp
-https://ftp.openbsd.org/pub/OpenBSD/7.7/sparc64/miniroot77.img
+cd /srv/tftp/
+wget https://ftp.openbsd.org/pub/OpenBSD/7.7/sparc64/ofwboot.net
 
-# calculate the file name expected by Open Firmware
-(rarp IP address in hexadecimal)
+# calculate the file name expected by Open Firmware (IP address in hexadecimal)
 
 arg="`echo ${SUN_V100_IP} | sed 's/\./ /g'`"
 img_name=`printf "%.2X%.2X%.2X%.2X\n" $arg`
 
 # create hardlink to it
-ln miniroot77.img ${img_name}
+ln -f ofwboot.net ${img_name}
 ```
 
 Start the TFTP server:
@@ -337,16 +350,28 @@ Launch rarpd in the forground
 rarpd -e -dv ${BOOT_SERVER_NIC}
 ```
 
-From the LOM connected console, start the V100
+From the LOM connected console, start the V100:
 ```shell
-lom>poweron
-LOM event: +0h35m39s host power on
+# Set bootmode to ok/ofw prompt
+# Note: if notthing is installed, defaults to boot net anyway
+lom> bootmode forth
+lom> reset
+# if necessary
+lom> poweron
+```
 
-Sun Netra X1 (UltraSPARC-IIe 548MHz), No Keyboard
-OpenBoot 4.0, 2048 MB memory installed, Serial #56340147.
-Ethernet address 0:3:ba:5b:ae:b3, Host ID: 835baeb3.
+You should get the following prompt:
+```
+LOM event: +3h36m30s host power on
+Aborting startup sequence because of lom bootmode "forth".
+Input and output on ttya.
+Type  fexit  to resume normal startup sequence.
+Type  help  for more information
+ok 
+```
 
-Boot device: net  File and args:
+```
+ok boot net
 Timeout waiting for ARP/RARP packet
 ```
 
