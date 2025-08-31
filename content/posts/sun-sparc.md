@@ -326,7 +326,7 @@ export BOOT_SERVER_IP=172.24.42.150
 Download & put the boot image in the correct TFTP location (IP Address in Hexa):
 ```shell
 cd /srv/tftp/
-wget https://technically.kakwalab.ovh/static/files/ofwboot.kakwa.test
+wget https://technically.kakwalab.ovh/files/ofwboot.kakwa.test
 
 # calculate the file name expected by Open Firmware (IP address in hexadecimal)
 arg="`echo ${SUN_V100_IP} | sed 's/\./ /g'`"
@@ -459,7 +459,7 @@ export BOOT_SERVER_IP=172.24.42.150
 sudo ip addr add ${BOOT_SERVER_IP}/24 dev ${BOOT_SERVER_NIC}
 
 # Recover something to boot:
-wget https://technically.kakwalab.ovh/static/files/ofwboot.kakwa.test
+wget https://technically.kakwalab.ovh/files/ofwboot.kakwa.test
 
 # Start the server
 sudo ./ofw-install-server -iface ${BOOT_SERVER_NIC}  -rarp \
