@@ -285,18 +285,20 @@ Setting NVRAM parameters to default values.
 ok reset-all
 ```
 
-## Netboot
+## Network Install
 
-### Netboot Server Setup
 
-The Open Firmware on these machines is able to boot over the network a bit like PXE boot.
+Open Firmware on these machines is able to boot over the network a bit like PXE.
 
 The major difference is the lack of DHCP support: it instead relies on rarp (static MAC -> IP mapping).
-Also the netboot server needs to be on the same lan subnet (or plugged directly to) as our cute & old server.
 
-Aside from that, we also need to put the boot image where Open Firmware expects it. 
+Also the netboot server needs to be on the same lan subnet (or plugged directly to) as our cute sun server.
+And the netboot server must also be a tftp server hosting the boot file at a set location (derived from the IP
+we give to our sun server)
 
-Let's setup a netboot server (Debian/Ubuntu based).
+### Netboot Server Setup - The Annoying Way
+
+Let's setup a netboot server (Debian/Ubuntu based) as our Sunny God intended.
 
 First, get a `root` terminal:
 
@@ -309,7 +311,7 @@ su -i
 
 install the necessary software
 ```shell
-apt install atftpd rarpd bootparamd
+apt install atftpd rarpd
 ```
 
 ```shell
@@ -324,15 +326,14 @@ export BOOT_SERVER_IP=172.24.42.150
 Download & put the boot image in the correct TFTP location (IP Address in Hexa):
 ```shell
 cd /srv/tftp/
-wget https://ftp.openbsd.org/pub/OpenBSD/7.7/sparc64/ofwboot.net
+wget https://technically.kakwalab.ovh/static/files/ofwboot.kakwa.test
 
 # calculate the file name expected by Open Firmware (IP address in hexadecimal)
-
 arg="`echo ${SUN_V100_IP} | sed 's/\./ /g'`"
 img_name=`printf "%.2X%.2X%.2X%.2X\n" $arg`
 
 # create hardlink to it
-ln -f ofwboot.net ${img_name}
+ln -f ofwboot.kakwa.test ${img_name}
 ```
 
 Start the TFTP server:
@@ -360,7 +361,7 @@ lom> reset
 lom> poweron
 ```
 
-You should get the following prompt:
+After a few minutes, you should get the following prompt:
 ```
 LOM event: +3h36m30s host power on
 Aborting startup sequence because of lom bootmode "forth".
@@ -370,6 +371,7 @@ Type  help  for more information
 ok 
 ```
 
+From the `ok prompt`, enter the following to initiate the Netbooting
 ```
 ok boot net
 Timeout waiting for ARP/RARP packet
@@ -389,7 +391,7 @@ export SUN_V100_MAC="00:03:ba:5b:ae:b3"
 MAC_UPPER=$(echo "$SUN_V100_MAC" | tr '[:lower:]' '[:upper:]')
 MAC_NOPUNCT=$(echo "$MAC_UPPER" | tr -d ':')
 
-# Hostname format: sparc-<MAC>
+# Generate a hostname for rarp & ethers/hosts mapping
 # note: could be any name, just avoid collisions
 HOSTNAME="sparc-${MAC_NOPUNCT}"
 
@@ -407,6 +409,58 @@ grep -q -F "$SUN_V100_IP $HOSTNAME" /etc/hosts || \
 
 ```shell
 Timeout waiting for ARP/RARP packet
-Timeout waiting for ARP/RARP packet
 18e200 
+```
+
+It works! Not sure if we have created Paradise or Hell however...
+
+### Netboot Server Setup - The Masochist Way
+
+In truth, I'm atheist, I don't believe in God, even the Sunnier ones.
+
+And I find this setup really messy, and I'm kind of sorry if you read
+through it... or worse, if you actually tried to implement it. Also, spoiler, 
+for our NetBSD/OpenBSD netbooting target, even more similar setup is likely required.
+
+So I've committed blasphemy and created my [own, all in one, Golang simple netboot server](https://github.com/kakwa/ofw-install-server) directly providing the RARP + TFTP combo (plus, spoiler, also BOOTP + NFSv2).
+
+I must confess I've sinned even more by letting the twin d(a)emons
+Claude & ChatGPT do most of work, specially the network protocols implementation.
+So, expect a few bugs.
+On top of that, this netboot server is, by design, very limited
+It only provides a single bootstrap path/set of file and should
+only be used in a dedicated lan segment or in a direct, one to one, connection.
+Don't use it in your DC if you are still rocking and bootstrapping hundred of SPARC servers.
+But for the onezzies/twozzies like here, let the temptation win and give it a try.
+
+Enough talk, here how to setup it.
+
+Building the server:
+```shell
+# build dependencies
+sudo apt install golang git make
+
+# clone sources
+git clone https://github.com/kakwa/ofw-install-server
+cd ofw-install-server/
+make
+
+# check the help
+./ofw-install-server -h
+```
+
+Start the server with the TFTP & RARP module enabled:
+
+```shell
+# NIC & IP to use for the boot server
+export BOOT_SERVER_NIC=enp0s25
+export BOOT_SERVER_IP=172.24.42.150
+sudo ip addr add ${BOOT_SERVER_IP}/24 dev ${BOOT_SERVER_NIC}
+
+# Recover something to boot:
+wget https://technically.kakwalab.ovh/static/files/ofwboot.kakwa.test
+
+# Start the server
+sudo ./ofw-install-server -iface ${BOOT_SERVER_NIC}  -rarp \
+    -tftp -tftp-file ./ofwboot.kakwa.test
 ```
