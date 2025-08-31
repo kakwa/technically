@@ -429,12 +429,12 @@ Claude & ChatGPT do most of work, specially the network protocols implementation
 So, expect a few bugs.
 
 On top of that, this netboot server is, by design, very limited.
-It only provides a single bootstrap path/set of file and should
-only be used in a dedicated lan segment or in a direct, one to one, connection.
-Don't use it in your DC if you are still rocking and bootstrapping hundred of SPARC servers.
-But for the onezzies/twozzies like here, let the temptation win and give it a try.
+It only provides a single bootstrap path/set of boot files
+and should only be used within dedicated lan segment.
+Don't rely on this server if you are still bootstrapping hundreds of SPARC servers like in the good old [Jumpstart](https://docs.oracle.com/cd/E26505_01/html/E28039/customjumpsample-5.html#scrolltoc) days.
+However for the onezzies/twozzies like here, let the temptation win you over, and give it a try.
 
-Enough talk, here how to setup it.
+But enough talk, here how to setup this simplified netboot server.
 
 Building the server:
 ```shell
