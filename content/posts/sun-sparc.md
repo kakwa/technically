@@ -67,22 +67,28 @@ But enough said! Now we need to address the two broad complaints we had about th
 
 ## Starting Point & End Goal
 
+### Smaller
+
 This tiny server is well... a server. If it fits onto a small and standard 1U height (44.50mm), it's also kind of big in the other dimensions: 19"/482.60mm by 17.55"/445mm.
 
-However, once inside, the content looks like this:
+Fortunately, once opened, the server looks like that:
 
-TODO photo inside of V100 CASE
+{{< figure src="/images/sun-inside.jpg" alt="Sun Fire V100 opened showing mainboard and layout in original case" caption="Sun Fire V100 with top cover removed – original layout" >}}
 
-We are in luck, this cute beast could probably be a lot more compact. In particular the main board, including the RAM sticks, is 250x190mm.
+We are in luck, this cute beast could probably be a lot more compact.
+
+In particular the main board, including the RAM sticks, is 250x190mm.
 If we ditch the original (and noisy) Hard Drives & PSU, and cheat a little we could even make it fit into a 254mm(/10") case able to be used in these fancy small [10 inch racks](https://mini-rack.jeffgeerling.com/).
+
+### Quieter
 
 Aside from that, we also need to silence this small beast.
 
 In particular we need to take care of these little bastards:
 
-TODO photo small 40x40 FAN
+{{< figure src="/images/sun-fan.jpg" alt="Sun V100 40x40mm 12V fan" caption="Original 40×40 mm 12V fan" >}}
 
-Replacing these with Noctua fans could probably help.
+But here again, we have options, specially the one beginning with an 'N'.
 
 ## New Parts
 
@@ -93,7 +99,8 @@ To make it fit, I'm replacing the following parts:
 * Let's also try our luck with a GaN USB-C charger + [trigger board](https://www.aliexpress.com/p/tesla-landing/index.html?scenario=c_ppc_item_bridge&productId=1005004356272196&_immersiveMode=true&withMainCard=true&src=google&aff_platform=true&isdl=y). On paper, it could provide us with a great little PSU instead of a rather large and sketchy black brick from an unknown manufacturer.
 * The original 40x40mm 12V fans are getting the [Noctua treatment](https://noctua.at/en/products/fan?size=2645&connector=10&voltage=12).
 
-Note: I'm not doing this project to save money. Secondhand micro PCs like ThinkCentre Ms or RPi like SBC are cheaper.
+Note: I'm not doing this project to save money.
+If you want a cheap option, secondhand micro PCs (ex: ThinkCentre Ms) or RPi like SBC are the way to go.
 
 ## PSU
 
@@ -117,6 +124,8 @@ TODO
 * Scanner technique for the back panel cutouts
 * 2mm PMMA (?) -> too weak -> 3mm minimum
 * Switch to 3mm + recess if necessary.
+
+{{< figure src="/images/sun-cracked-2mm-pmma.jpg" alt="Cracked 2mm PMMA panel" caption="2 mm PMMA cracked – too flimsy" >}}
 
 ### Brackets
 
@@ -143,6 +152,13 @@ TODO
 * Close path
 * FreeCAD
 * Print with filament change (M400).
+
+{{< figure src="/images/sun-logo-3dprint.jpg" alt="3D printed Sun logo" caption="3D‑printed Sun logo with filament color change" >}}
+
+### Final Result
+
+{{< figure src="/images/sun-front-opened.jpg" alt="Sun Fire V100 Custom Tiny" caption="Sun Tiny Custom Case" >}}
+
 
 # The Software Side
 
@@ -174,13 +190,13 @@ On this V100, we have the LOMLite2 version, which is only accessible through Ser
 
 ### Serial Cabling
 
-To access LOM, you need one of these blue "Cisco Cable" with DB9 + RJ45 connectors and a serial adapter:
+To access LOM, you need one of these blue "Cisco cable" with DB9 + RJ45 connectors and a serial adapter:
 
-TODO Picture of cables
+{{< figure src="/images/sun-cable-serial-usb.jpg" alt="DB9 to RJ45 console cable with USB serial adapter" caption="Blue Cisco console cable with USB serial adapter" >}}
 
 Connect it to the upper port on the server, and use your favorite serial terminal software.
 
-TODO Picture of port
+{{< figure src="/images/sun-serial-port.jpg" alt="Sun V100 RJ45 serial console port" caption="Upper RJ45 serial console (LOM) on the Sun V100 rear panel" >}}
 
 ### It's Alive!
 
@@ -240,7 +256,7 @@ In its past life, it seems this server was configured to not share LOM and tty o
 
 I was getting LOM access via the upper port all right, but the Open Firmware/OS on the lower port remained silent.
 
-```
+```shell
 lom> break
 Console not shared.
 
@@ -273,13 +289,15 @@ And bingo, I was in business.
 I was getting the `ok>` prompt and could switch back and forth between `lom>` and `ok>`
 
 However, when trying to `boot net`, I was getting:
-```
+
+```shell
 ok boot net
 Fast Data Access MMU Miss
 ```
 
 The following reset seems to have solved the issue:
-```
+
+```shell
 ok set-defaults
 Setting NVRAM parameters to default values.
 ok reset-all
@@ -289,6 +307,8 @@ ok reset-all
 
 
 Open Firmware on these machines is able to boot over the network a bit like PXE.
+
+{{< figure src="/images/sun-install-setup.jpg" alt="Network install setup with cables" caption="Ad‑hoc netboot lab setup for Open Firmware testing" >}}
 
 The major difference is the lack of DHCP support: it instead relies on RARP (static MAC -> IP mapping).
 
@@ -337,17 +357,20 @@ ln -f ofwboot.kakwa.test ${img_name}
 ```
 
 Start the TFTP server:
+
 ```shell
 systemctl start atftpd.service
 ```
 
 Set the server IP:
+
 ```shell
 ip addr add ${BOOT_SERVER_IP}/24 dev ${BOOT_SERVER_NIC}
 ```
 
 Launch rarpd in the foreground
-```
+
+```shell
 rarpd -e -dv ${BOOT_SERVER_NIC}
 ```
 
@@ -362,7 +385,7 @@ lom> poweron
 ```
 
 After a few minutes, you should get the following prompt:
-```
+```shell
 LOM event: +3h36m30s host power on
 Aborting startup sequence because of lom bootmode "forth".
 Input and output on ttya.
@@ -372,7 +395,7 @@ ok
 ```
 
 From the `ok>` prompt, enter the following to initiate the netbooting
-```
+```shell
 ok boot net
 Timeout waiting for ARP/RARP packet
 ```
@@ -434,7 +457,8 @@ and should only be used within a dedicated LAN segment.
 Don't rely on this server if you are still bootstrapping hundreds of SPARC servers like in the good old [Jumpstart](https://docs.oracle.com/cd/E26505_01/html/E28039/customjumpsample-5.html#scrolltoc) days.
 However for the onesies/twosies like here, let the temptation win you over, and give it a try.
 
-But enough talk, here is how to set up this simplified netboot server.
+But enough about why my masochism tendancies led me to code a netboot server for a dead platform.
+Here is how to set up this damn piece of software.
 
 Building the server:
 ```shell
