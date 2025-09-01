@@ -176,8 +176,6 @@ This leaves more or less two choices:
 * [NetBSD](https://wiki.netbsd.org/ports/sparc64/)
 * [OpenBSD](https://www.openbsd.org/sparc64.html)
 
-Let's go with OpenBSD.
-
 ## LOMLite2
 
 ### Intro
@@ -302,6 +300,94 @@ ok set-defaults
 Setting NVRAM parameters to default values.
 ok reset-all
 ```
+
+## Open Firmware
+
+TODO presentation & link.
+
+### Usefull Comands
+
+TODO, explainations
+
+```shell
+ok help
+
+Enter 'help command-name' or 'help category-name' for more help
+(Use ONLY the first word of a category description) 
+Examples:  help select   -or-   help line
+    Main categories are: 
+[...]
+System and boot configuration parameters
+[...]
+nvramrc (making new commands permanent)
+```
+
+Sub-help (note: need to lower case)
+```shell
+ok help system
+
+devalias                 - Display all device aliases
+devalias <name> <value>  - Create or change a device alias
+printenv      Show all configuration parameters
+                numbers are shown in decimal
+setenv <name> <value>   Change a configuration parameter
+         changes are permanent but only take effect after a reset
+   Examples:
+     setenv input-device ttya         - use ttya input next time
+     setenv screen-#rows 0x1e         - use 30 rows of display ( hex 1e )
+     setenv boot-device net           - specify network as boot device
+     setenv auto-boot? false          - disable automatic boot
+set-defaults    Revert to factory configuration
+See also: nvramrc
+```
+
+list dev aliases (boot device):
+```
+ok devalias
+
+dload                    /pci@1f,0/ethernet@c:,
+net0                     /pci@1f,0/ethernet@c
+net                      /pci@1f,0/ethernet@c
+cdrom                    /pci@1f,0/ide@d/cdrom@3,0:f
+disk3                    /pci@1f,0/ide@d/disk@3,0
+disk2                    /pci@1f,0/ide@d/disk@2,0
+disk1                    /pci@1f,0/ide@d/disk@1,0
+disk0                    /pci@1f,0/ide@d/disk@0,0
+[...]
+```
+
+get the current env var
+```
+printenv
+auto-boot?            true                           true
+watchdog-reboot?      false                          false
+diag-file                                            
+diag-device           net                            net
+boot-file                                            
+boot-device           disk0                          disk net
+local-mac-address?    false                          false
+net-timeout           0                              0
+ansi-terminal?        true                           true
+screen-#columns       80                             80
+screen-#rows          34                             34
+silent-mode?          false                          false
+```
+
+Change the boot device (permanent)
+```
+ok setenv boot-device disk0
+
+boot-device =         disk0
+
+ok reset
+```
+
+Boot on another device
+
+```
+ok boot net
+```
+
 
 ## Open Firmware Netboot Server
 
@@ -515,4 +601,49 @@ From there, you should be able to install Debian 6, albeit with a few headaches 
 
 Note that there is a Debian 7 version of the installer, but it kernel-oopsed on me.
 
-### Netbooting BSD
+### Netbooting OpenBSD/NetBSD
+
+#### More Netboot Setup...
+
+TODO
+
+Yay... More if this stuff.
+
+link to diskless.
+
+Mention bootparamd -> never quite managed to make to make it work.
+
+Mention Bootp/DHCP.
+
+Mention NFSv2 (and its deprecation).
+
+Mention -> more service added to our netboot server
+
+Mention ofwboot.net being a bit finiky, specially the OpenBSD one, while the NetBSD one seems a bit more modern.
+-> use the ofwboot.net for both.
+
+Link to the Source of the OpenBSD on (mention attempt to make it TFTP only), mention the netbsd one might do it be not able to manage it.
+
+```
+sudo ./ofw-install-server -rarp -tftp -tftp-file ./ofwboot.net -bootp -nfs -nfs-file ./netbsd
+```
+
+```
+sudo ./ofw-install-server -rarp -tftp -tftp-file ./ofwboot.net -bootp -nfs -nfs-file ./bsd.rd -http -http-file ./openbsd-install.conf 
+```
+
+Mention OpenBSD auto_install file & server (at this point, adding http on 80 is a not much).
+
+
+Usefull:
+
+```
+setenv boot-device disk0
+reset
+```
+
+# Few bits of NetBSD
+
+TODO document how to setup a basic web hosting & reverse & certbot & install packages.
+
+Show it's serving the SUN documenation.
