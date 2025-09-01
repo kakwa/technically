@@ -303,7 +303,7 @@ Setting NVRAM parameters to default values.
 ok reset-all
 ```
 
-## Network Install
+## Open Firmware Netboot Server
 
 
 Open Firmware on these machines is able to boot over the network a bit like PXE.
@@ -316,7 +316,7 @@ Also the netboot server needs to be on the same LAN subnet (or plugged directly 
 And the netboot server must also be a TFTP server hosting the boot file at a set location (derived from the IP
 we give to our sun server)
 
-### Netboot Server Setup - The Annoying Way
+### Netboot Server Setup - The Annoying & Legacy Way
 
 Let's set up a netboot server (Debian/Ubuntu based) as our Sunny God intended.
 
@@ -431,13 +431,16 @@ grep -q -F "$SUN_V100_IP $HOSTNAME" /etc/hosts || \
 ```
 
 ```shell
-Timeout waiting for ARP/RARP packet
-18e200 
+Boot device: /pci@1f,0/ethernet@c  File and args: 
+27a00 >> kakwa's OFW BOOT 1.29
+Using RARP protocol: ip address: 172.24.42.1, netmask: 255.255.0.0, server: 172.24.42.150
+TFTP IP address: 172.24.42.150
+Fast Data Access MMU Miss
 ```
 
 It works! Not sure if we have created Paradise or Hell however...
 
-### Netboot Server Setup - The Masochist Way
+### Netboot Server Setup - The Modern & Masochist Way
 
 In truth, I'm an atheist, I don't believe in God, even the Sunnier ones.
 
@@ -457,8 +460,8 @@ and should only be used within a dedicated LAN segment.
 Don't rely on this server if you are still bootstrapping hundreds of SPARC servers like in the good old [Jumpstart](https://docs.oracle.com/cd/E26505_01/html/E28039/customjumpsample-5.html#scrolltoc) days.
 However for the onesies/twosies like here, let the temptation win you over, and give it a try.
 
-But enough about why my masochism tendancies led me to code a netboot server for a dead platform.
-Here is how to set up this damn piece of software.
+But enough about why my masochism tendancies led me to develop a full netboot server for such a dead platform.
+here is how to set up this damn piece of software.
 
 Building the server:
 ```shell
@@ -489,3 +492,27 @@ wget https://technically.kakwalab.ovh/files/ofwboot.kakwa.test
 sudo ./ofw-install-server -iface ${BOOT_SERVER_NIC}  -rarp \
     -tftp -tftp-file ./ofwboot.kakwa.test
 ```
+
+## Netbooting & Installing an OS
+
+### Netbooting Debian 6
+
+Just for reference, here is how to get and netboot the last working Debian installer:
+
+```shell
+# Recover the boot.img file from the netboot installer `.deb` package.
+wget https://archive.debian.org/debian/pool/main/d/debian-installer-netboot-images/debian-installer-6.0-netboot-sparc_20110106.squeeze4.b6_all.deb
+mkdir debtmp && dpkg-deb -x *.deb debtmp/
+find ./debtmp/ -name 'boot.img' -exec cp {} ./boot-debian-6.img \;
+rm -rf -- debian-installer-6.0-netboot-sparc_20110106.squeeze4.b6_all.deb ./debtmp/
+
+# Start the server with the debian boot image
+sudo ./ofw-install-server -iface ${BOOT_SERVER_NIC}  -rarp \
+    -tftp -tftp-file ./boot-debian-6.img
+```
+
+From there, you should be able to install Debian 6, albeit with a few headaches like pointing to the archive.debian.org repository or handling expired GPG keys.
+
+Note that there is a Debian 7 version of the installer, but it kernel-oopsed on me.
+
+### Netbooting BSD
