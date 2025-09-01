@@ -303,12 +303,14 @@ ok reset-all
 
 ## Open Firmware
 
-TODO presentation & link.
+[Open Firmware](https://github.com/openbios/openfirmware) is the Forth-powered (a fun basic basic little language) boot firmware used by Sun Servers and other non x86 platform from that period, like PPC Macs and IBM Power Servers.
+FYI Sun had it's own implentation: [OpenBoot](https://github.com/openbios/openboot).
 
-### Usefull Comands
+### Useful Commands
 
-TODO, explainations
+Here is a few useful commands
 
+Main help:
 ```shell
 ok help
 
@@ -322,7 +324,7 @@ System and boot configuration parameters
 nvramrc (making new commands permanent)
 ```
 
-Sub-help (note: need to lower case)
+Sub-help (note: need to lower case):
 ```shell
 ok help system
 
@@ -342,7 +344,7 @@ See also: nvramrc
 ```
 
 list dev aliases (boot device):
-```
+```shell
 ok devalias
 
 dload                    /pci@1f,0/ethernet@c:,
@@ -356,9 +358,10 @@ disk0                    /pci@1f,0/ide@d/disk@0,0
 [...]
 ```
 
-get the current env var
-```
-printenv
+get the current env vars:
+```shell
+ok printenv
+
 auto-boot?            true                           true
 watchdog-reboot?      false                          false
 diag-file                                            
@@ -373,8 +376,8 @@ screen-#rows          34                             34
 silent-mode?          false                          false
 ```
 
-Change the boot device (permanent)
-```
+Set the boot device (persistent):
+```shell
 ok setenv boot-device disk0
 
 boot-device =         disk0
@@ -382,9 +385,9 @@ boot-device =         disk0
 ok reset
 ```
 
-Boot on another device
+One time boot of another device:
 
-```
+```shell
 ok boot net
 ```
 
@@ -605,46 +608,78 @@ Note that there is a Debian 7 version of the installer, but it kernel-oopsed on 
 
 #### More Netboot Setup...
 
-TODO
+For [NetBSD](https://www.netbsd.org/docs/network/netboot/)/[OpenBSD](https://ftp.openbsd.org/pub/OpenBSD/7.7/sparc64/INSTALL.sparc64), this is "slightly" more complex than the Debian case:
+* Open Firmware first RARPs & TFTP‑loads a tiny second‑stage loader (`ofwboot.net`).
+* That loader then speaks BOOTPARAMS and/or BOOTP to learn its IP and the NFS root path
+* It then mounts that root over good old NFSv2,
+* And finally [loads the kernel & ramdisk](https://www.netbsd.org/docs/network/netboot/local.install.html#diskimage) from there.
 
-Yay... More if this stuff.
+Yes: RARP + TFTP + BOOTP + NFSv2 on the same poor L2 segment.
 
-link to diskless.
+Oh, and to a add a bit of fun, NFSv2 is kind of obsolete (removed from Debian since `2022/03/13` & `nfs-utils (1:2.6.1-1~exp1)`):
 
-Mention bootparamd -> never quite managed to make to make it work.
+But once again, with a bit of vibe coding and a few tweaks, we are able to add these services to our custom netboot server.
 
-Mention Bootp/DHCP.
+But at least, we are skipping the BOOTPARAM rpc bits. According to the `diskless` documentations from OpenBSD & the sourcecode of `ofwboot.net`, BOOTP could be substituted by `bootparamd`. It's still the first option used by OpenBSD’s `ofwboot.net` and I tried to make it work, but I finally gave up.
 
-Mention NFSv2 (and its deprecation).
+I also tried to implement a version of `ofwboot.net` using the same RARP + TFTP protocols as the first stage, but without luck. If you want to give it a try, the code is available [here](https://github.com/kakwa/silly-sunv100-server/tree/main/ofwboot) and can be built under linux (see README.md instructions).
 
-Mention -> more service added to our netboot server
 
-Mention ofwboot.net being a bit finiky, specially the OpenBSD one, while the NetBSD one seems a bit more modern.
--> use the ofwboot.net for both.
+#### OpenBSD Install
 
-Link to the Source of the OpenBSD on (mention attempt to make it TFTP only), mention the netbsd one might do it be not able to manage it.
+In the end, I opted for NetBSD so I didn't fully installed OpenBSD. But given I managed to start the installer, I'm fairly confident I would be able to install it if needed.
 
-```
-sudo ./ofw-install-server -rarp -tftp -tftp-file ./ofwboot.net -bootp -nfs -nfs-file ./netbsd
-```
+Also, just for kick, hiven all the services we have in our netboot server, I've taken the liberty to add one last bit:
+* an http server to server an OpenBSD [autoinstall](https://man.openbsd.org/autoinstall.8) configuration file.
 
+Lastly, it's worth mentionning that the OpenBSD version of `ofwboot.net` gave me quite a lot of headaches. I never quite managed to pass it the NFS server IP & file path/name given by BootP (typo? bug? wrong bootp option? magic values?).
+
+So in the end, I chose to use the NetBSD's `ofwboot.net` version for both NetBSD and OpenBSD.
+
+FYI, both versions come from the same source, but the the NetBSD one seems marginally more modern.
+
+TODO, list files toe recover
+
+Start the install server
 ```
 sudo ./ofw-install-server -rarp -tftp -tftp-file ./ofwboot.net -bootp -nfs -nfs-file ./bsd.rd -http -http-file ./openbsd-install.conf 
 ```
 
-Mention OpenBSD auto_install file & server (at this point, adding http on 80 is a not much).
+#### NetBSD Install
 
+So in the end, I finally settled on installing NetBSD:
 
-Usefull:
+TODO, list files to recover
+
+Start the server
+```
+sudo ./ofw-install-server -rarp -tftp -tftp-file ./ofwboot.net -bootp -nfs -nfs-file ./netbsd
+```
+
+TODO mention ofwboot seems to support tftp?
+
+#### One Last Bit
+
+And then I just did this final tweak to make it boot on disk persistently:
 
 ```
 setenv boot-device disk0
 reset
 ```
+Not sure why the default boot-device config (`disk net`) didn't work. Maybe the `disk` dev alias was missing?
 
-# Few bits of NetBSD
+But frankly, by this point, I could not care less.
 
-TODO document how to setup a basic web hosting & reverse & certbot & install packages.
+This cute little sun server is finally working!
+
+
+# Wrapping-up
+
+## A Bit of NetBSD SysAdmin
+
+TODO this is not a blog post about NetBSD Administration, but here a few useful commands:
+
+### SSHD
 
 Service /etc/rc.conf
 
@@ -654,12 +689,16 @@ echo "sshd=YES" >>/etc/rc.conf
 /etc/rc.d/sshd start
 ```
 
+### NTP
+
 NTP (got stuck on weird SSL errors, server in 2024... certificate not yet valid, `openssl s_client cdn.netbsd.org:443`)
 ```
 ntpdate 2.netbsd.pool.ntp.org
 echo "ntpd=YES" >>/etc/rc.conf
 /etc/rc.d/ntpd start
 ```
+
+### Hardware Monitoring
 
 ```shell
 netra-x1# envstat
@@ -674,6 +713,8 @@ netra-x1# envstat
      Alarm3:      TRUE
 ```
 
+### Getting A Package Manager
+
 ```
 pkg_add https://cdn.NetBSD.org/pub/pkgsrc/packages/NetBSD/`uname -m`/`uname -r`/All/pkgin
 ```
@@ -686,4 +727,11 @@ pkgin update
 pkgin search neovim
 ```
 
-Show it's serving the SUN documenation.
+## Conclusion
+
+> TODO Long Project
+> Significantly improved CAD skills
+> Side Projects (printers)
+> Fancy Deploy server
+
+TODO > Put to good use, personal stuff.... but also Fitting to host sun docs.
