@@ -646,4 +646,44 @@ reset
 
 TODO document how to setup a basic web hosting & reverse & certbot & install packages.
 
+Service /etc/rc.conf
+
+SSH:
+```
+echo "sshd=YES" >>/etc/rc.conf
+/etc/rc.d/sshd start
+```
+
+NTP (got stuck on weird SSL errors, server in 2024... certificate not yet valid, `openssl s_client cdn.netbsd.org:443`)
+```
+ntpdate 2.netbsd.pool.ntp.org
+echo "ntpd=YES" >>/etc/rc.conf
+/etc/rc.d/ntpd start
+```
+
+```shell
+netra-x1# envstat
+               Current  CritMax  WarnMax  WarnMin  CritMin  Unit
+[admtemp0]
+   internal:    37.000   95.000                    -55.000  degC
+   external:    58.000  105.000                    -55.000  degC
+[lom0]
+  Fault LED:     FALSE
+     Alarm1:     FALSE
+     Alarm2:     FALSE
+     Alarm3:      TRUE
+```
+
+```
+pkg_add https://cdn.NetBSD.org/pub/pkgsrc/packages/NetBSD/`uname -m`/`uname -r`/All/pkgin
+```
+
+```
+pkgin update
+```
+
+```
+pkgin search neovim
+```
+
 Show it's serving the SUN documenation.
