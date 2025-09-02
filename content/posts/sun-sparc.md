@@ -8,7 +8,7 @@ draft = true
 
 - [Project's git (scripts & 3D models)](https://github.com/kakwa/silly-sunv100-server).
 - [Sun's V100 Official documentation](https://dogemicrosystems.ca/pub/Sun/System_Handbook/Sun_syshbk_V3.4/Systems/SunFireV100/SunFireV100.html).
-- [Sun's LOMLite2 official documentation](https://docs.oracle.com/cd/E19102-01/n20.srvr/806-7334-13/LW2+User.LOM.html)
+- [Sun's LOMlite2 official documentation](https://docs.oracle.com/cd/E19102-01/n20.srvr/806-7334-13/LW2+User.LOM.html)
 - Eerie Linux's [blog post 1](https://eerielinux.wordpress.com/2019/09/22/a-sparc-in-the-night-sunfire-v100-exploration/) and [post 2](https://eerielinux.wordpress.com/2019/10/30/illumos-v9os-on-sparc64-sunfire-v100/) about his V100.
 - [Obligatory Clabretro's video](https://www.youtube.com/watch?v=5OyGwbWKWZU).
 
@@ -22,7 +22,7 @@ Here, I'm not thinking in a retro-computing kind of way, software is not exactly
 
 Also, old software tends to be isolated in its own bubble, amusing, but unless you are [G.R.R. Martin rocking along WordStar 4.0](https://www.youtube.com/watch?v=X5REM-3nWHg), that's not really useful.
 
-I prefer the challenge of trying to install modern software on these antiquities, make them able to interact with the Worldwide Internet, and do something useful with them.
+I prefer the challenge of trying to install modern software on these antiquities, make them able to interact with the internet, and do something useful with them.
 
 Sure, it will not run a k8s cluster, but these old machines generally still have enough oomph for lightweight use cases like, for example:
 
@@ -45,7 +45,7 @@ It boasts impressive specs such as:
 - LOMlite Management over Serial + second Serial Port
 
 In truth, this beast is a little asthmatic, but I find the SPARC CPU interesting, particularly for testing endianness and alignment issues.
-And it doesn't need huge amounts of power (~15 Watts TDP) to run, unlike most servers from that period.
+And it doesn't need huge amounts of power (~15 W TDP) to run, unlike most servers from that period.
 
 I bought this V100 about 15 years ago secondhand, but in truth, never did anything really useful with it.
 While not as bad as other monsters from the era, it's still simply a bit too big and loud.
@@ -69,7 +69,7 @@ But enough said! Now we need to address the two broad complaints we had about th
 
 ### Smaller
 
-This tiny server is well... a server. If it fits onto a small and standard 1U height (44.50mm), it's also kind of big in the other dimensions: 19"/482.60mm by 17.55"/445mm.
+This tiny server is well... a server. If it fits onto a small and standard 1U height (44.50 mm), it's also kind of big in the other dimensions: 19"/482.60 mm by 17.55"/445 mm.
 
 Fortunately, once opened, the server looks like that:
 
@@ -77,8 +77,8 @@ Fortunately, once opened, the server looks like that:
 
 We are in luck, this cute beast could probably be a lot more compact.
 
-In particular the main board, including the RAM sticks, is 250x190mm.
-If we ditch the original (and noisy) Hard Drives & PSU, and cheat a little we could even make it fit into a 254mm(/10") case able to be used in these fancy small [10 inch racks](https://mini-rack.jeffgeerling.com/).
+In particular the main board, including the RAM sticks, is 250×190 mm.
+If we ditch the original (and noisy) hard drives and PSU, and, if we cheat a little, we could even make it fit into a 254 mm (10") case able to be used in these fancy small [10‑inch racks](https://mini-rack.jeffgeerling.com/).
 
 ### Quieter
 
@@ -86,18 +86,18 @@ Aside from that, we also need to silence this small beast.
 
 In particular we need to take care of these little bastards:
 
-{{< figure src="/images/sun-fan.jpg" alt="Sun V100 40x40mm 12V fan" caption="Original 40×40 mm 12V fan" >}}
+{{< figure src="/images/sun-fan.jpg" alt="Sun V100 40×40 mm 12 V fan" caption="Original 40×40 mm 12 V fan" >}}
 
-But here again, we have options, specially the one beginning with an 'N'.
+But here again, we have options, especially the one beginning with an 'N'.
 
 ## New Parts
 
 To make it fit, I'm replacing the following parts:
 
 * The original IDE HDs are too big & noisy, so I'm replacing them with a [SanDisk 32GB CF Card](https://shop.sandisk.com/products/memory-cards/cfast-cfexpress-compactflash/sandisk-extreme-compactflash?sku=SDCFXSB-032G-G46) + [adapter thingy](https://www.startech.com/en-us/hdd/35baycf2ide) (CF cards are generally pin-compatible with IDE, giving good odds of it working with decent performance).
-* The original PSU is quite bulky, but relatively small at 80 Watts. So I will also try my luck with a [Pico PSU](https://www.rgeek.com/portfolio-item/rgeek-pico-dc-psu-rp-120lq-dc-12v-24pin-power-supply-module/) + external 12V Power Brick.
+* The original PSU is quite bulky, but relatively small at 80 W. So I will also try my luck with a [Pico PSU](https://www.rgeek.com/portfolio-item/rgeek-pico-dc-psu-rp-120lq-dc-12v-24pin-power-supply-module/) + external 12 V power brick.
 * Let's also try our luck with a GaN USB-C charger + [trigger board](https://www.aliexpress.com/p/tesla-landing/index.html?scenario=c_ppc_item_bridge&productId=1005004356272196&_immersiveMode=true&withMainCard=true&src=google&aff_platform=true&isdl=y). On paper, it could provide us with a great little PSU instead of a rather large and sketchy black brick from an unknown manufacturer.
-* The original 40x40mm 12V fans are getting the [Noctua treatment](https://noctua.at/en/products/fan?size=2645&connector=10&voltage=12).
+* The original 40×40 mm 12 V fans are getting the [Noctua treatment](https://noctua.at/en/products/fan?size=2645&connector=10&voltage=12).
 
 Note: I'm not doing this project to save money.
 If you want a cheap option, secondhand micro PCs (ex: ThinkCentre Ms) or RPi like SBC are the way to go.
@@ -107,7 +107,7 @@ If you want a cheap option, secondhand micro PCs (ex: ThinkCentre Ms) or RPi lik
 TODO
 
 * Say it's standard ATX.
-* PSA: Trigger Board + 12V -> not a given
+* PSA: Trigger board + 12 V -> not a given
 * PSU might be a bit too weak.
 
 ## Modeling
@@ -122,8 +122,8 @@ TODO
 
 * Dimension choices
 * Scanner technique for the back panel cutouts
-* 2mm PMMA (?) -> too weak -> 3mm minimum
-* Switch to 3mm + recess if necessary.
+* 2 mm PMMA (?) -> too weak -> 3 mm minimum
+* Switch to 3 mm + recess if necessary.
 
 {{< figure src="/images/sun-cracked-2mm-pmma.jpg" alt="Cracked 2mm PMMA panel" caption="2 mm PMMA cracked – too flimsy" >}}
 
@@ -139,7 +139,7 @@ TODO
 TODO
 
 * Start from Photo of V210 (prettier than V100)
-* two Outlines: front + back
+* Two outlines: front + back
 * lofting
 * finishing features
 * extend concept to other server fronts/bezels (Dell, HP, Fujitsu, IBM)
@@ -176,7 +176,7 @@ This leaves more or less two choices:
 * [NetBSD](https://wiki.netbsd.org/ports/sparc64/)
 * [OpenBSD](https://www.openbsd.org/sparc64.html)
 
-## LOMLite2
+## LOMlite2
 
 ### Intro
 
@@ -184,7 +184,7 @@ LOM stands for Lights Out Management. Not sure if it fulfills the [IPMI](https:/
 
 It's a small Baseboard Management Controller (BMC), similar to HP's iLO or Dell iDRAC, monitoring the hardware (fans, PSUs), setting the boot sequence, and of course, [turning it off and on again](https://www.youtube.com/watch?v=5UT8RkSmN4k).
 
-On this V100, we have the LOMLite2 version, which is only accessible through Serial (bigger & newer servers, like V210s or T2000s, have ALOM & ILOM with network & telnet/ssh capabilities).
+On this V100, we have the LOMlite2 version, which is only accessible through serial (bigger & newer servers, like V210s or T2000s, have ALOM & ILOM with network & telnet/ssh capabilities).
 
 ### Serial Cabling
 
@@ -303,12 +303,12 @@ ok reset-all
 
 ## Open Firmware
 
-[Open Firmware](https://github.com/openbios/openfirmware) is the Forth-powered (a fun basic basic little language) boot firmware used by Sun Servers and other non x86 platform from that period, like PPC Macs and IBM Power Servers.
-FYI Sun had it's own implentation: [OpenBoot](https://github.com/openbios/openboot).
+[Open Firmware](https://github.com/openbios/openfirmware) is the Forth-powered (a fun little language) boot firmware used by Sun servers and other non‑x86 platforms from that period, like PowerPC Macs and IBM POWER servers.
+FYI, Sun had its own implementation: [OpenBoot](https://github.com/openbios/openboot).
 
 ### Useful Commands
 
-Here is a few useful commands
+Here are a few useful commands:
 
 Main help:
 ```shell
@@ -324,7 +324,7 @@ System and boot configuration parameters
 nvramrc (making new commands permanent)
 ```
 
-Sub-help (note: need to lower case):
+Sub-help (note: need to use lowercase):
 ```shell
 ok help system
 
@@ -343,7 +343,7 @@ set-defaults    Revert to factory configuration
 See also: nvramrc
 ```
 
-list dev aliases (boot device):
+List device aliases (boot devices):
 ```shell
 ok devalias
 
@@ -358,7 +358,7 @@ disk0                    /pci@1f,0/ide@d/disk@0,0
 [...]
 ```
 
-get the current env vars:
+Get the current environment variables:
 ```shell
 ok printenv
 
@@ -385,7 +385,7 @@ boot-device =         disk0
 ok reset
 ```
 
-One time boot of another device:
+One-time boot of another device:
 
 ```shell
 ok boot net
@@ -401,9 +401,9 @@ Open Firmware on these machines is able to boot over the network a bit like PXE.
 
 The major difference is the lack of DHCP support: it instead relies on RARP (static MAC -> IP mapping).
 
-Also the netboot server needs to be on the same LAN subnet (or plugged directly to) as our cute sun server.
+Also, the netboot server needs to be on the same LAN subnet (or plugged directly into) as our cute Sun server.
 And the netboot server must also be a TFTP server hosting the boot file at a set location (derived from the IP
-we give to our sun server)
+we give to our Sun server)
 
 ### Netboot Server Setup - The Annoying & Legacy Way
 
@@ -415,10 +415,10 @@ First, get a `root` terminal:
 # pick your poison
 sudo -i
 # or
-su -i
+su -
 ```
 
-Install the necessary software
+Install the necessary software:
 ```shell
 apt install atftpd rarpd
 ```
@@ -457,7 +457,7 @@ Set the server IP:
 ip addr add ${BOOT_SERVER_IP}/24 dev ${BOOT_SERVER_NIC}
 ```
 
-Launch rarpd in the foreground
+Launch rarpd in the foreground:
 
 ```shell
 rarpd -e -dv ${BOOT_SERVER_NIC}
@@ -483,7 +483,7 @@ Type  help  for more information
 ok 
 ```
 
-From the `ok>` prompt, enter the following to initiate the netbooting
+From the `ok>` prompt, enter the following to initiate netbooting:
 ```shell
 ok boot net
 Timeout waiting for ARP/RARP packet
@@ -504,7 +504,7 @@ MAC_UPPER=$(echo "$SUN_V100_MAC" | tr '[:lower:]' '[:upper:]')
 MAC_NOPUNCT=$(echo "$MAC_UPPER" | tr -d ':')
 
 # Generate a hostname for rarp & ethers/hosts mapping
-# note: could be any name, just avoid collisions
+# Note: could be any name, just avoid collisions
 HOSTNAME="sparc-${MAC_NOPUNCT}"
 
 # Make sure ethers file exists
@@ -549,8 +549,8 @@ and should only be used within a dedicated LAN segment.
 Don't rely on this server if you are still bootstrapping hundreds of SPARC servers like in the good old [Jumpstart](https://docs.oracle.com/cd/E26505_01/html/E28039/customjumpsample-5.html#scrolltoc) days.
 However for the onesies/twosies like here, let the temptation win you over, and give it a try.
 
-But enough about why my masochism tendancies led me to develop a full netboot server for such a dead platform.
-here is how to set up this damn piece of software.
+But enough about why my masochism tendencies led me to develop a full netboot server for such a dead platform.
+Here is how to set up this damn piece of software.
 
 Building the server:
 ```shell
@@ -595,7 +595,7 @@ mkdir debtmp && dpkg-deb -x *.deb debtmp/
 find ./debtmp/ -name 'boot.img' -exec cp {} ./boot-debian-6.img \;
 rm -rf -- debian-installer-6.0-netboot-sparc_20110106.squeeze4.b6_all.deb ./debtmp/
 
-# Start the server with the debian boot image
+# Start the server with the Debian boot image
 sudo ./ofw-install-server -iface ${BOOT_SERVER_NIC}  -rarp \
     -tftp -tftp-file ./boot-debian-6.img
 ```
@@ -616,29 +616,29 @@ For [NetBSD](https://www.netbsd.org/docs/network/netboot/)/[OpenBSD](https://ftp
 
 Yes: RARP + TFTP + BOOTP + NFSv2 on the same poor L2 segment.
 
-Oh, and to a add a bit of fun, NFSv2 is kind of obsolete (removed from Debian since `2022/03/13` & `nfs-utils (1:2.6.1-1~exp1)`):
+Oh, and to add a bit of fun, NFSv2 is kind of obsolete (removed from Debian since `2022/03/13` & `nfs-utils (1:2.6.1-1~exp1)`):
 
 But once again, with a bit of vibe coding and a few tweaks, we are able to add these services to our custom netboot server.
 
-But at least, we are skipping the BOOTPARAM rpc bits. According to the `diskless` documentations from OpenBSD & the sourcecode of `ofwboot.net`, BOOTP could be substituted by `bootparamd`. It's still the first option used by OpenBSD’s `ofwboot.net` and I tried to make it work, but I finally gave up.
+But at least, we are skipping the BOOTPARAMS RPC bits. According to the `diskless` documentation from OpenBSD and the source code of `ofwboot.net`, BOOTP could be replaced by `bootparamd`. It's still the first option used by OpenBSD’s `ofwboot.net` and I tried to make it work, but I finally gave up.
 
-I also tried to implement a version of `ofwboot.net` using the same RARP + TFTP protocols as the first stage, but without luck. If you want to give it a try, the code is available [here](https://github.com/kakwa/silly-sunv100-server/tree/main/ofwboot) and can be built under linux (see README.md instructions).
+I also tried to implement a version of `ofwboot.net` using the same RARP + TFTP protocols as the first stage, but without luck. If you want to give it a try, the code is available [here](https://github.com/kakwa/silly-sunv100-server/tree/main/ofwboot) and can be built under Linux (see README.md instructions).
 
 
 #### OpenBSD Install
 
-In the end, I opted for NetBSD so I didn't fully installed OpenBSD. But given I managed to start the installer, I'm fairly confident I would be able to install it if needed.
+In the end, I opted for NetBSD so I didn't fully install OpenBSD. But given I managed to start the installer, I'm fairly confident I would be able to install it if needed.
 
-Also, just for kick, hiven all the services we have in our netboot server, I've taken the liberty to add one last bit:
-* an http server to server an OpenBSD [autoinstall](https://man.openbsd.org/autoinstall.8) configuration file.
+Also, just for kicks, given all the services we have in our netboot server, I've taken the liberty to add one last bit:
+* an HTTP server to serve an OpenBSD [autoinstall](https://man.openbsd.org/autoinstall.8) configuration file.
 
-Lastly, it's worth mentionning that the OpenBSD version of `ofwboot.net` gave me quite a lot of headaches. I never quite managed to pass it the NFS server IP & file path/name given by BootP (typo? bug? wrong bootp option? magic values?).
+Lastly, it's worth mentioning that the OpenBSD version of `ofwboot.net` gave me quite a lot of headaches. I never quite managed to pass it the NFS server IP and file path/name given by BOOTP (typo? bug? wrong BOOTP option? magic values?).
 
 So in the end, I chose to use the NetBSD's `ofwboot.net` version for both NetBSD and OpenBSD.
 
-FYI, both versions come from the same source, but the the NetBSD one seems marginally more modern.
+FYI, both versions come from the same source, but the NetBSD one seems marginally more modern.
 
-TODO, list files toe recover
+TODO, list files to recover
 
 Start the install server
 ```
@@ -656,7 +656,7 @@ Start the server
 sudo ./ofw-install-server -rarp -tftp -tftp-file ./ofwboot.net -bootp -nfs -nfs-file ./netbsd
 ```
 
-TODO mention ofwboot seems to support tftp?
+TODO mention ofwboot seems to support TFTP?
 
 #### One Last Bit
 
@@ -670,14 +670,14 @@ Not sure why the default boot-device config (`disk net`) didn't work. Maybe the 
 
 But frankly, by this point, I could not care less.
 
-This cute little sun server is finally working!
+This cute little Sun server is finally working!
 
 
-# Wrapping-up
+# Wrapping up
 
 ## A Bit of NetBSD SysAdmin
 
-TODO this is not a blog post about NetBSD Administration, but here a few useful commands:
+TODO this is not a blog post about NetBSD administration, but here are a few useful commands:
 
 ### SSHD
 
@@ -734,4 +734,4 @@ pkgin search neovim
 > Side Projects (printers)
 > Fancy Deploy server
 
-TODO > Put to good use, personal stuff.... but also Fitting to host sun docs.
+TODO > Put to good use, personal stuff... but also fitting to host Sun docs.
