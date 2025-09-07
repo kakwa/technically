@@ -18,7 +18,7 @@ draft = true
 
 One of my pet peeves is to bring new life into old hardware.
 
-Here, I'm not thinking in a retro-computing kind of way, software is not exactly like fine wine in my opinion: it doesn't age well.
+Here, I'm not thinking in a retro-computing kind of way, software is not exactly like fine wine in my opinion: it usually doesn't age well.
 
 Also, old software tends to be isolated in its own bubble, amusing, but unless you are [G.R.R. Martin rocking along WordStar 4.0](https://www.youtube.com/watch?v=X5REM-3nWHg), that's not really useful.
 
