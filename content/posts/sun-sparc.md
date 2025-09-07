@@ -26,11 +26,10 @@ I prefer the challenge of trying to install modern software on these antiquities
 
 Sure, it will not run a k8s cluster, but these old machines generally still have enough oomph for lightweight use cases like, for example:
 
-- Spotifyd/Webradio Receiver/MPD servers hooked to old analog Hi-Fi Systems.
-- Basic Web Hosting
+- MPD/Music server (in an analog Hi-Fi setup).
+- Basic Web Hosting (Blog, RSS aggregator, etc)
 - Mail Server
-- Test Machines
-- Firewalls/Routers
+- Test/Lab Machines
 
 ## The Little Server That Could (Not)
 
@@ -83,7 +82,7 @@ If we ditch the original (and noisy) hard drives and PSU, and, if we cheat a lit
 
 These racks also are generally quite short, at most 300 mm if not less.
 
-So we have goal number one: make it fit into 254x190-300x44mm.
+So we have goal number one: make it fit into 254x190-300x44mm. And if possible, retain the original look.
 
 ### Quieter
 
