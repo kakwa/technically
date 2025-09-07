@@ -98,9 +98,9 @@ TODO pic CPU fan.
 
 But here again, we have options, especially the one beginning with an 'N'.
 
-I'm aiming for a noise level in the low thirties in terms of DBs, aka something you don't really notice unless you really are paying attention. It should also remain properly v
+I'm aiming for a noise level in the low thirties in terms of DBs, aka something you don't really notice unless you really are paying attention. It should also remain properly cooled and with no alarm LED being triggered.
 
- That's goal number two.
+That's goal number two.
 
 ## New Parts
 
