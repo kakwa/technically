@@ -34,7 +34,7 @@ Sure, it will not run a k8s cluster, but these old machines generally still have
 
 ## The Little Server That Could (Not)
 
-Enter the Sun V100, the entry-level server from 2001 sold by Sun Microsystems.
+Enters the Sun V100, the 2001 entry-level server from Sun Microsystems.
 
 It boasts impressive specs such as:
 - UltraSPARC-IIe CPU @548MHz
@@ -44,11 +44,11 @@ It boasts impressive specs such as:
 - Two 100 Mbit/s NICs
 - LOMlite Management over Serial + second Serial Port
 
-In truth, this beast is a little asthmatic, but I find the SPARC CPU interesting, particularly for testing endianness and alignment issues.
-And it doesn't need huge amounts of power (~15 W TDP) to run, unlike most servers from that period.
+In truth, this beast is a little asthmatic, it already was at the time, but I find the SPARC CPU interesting, particularly for testing endianness and alignment issues.
+And it doesn't need huge amounts of power (~15W TDP) to run, unlike most servers from that period.
 
 I bought this V100 about 15 years ago secondhand, but in truth, never did anything really useful with it.
-While not as bad as other monsters from the era, it's still simply a bit too big and loud.
+While not as bad as other monsters from the era, it's simply a bit too big and loud.
 Consequently, it sat in my cupboard for ages, in the dark, lonely and unused, away from the information highways.
 
 But let's try to change that and maybe learn a few things along the way.
@@ -65,9 +65,9 @@ But enough said! Now we need to address the two broad complaints we had about th
 
 # The Hardware Side
 
-## Starting Point & End Goal
+## The Goals
 
-### Smaller
+### Make It Smaller
 
 This tiny server is well... a server. If it fits onto a small and standard 1U height (44.50 mm), it's also kind of big in the other dimensions: 19"/482.60 mm by 17.55"/445 mm.
 
@@ -78,7 +78,11 @@ Fortunately, once opened, the server looks like that:
 We are in luck, this cute beast could probably be a lot more compact.
 
 In particular the main board, including the RAM sticks, is 250×190 mm.
-If we ditch the original (and noisy) hard drives and PSU, and, if we cheat a little, we could even make it fit into a 254 mm (10") case able to be used in these fancy small [10‑inch racks](https://mini-rack.jeffgeerling.com/).
+If we ditch the original (and noisy) hard drives and PSU, and, if we cheat a little, we could even make it fit into a 254 mm (10") case able to be used in one of these fancy small [10‑inch racks](https://mini-rack.jeffgeerling.com/).
+
+These racks also are generally quite short, at most 300 mm if not less.
+
+So we have goal number one: make it fit into 254x190-300x44mm.
 
 ### Quieter
 
@@ -88,7 +92,15 @@ In particular we need to take care of these little bastards:
 
 {{< figure src="/images/sun-fan.jpg" alt="Sun V100 40×40 mm 12 V fan" caption="Original 40×40 mm 12 V fan" >}}
 
+And also their lord and master:
+
+TODO pic CPU fan.
+
 But here again, we have options, especially the one beginning with an 'N'.
+
+I'm aiming for a noise level in the low thirties in terms of DBs, aka something you don't really notice unless you really are paying attention. It should also remain properly v
+
+ That's goal number two.
 
 ## New Parts
 
