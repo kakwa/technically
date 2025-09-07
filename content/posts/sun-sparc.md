@@ -120,7 +120,7 @@ So it was back to a cheap noname 12V brick. At least this one is rated for 120W 
 
 But in truth, this option is not quite right either. the PSU too frequently fails to start, and I have to cycle unplug/plug several times to get the server to start. Maybe the PicoPSU is a bit to light and cannot deliver the starting spike, but I lack the skills and equipment to properly diagnos this one.
 
-I might try might my luck with another PicoPSU, this time, a multi-voltage one and explore the USB-C option again. I would really if the option worked given that with the standardisation of USB-C, quality PSU are easier to get this way.
+I might try might my luck with another PicoPSU, this time, a multi-voltage one and explore the USB-C option again. I would really if the option worked, good and compact GaN USB-C PSUs are quite easy to get these days.
 
 But for now, let's forge ahead.
 
