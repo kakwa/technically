@@ -78,11 +78,11 @@ Fortunately, once opened, the server looks like that:
 We are in luck, this cute beast could probably be a lot more compact.
 
 In particular the main board, including the RAM sticks, is 250×190 mm.
-If we ditch the original (and noisy) hard drives and PSU, and, if we cheat a little, we could even make it fit into a 254 mm (10") case able to be used in one of these fancy small [10‑inch racks](https://mini-rack.jeffgeerling.com/).
+If we ditch the original (and noisy) hard drives and PSU, plus, if we cheat a little, we could even make it fit into a 254 mm (10") case able to be used in one of these fancy small [10‑inch racks](https://mini-rack.jeffgeerling.com/).
 
-These racks also are generally quite short, at most 300 mm if not less.
+Given these racks are also quite short, 300 mm and often less, this gives goal number one: make it fit into 254x190-300x44mm.
 
-So we have goal number one: make it fit into 254x190-300x44mm. And if possible, retain the original look.
+And also, if possible, retain the original "Sun Vibe".
 
 ### Quieter
 
