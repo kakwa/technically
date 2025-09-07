@@ -39,7 +39,7 @@ It boasts impressive specs such as:
 - UltraSPARC-IIe CPU @548MHz
 - No GPU whatsoever (not great for AI, I guess :p)
 - 2GB RAM (if maxed out)
-- 2x 80GB IDE Hard Drives
+- 2 x 80GB IDE Hard Drives
 - Two 100 Mbit/s NICs
 - LOMlite Management over Serial
 - Second Serial Port
@@ -138,9 +138,14 @@ But for now, let's forge ahead.
 
 ## Modeling
 
-TODO intro.
+### A Caveman And A CAD
 
-I'm a masochist, so FreeCAD it is. It enabled me to improve my CAD techniques and play with the new Assembly Workbench.
+I'm a masochist and a fervent OSS believer.
+So FreeCAD it is... even if this option is let's say frustrating...
+
+In truth it's the only CAD software I ever used and let's say I've never really gone beyond the most basic features. I'm really CAD illiterate, brute forcing my way to a half-assed model like a caveman.
+
+Actually, this project is also an excuse/motivation to properly learn CAD beyond the caveman's usage I had until now.
 
 ### Case
 
