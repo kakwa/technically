@@ -99,16 +99,30 @@ To make it fit, I'm replacing the following parts:
 * Let's also try our luck with a GaN USB-C charger + [trigger board](https://www.aliexpress.com/p/tesla-landing/index.html?scenario=c_ppc_item_bridge&productId=1005004356272196&_immersiveMode=true&withMainCard=true&src=google&aff_platform=true&isdl=y). On paper, it could provide us with a great little PSU instead of a rather large and sketchy black brick from an unknown manufacturer.
 * The original 40×40 mm 12 V fans are getting the [Noctua treatment](https://noctua.at/en/products/fan?size=2645&connector=10&voltage=12).
 
+I will also redesign a new and far more compact case for it.
+
 Note: I'm not doing this project to save money.
-If you want a cheap option, secondhand micro PCs (ex: ThinkCentre Ms) or RPi like SBC are the way to go.
+If you want a cheap option, secondhand micro PCs from Dell HP or Lenovo, or simply a Raspberry Pies, are better options.
 
 ## PSU
 
-TODO
+The Sun V100 uses an 80 Watts PSU Following the ATX standard. It has the usual Molex IDE and 20 Pins connectors of the PCs from the era.
 
-* Say it's standard ATX.
-* PSA: Trigger board + 12 V -> not a given
-* PSU might be a bit too weak.
+It could probably be made quieter with the Noctua treatment, but it would not fix it's other issue: it's simply too big.
+
+So to replace it. I tried my luck with a 120W PicoPSU board and, at first, also with USB-C trigger board and power brick.
+
+But unfortunately, I didn't read the fine prints close enough. While USB-C Power Delivery (TODO wiki) does have a 12V level, it's optional and seems to not be commonly implemented, at least on the fully representative size of 2 PSUs I have on hands.
+
+And worse, despite being set at 12V, when I plugged the trigger board to the PSU, it started outputing 15V... Lesson learned: always check these boards.
+
+So it was back to a cheap noname 12V brick. At least this one is rated for 120W and is not bellows the original 80W like the USB C option and its 60W would have been.
+
+But in truth, this option is not quite right either. the PSU too frequently fails to start, and I have to cycle unplug/plug several times to get the server to start. Maybe the PicoPSU is a bit to light and cannot deliver the starting spike, but I lack the skills and equipment to properly diagnos this one.
+
+I might try might my luck with another PicoPSU, this time, a multi-voltage one and explore the USB-C option again. I would really if the option worked given that with the standardisation of USB-C, quality PSU are easier to get this way.
+
+But for now, let's forge ahead.
 
 ## Modeling
 
