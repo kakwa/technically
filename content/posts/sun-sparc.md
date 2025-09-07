@@ -564,7 +564,7 @@ It works! Not sure if we have created Paradise or Hell however...
 
 In truth, I'm an atheist, I don't believe in God, even the Sunnier ones.
 
-And I find this setup really messy, and I'm kind of sorry if you read
+I find this setup really messy, and I'm kind of sorry if you read
 through it... or worse, if you actually tried to implement it. Also, spoiler, 
 for our NetBSD/OpenBSD netbooting target, even more similar setup is likely required.
 
