@@ -42,7 +42,8 @@ It boasts impressive specs such as:
 - 2GB RAM (if maxed out)
 - 2x 80GB IDE Hard Drives
 - Two 100 Mbit/s NICs
-- LOMlite Management over Serial + second Serial Port
+- LOMlite Management over Serial
+- Second Serial Port
 
 In truth, this beast is a little asthmatic, it already was at the time, but I find the SPARC CPU interesting, particularly for testing endianness and alignment issues.
 And it doesn't need huge amounts of power (~15W TDP) to run, unlike most servers from that period.
