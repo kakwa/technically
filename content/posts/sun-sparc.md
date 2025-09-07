@@ -47,7 +47,7 @@ It boasts impressive specs such as:
 In truth, this beast is a little asthmatic, it already was at the time, but I find the SPARC CPU interesting, particularly for testing endianness and alignment issues.
 And it doesn't need huge amounts of power (~15W TDP) to run, unlike most servers from that period.
 
-I bought this V100 about 15 years ago secondhand, but in truth, never did anything really useful with it.
+I bought this V100 about 15 years ago secondhand, played a bit, but never did anything really useful with it.
 While not as bad as other monsters from the era, it's simply a bit too big and loud.
 Consequently, it sat in my cupboard for ages, in the dark, lonely and unused, away from the information highways.
 
