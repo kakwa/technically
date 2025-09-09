@@ -126,11 +126,11 @@ So to replace it. I tried my luck with a 120W PicoPSU board and, at first, also 
 
 But unfortunately, I didn't read the fine prints close enough. While USB-C Power Delivery (TODO wiki) does have a 12V level, it's optional and seems to not be commonly implemented, at least on the fully representative size of 2 PSUs I have on hands.
 
-And worse, despite being set at 12V, when I plugged the trigger board to the PSU, it started outputing 15V... Lesson learned: always check these boards.
+And worse, despite being set at 12V, when I plugged the trigger board to the PSU, it started outputing 15V... Lesson learned: always check the voltage with these boards.
 
-So it was back to a cheap noname 12V brick. At least this one is rated for 120W and is not bellows the original 80W like the USB C option and its 60W would have been.
+So it was back to a cheap noname 12V brick. At least this one is rated for 120W and is not bellow the original 80W unlike the USB C option at 60W would have been.
 
-But in truth, this option is not quite right either. the PSU too frequently fails to start, and I have to cycle unplug/plug several times to get the server to start. Maybe the PicoPSU is a bit to light and cannot deliver the starting spike, but I lack the skills and equipment to properly diagnos this one.
+But in truth, this option is not quite right either. The PSU too frequently fails to start, and I have to cycle unplug/plug several times to get the server to start. Maybe the PicoPSU is a bit to light and cannot deliver the starting spike, but I lack the skills and equipment to properly diagnos this one.
 
 I might try my luck with another PicoPSU, this time, a multi-voltage one and explore the USB-C option again. I would really if the option worked, good and compact GaN USB-C PSUs are quite easy to get these days.
 
@@ -660,8 +660,7 @@ I also tried to implement a version of `ofwboot.net` using the same RARP + TFTP 
 
 In the end, I opted for NetBSD so I didn't fully install OpenBSD. But given I managed to start the installer, I'm fairly confident I would be able to install it if needed.
 
-Also, just for kicks, given all the services we have in our netboot server, I've taken the liberty to add one last bit:
-* an HTTP server to serve an OpenBSD [autoinstall](https://man.openbsd.org/autoinstall.8) configuration file.
+Also, just for kicks, given all the services we have in our netboot server, I've taken the liberty to add one last bit: an HTTP server to serve an OpenBSD [autoinstall](https://man.openbsd.org/autoinstall.8) configuration file.
 
 Lastly, it's worth mentioning that the OpenBSD version of `ofwboot.net` gave me quite a lot of headaches. I never quite managed to pass it the NFS server IP and file path/name given by BOOTP (typo? bug? wrong BOOTP option? magic values?).
 
@@ -669,10 +668,21 @@ So in the end, I chose to use the NetBSD's `ofwboot.net` version for both NetBSD
 
 FYI, both versions come from the same source, but the NetBSD one seems marginally more modern.
 
-TODO, list files to recover
+```shell
+# If you want to try your luck with the OpenBSD ofwboot.net
+# wget https://ftp.openbsd.org/pub/OpenBSD/7.7/sparc64/ofwboot.net
 
-Start the install server
+# Recover bootloader from NetBSD
+wget https://cdn.netbsd.org/pub/NetBSD/NetBSD-10.1/sparc64/installation/netboot/ofwboot.net
+# Recover OpenBSD install RamDisk
+wget https://ftp.openbsd.org/pub/OpenBSD/7.7/sparc64/bsd.rd
+# Recover an autoinstall file
+wget https://raw.githubusercontent.com/kakwa/silly-sun-server/refs/heads/main/misc/openbsd-autoinstall.conf
 ```
+
+Start the install server:
+
+```shell
 sudo ./ofw-install-server -rarp -tftp -tftp-file ./ofwboot.net -bootp -nfs -nfs-file ./bsd.rd -http -http-file ./openbsd-install.conf 
 ```
 
@@ -680,11 +690,18 @@ sudo ./ofw-install-server -rarp -tftp -tftp-file ./ofwboot.net -bootp -nfs -nfs-
 
 So in the end, I finally settled on installing NetBSD:
 
-TODO, list files to recover
+Recover & prepare the files:
 
-Start the server
+```shell
+wget https://cdn.netbsd.org/pub/NetBSD/NetBSD-10.1/sparc64/installation/netboot/ofwboot.net
+wget https://cdn.netbsd.org/pub/NetBSD/NetBSD-10.1/sparc64/binary/kernel/netbsd-INSTALL.gz
+gunzip netbsd-INSTALL.gz
 ```
-sudo ./ofw-install-server -rarp -tftp -tftp-file ./ofwboot.net -bootp -nfs -nfs-file ./netbsd
+
+Start the server:
+
+```shell
+sudo ./ofw-install-server -rarp -tftp -tftp-file ./ofwboot.net -bootp -nfs -nfs-file ./netbsd-INSTALL
 ```
 
 TODO mention ofwboot seems to support TFTP?
@@ -693,7 +710,7 @@ TODO mention ofwboot seems to support TFTP?
 
 And then I just did this final tweak to make it boot on disk persistently:
 
-```
+```shell
 setenv boot-device disk0
 reset
 ```
