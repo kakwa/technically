@@ -1,5 +1,5 @@
 +++
-title = 'Reversing WoWs Resource Format - Part 3: Reading Everything'
+title = 'Reversing WoWs Resource Format - Part 4: Reading Everything'
 date = 2025-08-26T00:03:00+02:00
 draft = false
 +++
