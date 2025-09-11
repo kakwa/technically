@@ -1,189 +1,307 @@
 +++
-title = 'Reversing WoWs Resource Format - Part 3: Reading Everything'
-date = 2025-08-26T00:03:00+02:00
+title = 'Reversing WoWs Resource Format - Part 3: Dissecting The Index'
+date = 2025-08-25T00:02:00+02:00
 draft = false
 +++
 
 - Part 1 — [Searching The Data](/posts/wows_depack_part1/)
-- Part 2 — [Getting The Metadata](/posts/wows_depack_part2/)
-- Part 3 — [Reading Everything](/posts/wows_depack_part3/)
-- Part 4 — [Tidying-Up The Project](/posts/wows_depack_part4/)
+- Part 2 — [Looking For The Metadata](/posts/wows_depack_part2/)
+- Part 3 — [Dissecting The Index](/posts/wows_depack_part3/)
+- Part 4 — [Reading Everything](/posts/wows_depack_part4/)
+- Part 5 — [Tidying-Up The Project](/posts/wows_depack_part5/)
 
-# The Implementation
+# Index File Reverse Engineering
 
-In the last part, we discovered and got a fairly good idea of the metadata/IDX format.
+In the last part, we found the location of the index and determine the general layout.
 
-In this part, we will create a rough implementation to extract the content.
+Now, let's do the detailed reverse engineering.
 
-## Data Structures
+## Metadata Chunk Format
 
-First, define C structures matching our reverse-engineered format:
+The first section contains file metadata entries:
+
+```shell
+kakwa@linux 6775398/idx » hexdump -C system_data.idx | less
+```
+
+```
+00000000  49 53 46 50 00 00 00 02  91 9d 39 b4 40 00 00 00  |ISFP......9.@...|
+00000010  37 01 00 00 1c 01 00 00  01 00 00 00 00 00 00 00  |7...............|
+00000020  28 00 00 00 00 00 00 00  f6 3b 00 00 00 00 00 00  |(........;......|
+00000030  36 71 00 00 00 00 00 00  0e 00 00 00 00 00 00 00  |6q..............|
+00000040  e0 26 00 00 00 00 00 00  8f 0c 9a ba 4f 40 b6 93  |.&..........O@..|
+00000050  27 b9 08 b1 d1 a1 b1 db  13 00 00 00 00 00 00 00  |'...............|
+00000060  ce 26 00 00 00 00 00 00  8f ec 87 4a 28 d0 f7 c7  |.&.........J(...|
+00000070  a4 eb 1b 3e 50 21 d8 74  12 00 00 00 00 00 00 00  |...>P!.t........|
+00000080  c1 26 00 00 00 00 00 00  ad 70 a2 e7 ac 2c 4f 6b  |.&.......p...,Ok|
+00000090  27 b9 08 b1 d1 a1 b1 db  0e 00 00 00 00 00 00 00  |'...............|
+000000a0  b3 26 00 00 00 00 00 00  4e 84 a5 6a 94 dc 1f 7f  |.&......N..j....|
+000000b0  62 f5 aa 4b 5e 15 7f 93  10 00 00 00 00 00 00 00  |b..K^...........|
+000000c0  a1 26 00 00 00 00 00 00  4e b0 fe 23 62 40 a5 65  |.&......N..#b@.e|
+000000d0  27 b9 08 b1 d1 a1 b1 db  20 00 00 00 00 00 00 00  |'....... .......|
+000000e0  91 26 00 00 00 00 00 00  8e c7 6a 58 7c 86 62 33  |.&........jX|.b3|
+000000f0  27 b9 08 b1 d1 a1 b1 db  0f 00 00 00 00 00 00 00  |'...............|
+00000100  91 26 00 00 00 00 00 00  8e 43 3d e9 cf 49 52 a4  |.&.......C=..IR.|
+00000110  62 f5 aa 4b 5e 15 7f 93  16 00 00 00 00 00 00 00  |b..K^...........|
+00000120  80 26 00 00 00 00 00 00  0e 3c 9a 6d 22 de 7b da  |.&.......<.m".{.|
+00000130  4e b0 fe 23 62 40 a5 65  0b 00 00 00 00 00 00 00  |N..#b@.e........|
+00000140  76 26 00 00 00 00 00 00  0e 48 58 ea 50 44 1a 47  |v&.......HX.PD.G|
+00000150  df 61 50 67 c7 3a dd 7a  13 00 00 00 00 00 00 00  |.aPg.:.z........|
+00000160  61 26 00 00 00 00 00 00  e0 9f c3 bd d2 12 20 04  |a&............ .|
+00000170  09 28 f1 df 2d 04 93 de  0b 00 00 00 00 00 00 00  |.(..-...........|
+
+00002690  a4 eb 1b 3e 50 21 d8 74  0c 00 00 00 00 00 00 00  |...>P!.t........|
+000026a0  21 15 00 00 00 00 00 00  00 40 cc c7 49 c4 54 09  |!........@..I.T.|
+000026b0  a4 eb 1b 3e 50 21 d8 74  14 00 00 00 00 00 00 00  |...>P!.t........|
+000026c0  0d 15 00 00 00 00 00 00  ce 6a 28 bc cf e7 79 c8  |.........j(...y.|
+000026d0  a4 eb 1b 3e 50 21 d8 74  1a 00 00 00 00 00 00 00  |...>P!.t........|
+000026e0  01 15 00 00 00 00 00 00  6c c0 c9 f7 7e 00 03 05  |........l...~...|
+000026f0  a4 eb 1b 3e 50 21 d8 74  13 00 00 00 00 00 00 00  |...>P!.t........|
+00002700  fb 14 00 00 00 00 00 00  74 d1 1b 8d f4 ff 7a ce  |........t.....z.|
+00002710  a4 eb 1b 3e 50 21 d8 74  4b 44 53 74 6f 72 61 67  |...>P!.tKDStorag|
+00002720  65 2e 62 69 6e 00 77 61  76 65 73 5f 68 65 69 67  |e.bin.waves_heig|
+00002730  68 74 73 31 2e 64 64 73  00 61 6e 69 6d 61 74 65  |hts1.dds.animate|
+00002740  64 4d 69 73 63 73 2e 78  6d 6c 00 4c 6f 77 65 72  |dMiscs.xml.Lower|
+00002750  44 65 63 6b 2e 64 64 73  00 63 6f 6d 6d 61 6e 64  |Deck.dds.command|
+```
+
+Staring at the hexdump long enough and we can start to see some patterns.
+
+At regular intervals, every 256 bits, we get a 64-bit integer with a relatively low value, hinting at individual metadata sets of 256 bits.
+
+This looks suspiciously like some kind of constant enum coded into a 64-bit integer.
+My best guess right now would be some kind of file type code, itself defined as a constant in the game engine like this:
 
 ```C
-// INDEX file header
-typedef struct {
-    char magic[4];
-    uint32_t unknown_1;
-    uint32_t id;
-    uint32_t unknown_2;
-    uint32_t file_plus_dir_count;
-    uint32_t file_count;
-    uint64_t unknown_3;
-    uint64_t header_size;
-    uint64_t offset_idx_data_section;
-    uint64_t offset_idx_footer_section;
-} WOWS_INDEX_HEADER;
+#define FILE_TYPE_1 0x01
+#define FILE_TYPE_2 0x02
+// [...]
 ```
 
-## Parser Implementation
+Let's call it `file_type` for now.
 
-**Note:** These examples omit error handling for clarity. Production code requires bounds checking and validation.
+Looking at the end of the first chunk (right before we get `KDStorage.bin`), we have to go back 4 x 64 bits to get something that looks like a `file_type`.
 
-### File Mapping
+This means `file_type` is the first field in the 256-bit structure.
 
-Memory map the index file:
+Let's look at the next 64 bits: `ce 26 00 00 00 00 00 00`, `c1 26 00 00 00 00 00 00`, `80 26 00 00 00 00 00 00`, etc. These values are again rather small.
 
-```C
-// Open the index file
-int fd = open(args.input, O_RDONLY);
+Also these values, at least for the first ones, are suspiciously close to `00002718`, i.e. right where the section containing the file names starts.
 
-// Recover the file size
-struct stat s;
-fstat(fd, &s);
-size_t index_size = s.st_size;
+The last ones, `01 15 00 00 00 00 00 00`, `fb 14 00 00 00 00 00 00`, etc., are smaller, and suspiciously, they have similar values to the length of the file name section (approximately `0x00003c00 - 0x00002710 = 0x0000014f0`).
 
-// Map the whole content in memory
-char *index_content = mmap(0, index_size, PROT_READ, MAP_PRIVATE, fd, 0);
+The second field is then probably some kind of offset. Most likely from the start of one 256-bit chunk to the start of one of the file names.
+
+Looking at other `.idx` files seems to confirm that.
+
+Let's call it `offset` for now.
+
+Next, let's look at the remaining 128 bits.
+
 ```
-The second step is to have an entry point to actually parse the thing:
-
-```C
-    WOWS_CONTEXT context;
-    context.debug = true;
-
-    // Start the parsing
-    return wows_parse_index(index_content, index_size, &context);
-```
-
-Here, I pass the memory-mapped content of the index, its size (will be used in the future to avoid overflows), and a `context`, which will be used to pass parsing options and maintain "states" in the parsing if necessary.
-
-### Parsing the Header Section
-
-
-```C
-int wows_parse_index(char *contents, size_t length, WOWS_CONTEXT *context) {
-  // header section
-  WOWS_INDEX_HEADER *header = (WOWS_INDEX_HEADER *)contents;
+8f 0c 9a ba 4f 40 b6 93 | 27 b9 08 b1 d1 a1 b1 db
+8f ec 87 4a 28 d0 f7 c7 | a4 eb 1b 3e 50 21 d8 74
+ad 70 a2 e7 ac 2c 4f 6b | 27 b9 08 b1 d1 a1 b1 db
+4e 84 a5 6a 94 dc 1f 7f | 62 f5 aa 4b 5e 15 7f 93
+4e b0 fe 23 62 40 a5 65 | 27 b9 08 b1 d1 a1 b1 db
+8e c7 6a 58 7c 86 62 33 | 27 b9 08 b1 d1 a1 b1 db
 ```
 
-We can print it with a few `printf`:
+First thing to note: all the bits are used, which disqualifies offsets or simple enum IDs like before.
 
-```C
-int print_header(WOWS_INDEX_HEADER *header) {
-    printf("Index Header Content:\n");
-    printf("* magic:                     %.4s\n", (char *)&header->magic);
-    printf("* unknown_1:                 0x%x\n", header->unknown_1);
-    [...]
-    return 0;
-}
+Right now, we are not even sure these 128 bits are part of one 128-bit field (for example a hash), two 64-bit integers, four 32-bit integers, or any combination of 16, 32 or 64 bits that ends up making a 128-bit chunk.
+
+Looking at it more closely, the first 64 bits looks rather random, the last 64 bits however? we see quite a few values repeating themselves (ex: `27 b9 08 b1 d1 a1 b1 db`).
+
+Let's check the whole file:
+
+
+```shell
+kakwa@linux 6775398/idx » hexdump -C system_data.idx | grep '00 00 00 00 00 00 00' | \
+    sed 's/^..........//' | sed 's/  .*//' | sort  | uniq -c | sort -n
 ```
 
-Output:
 ```
-Index Header Content:
-* magic:                     ISFP
-* unknown_1:                 0x2000000
-* id:                        0xb4399d91
-* unknown_2:                 0x40
-* file_plus_dir_count:       311
-* file_count:                284
-* unknown_3:                 1
-* header_size:               40
-* offset_idx_data_section:   0x3bf6
-* offset_idx_footer_section: 0x7136
-```
-
-#### Metadata entries
-
-Then, we can do a bunch of pointer arithmetic operations to extract the other sections of the index file:
-
-```C
-  // Recover the start of the metadata array
-  WOWS_INDEX_METADATA_ENTRY *metadatas;
-  metadatas =
-      (WOWS_INDEX_METADATA_ENTRY *)(contents + sizeof(WOWS_INDEX_HEADER));
-```
-
-Then, we do something with these sections, like for example:
-
-```C
-    // Parse & print each entry in the metadata section
-    for (i = 0; i < header->file_plus_dir_count; i++) {
-        if (context->debug) {
-            print_metadata_entry(&metadatas[i], i);
-        }
-    }
-```
-
-With `print_metadata_entry` looking like this:
-
-```C
-int print_metadata_entry(WOWS_INDEX_METADATA_ENTRY *entry, int index) {
-    printf("Metadata entry %d:\n", index);
-    printf("* file_type:                 %lu\n", entry->file_type_1);
-    printf("* offset_idx_file_name:      0x%lx\n", entry->offset_idx_file_name);
-    printf("* unknown_4:                 0x%lx\n", entry->unknown_4);
-    printf("* file_type_2:               0x%lx\n", entry->file_type_2);
-    return 0;
-}
+# note: first number is the number of occurrences
+      1 00 00 00 00 00 00 00 af
+      1 1c 6a 8d 7f df 8e b3 35
+      1 28 00 00 00 00 00 00 00
+      1 36 71 00 00 00 00 00 00
+      1 37 01 00 00 1c 01 00 00
+      1 7d e3 1c a4 35 3e 98 8b
+      1 e0 95 53 f6 cc 08 c0 46
+      2 12 46 58 36 c8 ec 47 8b
+      2 4e b0 fe 23 62 40 a5 65
+      2 d0 d7 a5 ce a8 86 0e ae
+      3 1a aa c7 3c 4e 76 ad 94
+      3 4c d1 2e 30 73 38 d9 13
+      3 4c f0 ea c1 d5 5a 8d 12
+      3 88 57 fc 1c 72 f3 84 fa
+      3 ac 82 d5 f6 9e db 47 f9
+      3 b1 86 45 dc 7a 63 37 38
+      3 fc 27 83 2d 44 46 30 a3
+      6 76 83 17 b5 cf dd b7 0e
+      8 06 cf 85 bd 69 99 e2 46
+      9 09 28 f1 df 2d 04 93 de
+     10 a4 eb 1b 3e 50 21 d8 74
+     10 d7 22 2f fc 0a 67 7a 0d
+     14 aa db f0 18 01 89 b6 d8
+     15 df 61 50 67 c7 3a dd 7a
+     18 19 ac 65 3f 91 78 97 dc
+     19 38 e6 83 3c 74 a7 20 b2
+     19 59 dc e0 43 fc 88 b7 7c
+     23 d3 9e 86 23 25 42 27 45
+     24 0e 48 58 ea 50 44 1a 47
+     33 d7 19 f3 03 3e 6e 59 03
+     34 27 b9 08 b1 d1 a1 b1 db
+     38 62 f5 aa 4b 5e 15 7f 93
 ```
 
-#### Re-Evaluating some of the fields meaning:
+Indeed, the repetitions are quite frequent, and running the same command on other files yields roughly the same values:
 
-Once done, it gives us a more comfortable read:
+```shell
+kakwa@linux 6775398/idx » hexdump -C particles.idx | grep '00 00 00 00 00 00 00' | \
+    sed 's/^..........//' | sed 's/  .*//' | sort  | uniq -c | sort -n
+```
+
+```
+      1 27 b9 08 b1 d1 a1 b1 db
+      1 28 00 00 00 00 00 00 00
+      1 8e ae 00 00 00 00 00 00
+      1 bd 01 00 00 b7 01 00 00
+      4 ca 2c b7 97 24 b8 1c 86
+      5 1f 19 a6 0c a2 9b 7f b3
+     16 94 a1 23 f4 c5 41 b8 42
+     20 91 cc 55 52 25 2a 42 d4
+     81 de 3e 45 0e 99 dc 30 14
+    317 66 52 00 d6 89 64 1d 2e
+```
+
+Moreover, `sound_music.idx`, which as the name implies probably only contains sound files, returns mostly one type:
+
+```shell
+kakwa@linux 6775398/idx » hexdump -C sound_music.idx | grep '00 00 00 00 00 00 00' | \
+    sed 's/^..........//' | sed 's/  .*//' | sort  | uniq -c | sort -n
+```
+
+```
+    513 93 63 67 56 c2 97 75 69
+```
+
+Note: these commands are by no means accurate; they are likely to catch garbage and miscount. But these are quick and dirty ways to validate hypotheses.
+
+So it seems we are dealing with another `file_type` field. Let's call it `file_type2`, and rename the first one `file_type1`.
+
+So in the end, making a few assumptions for now, we have figured out the rough format of this section:
+
+```
++====+====+====+====+====+====+====+====++====+====+====+====+====+====+====+====+
+| T1 | T1 | T1 | T1 | T1 | T1 | T1 | T1 || OF | OF | OF | OF | OF | OF | OF | OF |
++====+====+====+====+====+====+====+====++====+====+====+====+====+====+====+====+
+|<---------- file type 1 -------------->||<------------ offset ----------------->|
+|               64 bits                 ||               64 bits                 |
++====+====+====+====+====+====+====+====++====+====+====+====+====+====+====+====+
+| UN | UN | UN | UN | UN | UN | UN | UN || T2 | T2 | T2 | T2 | T2 | T2 | T2 | T2 |
++====+====+====+====+====+====+====+====++====+====+====+====+====+====+====+====+
+|<------------ unknown ---------------->||<---------- file type 2 -------------->|
+|               64 bits                 ||               64 bits                 |
+```
+
+## Header Section Analysis
+
+The `.idx` file header contains:
+
+```
+00000000  49 53 46 50 00 00 00 02  91 9d 39 b4 40 00 00 00  |ISFP......9.@...|
+00000010  37 01 00 00 1c 01 00 00  01 00 00 00 00 00 00 00  |7...............|
+00000020  28 00 00 00 00 00 00 00  f6 3b 00 00 00 00 00 00  |(........;......|
+00000030  36 71 00 00 00 00 00 00  0e 00 00 00 00 00 00 00  |6q..............|
+00000040  e0 26 00 00 00 00 00 00  8f 0c 9a ba 4f 40 b6 93  |.&..........O@..|
+00000050  27 b9 08 b1 d1 a1 b1 db  13 00 00 00 00 00 00 00  |'...............|
+00000060  ce 26 00 00 00 00 00 00  8f ec 87 4a 28 d0 f7 c7  |.&.........J(...|
+00000070  a4 eb 1b 3e 50 21 d8 74  12 00 00 00 00 00 00 00  |...>P!.t........|
+00000080  c1 26 00 00 00 00 00 00  ad 70 a2 e7 ac 2c 4f 6b  |.&.......p...,Ok|
+00000090  27 b9 08 b1 d1 a1 b1 db  0e 00 00 00 00 00 00 00  |'...............|
+```
+
+These first bytes don't look like the `section` previously mentioned; we have a magic number (`ISFP`), and then the content doesn't look like a `section` at first (too many low-value 32-bit integers).
+
+This means we most likely have a header section containing things like:
+* magic numbers
+* types
+* sizes
+* number of entries/files
+
+The first thing to determine is the size of the header. Looking at it, the first `section` starts at `0x38` (recognisable by the full 64-bit integers).
+
+This means the header is 7 × 64 bits.
+
+Let's analyze the content.
+
+Looking at all the files, for the first 128 bits, we get:
+
+```shell
+kakwa@linux 6775398/idx » for i in *;do hexdump -C $i | head -n 1;done
+```
 
 ```
 [...]
-Metadata entry 0:
-* file_type:                 14
-* offset_idx_file_name:      0x26e0
-* unknown_4:                 0x93b6404fba9a0c8f
-* file_type_2:               0xdbb1a1d1b108b927
-
-Metadata entry 1:
-* file_type:                 19
-* offset_idx_file_name:      0x26ce
-* unknown_4:                 0xc7f7d0284a87ec8f
-* file_type_2:               0x74d821503e1beba4
-
-Metadata entry 2:
-* file_type:                 18
-* offset_idx_file_name:      0x26c1
-* unknown_4:                 0x6b4f2cace7a270ad
-* file_type_2:               0xdbb1a1d1b108b927
-
-Metadata entry 3:
-[...]
-
-Metadata entry 310:
-* file_type:                 19
-* offset_idx_file_name:      0x14fb
-* unknown_4:                 0xce7afff48d1bd174
-* file_type_2:               0x74d821503e1beba4
-```
-
-This permits us to review our previous reverse and right away there are two interesting things to note:
-
-* There was a bit of an unknown regarding the number of metadata chunks: was it `file_count` or `file_plus_dir_count`? Now we are more certain it's `file_plus_dir_count` as it's the larger value. If it was not, we would try to parse a section past the metadatas as metadata with funky results (garbage or crash). This is not the case.
-* `file_type` in metadata is not a file type/enum. The values are small but quite varied; it's more likely the length of the file name.
-
-Lets check with the last entry:
-
-```
-Metadata entry 310:
-* file_type:                 19
+00000000  49 53 46 50 00 00 00 02  1b 73 f9 d5 40 00 00 00  |ISFP.....s..@...|
+00000000  49 53 46 50 00 00 00 02  78 f0 2c 09 40 00 00 00  |ISFP....x.,.@...|
+00000000  49 53 46 50 00 00 00 02  b8 fe ba b9 40 00 00 00  |ISFP........@...|
+00000000  49 53 46 50 00 00 00 02  06 24 fa 2d 40 00 00 00  |ISFP.....$.-@...|
+00000000  49 53 46 50 00 00 00 02  1e 7e f6 d9 40 00 00 00  |ISFP.....~..@...|
+00000000  49 53 46 50 00 00 00 02  dd 21 74 c2 40 00 00 00  |ISFP.....!t.@...|
+00000000  49 53 46 50 00 00 00 02  33 28 63 bd 40 00 00 00  |ISFP....3(c.@...|
+00000000  49 53 46 50 00 00 00 02  cb 5c e2 0d 40 00 00 00  |ISFP.....\..@...|
+00000000  49 53 46 50 00 00 00 02  cb e8 8a fd 40 00 00 00  |ISFP........@...|
+00000000  49 53 46 50 00 00 00 02  6e 04 b1 62 40 00 00 00  |ISFP....n..b@...|
+00000000  49 53 46 50 00 00 00 02  15 1c a2 f9 40 00 00 00  |ISFP........@...|
 [...]
 ```
+
+As we can see, the 1st, 2nd, and 4th 32-bit chunks are always the same, and looking at the values, we have respectively:
+
+* a magic number (`ISFP`),
+* `00 00 00 02` which is rather weird (it could be some kind of ID if we were little-endian, but the format is big-endian). Maybe it is actually part of the magic number. As it doesn't vary, it's not too important for the task at hand here.
+* `40 00 00 00` which, like `type 1`, looks like a low-value enum, and given its position in the index file, within the header, we are most likely dealing with an archive type. Again, as it doesn't vary, it's not really important.
+
+The 3rd 32-bit integer uses all the available bits, so it's unlikely a size. Maybe it's a CRC32 or a unique ID for the archives.
+
+Edit: the `40 00 00 00` value upon closer inspection might not be an archive type; its value is 64 in decimal, which might be a header size, or simply storing the size of an integer.
+
+So we have:
+
+```
++====+====+====+====++====+====+====+====++====+====+====+====++====+====+====+====+
+| MA | MA | MA | MA || 00 | 00 | 00 | 02 || ID | ID | ID | ID || 40 | 00 | 00 | 00 |
++====+====+====+====++====+====+====+====++====+====+====+====++====+====+====+====+
+|<----- magic ----->||<----- ???? ------>||<---- id/crc ----->||<----- ??????? --->|
+```
+
+Now, let's look at the next 128 bits (second line in the hexdump).
+
+```shell
+kakwa@linux 6775398/idx » for i in *;do hexdump -C $i | head -n 2 | tail -n 1;done
+```
+
+```
+00000010  bd 01 00 00 b7 01 00 00  01 00 00 00 00 00 00 00  |................|
+00000010  35 01 00 00 1d 01 00 00  01 00 00 00 00 00 00 00  |5...............|
+00000010  5b 00 00 00 57 00 00 00  01 00 00 00 00 00 00 00  |[...W...........|
+00000010  5c 00 00 00 58 00 00 00  01 00 00 00 00 00 00 00  |\...X...........|
+00000010  10 18 00 00 ff 17 00 00  01 00 00 00 00 00 00 00  |................|
+00000010  29 3b 00 00 0b 3b 00 00  01 00 00 00 00 00 00 00  |);...;..........|
+00000010  04 02 00 00 02 02 00 00  01 00 00 00 00 00 00 00  |................|
+00000010  1e 05 00 00 c2 03 00 00  01 00 00 00 00 00 00 00  |................|
+00000010  a5 01 00 00 36 01 00 00  01 00 00 00 00 00 00 00  |....6...........|
+00000010  13 04 00 00 fb 02 00 00  01 00 00 00 00 00 00 00  |................|
+00000010  79 03 00 00 a9 02 00 00  01 00 00 00 00 00 00 00  |y...............|
+```
+
+So here, we recognize two 32-bit integers due to the `00 00`, and then either a fixed 64-bit integer with always a `01 00 00 00 00 00 00 00` value, or something like two 32-bit integers with value `01 00 00 00` and `00 00 00 00` (as the value never varies, again, it's not that important).
+
+Let's try to determine the two 32-bit values. Let's look at one of the files in particular:
 
 ```shell
 kakwa@linux 6775398/idx » hexdump -C system_data.idx | less
@@ -191,597 +309,549 @@ kakwa@linux 6775398/idx » hexdump -C system_data.idx | less
 
 ```
 [...]
+00000010  37 01 00 00 1c 01 00 00  01 00 00 00 00 00 00 00  |7...............|
+[...]
+```
+
+The first value is `37 01 00 00`, i.e. converted to decimal, `311`. Doing a `strings system_data.idx > listing` and removing the garbage (ex: `w6~n`) as best as possible, plus the `.pkg` file name, only keeping files and directory names, we get `310` entries, a remarkably close value.
+
+Looking at other files, story is similar, this field roughly matches the number of strings we get from `strings` (never perfectly however, but if the names are too short, `strings` will ignore them, most likely explaining the small delta we have each time).
+
+Consequently we can deduce it's most likely the number of entries (files and directories) in the index file.
+
+Next, we have `1c 01 00 00`, i.e. converted to decimal, `284`. This value is suspiciously close to the previous value. As we have both directories and file names, this number probably represents the number of items that are actual files.
+
+Let's validate that:
+
+```shell
+# Q&D filtering out names without an extension (no '.')
+kakwa@linux 6775398/idx » cat listing | grep  '\.' | wc -l
+```
+
+```
+284
+```
+
+Bingo, we have the exact number we were looking for.
+
+The last 64 bits could simply be ignored for now since they always have the same value.
+
+So we have:
+
+```
++====+====+====+====++====+====+====+====++====+====+====+====++====+====+====+====+
+| FD | FD | FD | FD || FI | FI | FI | FI || 01 | 00 | 00 | 00 || 00 | 00 | 00 | 00 |
++====+====+====+====++====+====+====+====++====+====+====+====++====+====+====+====+
+|<file + dir count >||<-- file count --->||<-------------- ???? ------------------>|
+```
+
+Next 128 bits:
+
+```shell
+kakwa@linux 6775398/idx » for i in *;do hexdump -C $i | head -n 3 | tail -n 1;done | less
+```
+
+```
+[...]
+00000020  28 00 00 00 00 00 00 00  58 8d 00 00 00 00 00 00  |(.......X.......|
+00000020  28 00 00 00 00 00 00 00  7c 3f 02 00 00 00 00 00  |(.......|?......|
+00000020  28 00 00 00 00 00 00 00  77 2f 00 00 00 00 00 00  |(.......w/......|
+00000020  28 00 00 00 00 00 00 00  bc e9 01 00 00 00 00 00  |(...............|
+00000020  28 00 00 00 00 00 00 00  c6 ea 02 00 00 00 00 00  |(...............|
+00000020  28 00 00 00 00 00 00 00  a9 0f 00 00 00 00 00 00  |(...............|
+00000020  28 00 00 00 00 00 00 00  c4 22 00 00 00 00 00 00  |(........"......|
+00000020  28 00 00 00 00 00 00 00  b6 2b 00 00 00 00 00 00  |(........+......|
+00000020  28 00 00 00 00 00 00 00  d6 41 00 00 00 00 00 00  |(........A......|
+00000020  28 00 00 00 00 00 00 00  fd 21 00 00 00 00 00 00  |(........!......|
+00000020  28 00 00 00 00 00 00 00  e1 25 00 00 00 00 00 00  |(........%......|
+00000020  28 00 00 00 00 00 00 00  f5 31 00 00 00 00 00 00  |(........1......|
+00000020  28 00 00 00 00 00 00 00  1e 42 00 00 00 00 00 00  |(........B......|
+00000020  28 00 00 00 00 00 00 00  70 42 02 00 00 00 00 00  |(.......pB......|
+[...]
+```
+
+So here, we have two 64-bit integers. The first one is `28 00 00 00 00 00 00 00` and always has the same value. Not sure what it represents; the value is somewhat close to the header size in bytes: 40 for this value, 56 for the full header size.
+
+Maybe the header could vary in size in certain situations, and this represents its size minus some fixed part (like the first 16 bytes/128 bits). I'm also kind of betting that if the previous 64-bit integer (`01 00 00 00 00 00 00 00`) changes, this will also change.
+
+But as it never varies in the set of index files we have here, we cannot really make any deduction, only guesses. So once again, let's ignore it.
+
+At this point, the idea of downloading other Wargaming games like World of Tanks or World of Warplanes popped up; maybe this will give complementary information regarding the unknown fields that start to pile up.
+
+But let's continue for now.
+
+EDIT: It's no help; World of Tanks and World of Warplanes simply pack their resources in `.zip` files...
+It's a wild guess, but I kind of expect WoWs to be the same in the future.
+The WoWs packing format feels, in fact, somewhat legacy, custom, and far less efficient than a standard run-of-the-mill `.zip` file. Not to mention using `.zip` files means removing one bit of code to maintain.
+
+The next value is again a 64-bit integer; it changes between each file.
+
+Let's focus on one file:
+
+```
+[...]
+00000020  28 00 00 00 00 00 00 00  f6 3b 00 00 00 00 00 00  |(........;......|
+[...]
+```
+
+At first, I thought it might be a file size, but quickly checking the index file size, I got:
+
+* index file size: 29043
+* value of this field in decimal: 15350
+
+Checking another file, I got 77461 and 44807.
+
+So no, it's not the index size. However it is suspiciously ~1/2 of the file size, and after having stared at hexdumps for hours, I had another idea.
+
+The third chunk of the file is right after the bundle of dir/file name strings which varies in length wildly (i.e., it's not a fixed length or a multiple of a fixed length).
+
+We probably need an offset pointing to the start of this section in the header.
+
+And sure enough, looking where the bundle of strings stops, we get:
+
+```
+00003bd0  6f 69 73 65 2e 64 64 73  00 73 70 61 63 65 5f 76  |oise.dds.space_v|
+00003be0  61 72 69 61 74 69 6f 6e  5f 64 75 6d 6d 79 2e 64  |ariation_dummy.d|
+00003bf0  64 73 00 77 61 76 65 73  5f 68 65 69 67 68 74 73  |ds.waves_heights|
+00003c00  30 2e 64 64 73 00 8f ec  87 4a 28 d0 f7 c7 70 11  |0.dds....J(...p.|
+00003c10  03 07 0d 33 ed 77 1e 9b  ef 05 00 00 00 00 05 00  |...3.w..........|
+```
+
+Okay, the string bundle ends at 00003c05; that's quite near 3bf6, so this is certainly the offset to this third section or the end of the bundle of strings.
+
+Most likely, the offset is not from the start of the file but from a specific point in the header (this field? end of header?); that's why we get a -15 difference (0x00003c05 - 0x3bf6 = 0xF = 15). This -15 value is constant between files.
+
+So we have:
+
+```
++====+====+====+====+====+====+====+====++====+====+====+====+====+====+====+====+
+| HS | HS | HS | HS | HS | HS | HS | HS || OF | OF | OF | OF | OF | OF | OF | OF |
++====+====+====+====+====+====+====+====++====+====+====+====+====+====+====+====+
+|<------------ header size (?) -------->||<---- offset third section start ----->|
+```
+
+Last 64 bits:
+
+```shell
+kakwa@linux 6623042/idx » for i in *;do hexdump -C $i | head -n 4 | tail -n 1;done | less
+```
+
+```
+[...]
+00000030  40 af 03 00 00 00 00 00  1b 00 00 00 00 00 00 00  |@...............|
+00000030  54 8d 1f 00 00 00 00 00  21 00 00 00 00 00 00 00  |T.......!.......|
+00000030  8e ae 00 00 00 00 00 00  17 00 00 00 00 00 00 00  |................|
+00000030  02 81 00 00 00 00 00 00  13 00 00 00 00 00 00 00  |................|
+00000030  c9 24 00 00 00 00 00 00  1f 00 00 00 00 00 00 00  |.$..............|
+[...]
+```
+
+So, we have a 64-bit integer, which is a relatively low value. This means it's most likely a size or an offset.
+
+If we pick one:
+
+```shell
+kakwa@linux 6623042/idx » hexdump -C system_data.idx | less
+```
+
+```
+[...]
+00000030  36 71 00 00 00 00 00 00  13 00 00 00 00 00 00 00  |6q..............|
+[...]
+```
+
+We can see that the `36 71 00 00 00 00 00 00`, 28982 once converted to decimal, is remarkably close to the file size (29043 bytes).
+
+From there, we can guess it might be three things:
+
+* the actual index file size
+* an offset to something at the end of the file
+* pointer to the end of the third section
+
+Let's note that for now, and figure out the finer details at implementation time.
+
+So, to recap, here is the header section format:
+
+```
++====+====+====+====++====+====+====+====++====+====+====+====++====+====+====+====+
+| MA | MA | MA | MA || 00 | 00 | 00 | 02 || ID | ID | ID | ID || 40 | 00 | 00 | 00 |
++====+====+====+====++====+====+====+====++====+====+====+====++====+====+====+====+
+|<----- magic ----->||<----- ???? ------>||<---- id/crc ----->||<----- ??????? --->|
+
++====+====+====+====++====+====+====+====++====+====+====+====++====+====+====+====+
+| FD | FD | FD | FD || FI | FI | FI | FI || 01 | 00 | 00 | 00 || 00 | 00 | 00 | 00 |
++====+====+====+====++====+====+====+====++====+====+====+====++====+====+====+====+
+|<file + dir count >||<-- file count --->||<-------------- ???? ------------------>|
+
++====+====+====+====+====+====+====+=====++=====+====+====+====+====+====+====+====+
+| HS | HS | HS | HS | HS | HS | HS | HS  ||  OF | OF | OF | OF | OF | OF | OF | OF |
++====+====+====+====+====+====+====+=====++=====+====+====+====+====+====+====+====+
+|<------------ header size (?) --------->||<----- offset third section start ----->|
+
++====+====+====+====+====+====+====+=====+
+| OE | OE | OE | OE | OE | OE | OE | OE  |
++====+====+====+====+====+====+====+=====+
+|<---- offset third section end -------->|
+```
+
+## Filename Section
+
+Not much to say there.
+
+Here's what it looks like:
+
+```shell
+kakwa@linux 6775398/idx » hexdump -C system_data.idx| less
+```
+
+```
+[...]
+00002700  fb 14 00 00 00 00 00 00  74 d1 1b 8d f4 ff 7a ce  |........t.....z.|
+00002710  a4 eb 1b 3e 50 21 d8 74  4b 44 53 74 6f 72 61 67  |...>P!.tKDStorag|
+00002720  65 2e 62 69 6e 00 77 61  76 65 73 5f 68 65 69 67  |e.bin.waves_heig|
+00002730  68 74 73 31 2e 64 64 73  00 61 6e 69 6d 61 74 65  |hts1.dds.animate|
+[...]
+000028c0  74 73 2e 62 69 6e 00 6d  69 73 63 53 65 74 74 69  |ts.bin.miscSetti|
+000028d0  6e 67 73 2e 78 6d 6c 00  64 61 6d 61 67 65 5f 64  |ngs.xml.damage_d|
+000028e0  65 63 5f 32 5f 64 2e 64  64 32 00 64 61 6d 61 67  |ec_2_d.dd2.damag|
+000028f0  65 5f 64 65 63 5f 31 5f  65 2e 64 64 73 00 63 72  |e_dec_1_e.dds.cr|
+[...]
 00003be0  61 72 69 61 74 69 6f 6e  5f 64 75 6d 6d 79 2e 64  |ariation_dummy.d|
 00003bf0  64 73 00 77 61 76 65 73  5f 68 65 69 67 68 74 73  |ds.waves_heights|
 00003c00  30 2e 64 64 73 00 8f 0c  9a ba 4f 40 b6 93 70 11  |0.dds.....O@..p.|
 00003c10  03 07 0d 33 ed 77 00 00  00 00 00 00 00 00 05 00  |...3.w..........|
+00003c20  00 00 01 00 00 00 f5 21  00 00 bf 00 45 5c 6c 36  |.......!....E\l6|
 ```
 
-The last file name is `waves_heights0.dds`, 18 characters long, with the `\0`, we have our 19 value.
+So it's a bunch of `\0` separated strings. The only thing interesting to note is that it's not a fixed size section.
 
-So let's rename this field.
+## PKG Pointer Section
 
-Now that we have fixed that, we can recover the file names of each entry:
-
-```C
-char *filename = (char *)entry;
-filename += entry->offset_idx_file_name;
-
-printf("* filename: %.*s\n", (int)entry->file_name_size, filename);
-```
-
-Nice:
-```
-Metadata entry 0:
-* file_name_size:            14
-* offset_idx_file_name:      0x26e0
-* unknown_4:                 0x93b6404fba9a0c8f
-* file_type_2:               0xdbb1a1d1b108b927
-* filename:                  KDStorage.bin
-
-Metadata entry 1:
-* file_name_size:            19
-* offset_idx_file_name:      0x26ce
-* unknown_4:                 0xc7f7d0284a87ec8f
-* file_type_2:               0x74d821503e1beba4
-* filename:                  waves_heights1.dds
-```
-
-We have file names and directory names, for example:
-
-```
-[...]
-Metadata entry 10:
-* file_name_size:            11
-* offset_idx_file_name:      0x2654
-* unknown_4:                 0x46c008ccf65395e0
-* file_type_2:               0x46e29969bd85cf06
-* filename:                  space_defs
-
-Metadata entry 11:
-* file_name_size:            13
-* offset_idx_file_name:      0x263f
-* unknown_4:                 0x7213702d5e6899e0
-* file_type_2:               0x13d93873302ed14c
-* filename:                  aid_null.dds
-
-Metadata entry 12:
-* file_name_size:            16
-* offset_idx_file_name:      0x262c
-* unknown_4:                 0xa1a829d8713f89e0
-* file_type_2:               0xdbb1a1d1b108b927
-* filename:                  camouflages.xml
-[...]
-```
-
-There is something which should enable us to differentiate between the two, maybe one of the unknown fields.
-
-Also, we still need to figure out how the directory system works:
-
-* How directories & subdirectories are composed (to get `<dir>/<sub dir>/<sub sub dir>/` paths)
-* How the path goes back to the root (`/`)
-
-We will not look at it here, but that's something to keep in mind.
-
-#### Footer Parsing
-
-Extracting footer information:
-
-```C
-WOWS_INDEX_FOOTER *footer = (WOWS_INDEX_FOOTER *)(contents + header->offset_idx_footer_section);
-print_footer(footer);
-```
-
-The results were incorrect due to an offset miscalculation.
-
-```
-Index Footer Content:
-* size_pkg_file_name:        50b0bd0300002d0b
-* unknown_7:                 0xe967
-* unknown_6:                 0x15
-```
-
-A file name size of `50b0bd0300002d0b`? I don't think so.
-
-So let's look at it more closely.
-
-In the header, we have:
-
-```
-Index Header Content:
-[...]
-* offset_idx_footer_section: 0x7136
-[...]
-```
-
-The hexdump gives:
+Here what it looks like:
 
 ```shell
+kakwa@linux 6775398/idx » hexdump -C system_data.idx| less
+```
+
+```
+[...]
+00003bf0  64 73 00 77 61 76 65 73  5f 68 65 69 67 68 74 73  |ds.waves_heights|
+00003c00  30 2e 64 64 73 00 8f 0c  9a ba 4f 40 b6 93 70 11  |0.dds.....O@..p.|
+00003c10  03 07 0d 33 ed 77 00 00  00 00 00 00 00 00 05 00  |...3.w..........|
+00003c20  00 00 01 00 00 00 f5 21  00 00 bf 00 45 5c 6c 36  |.......!....E\l6|
+00003c30  00 00 00 00 00 00 8f ec  87 4a 28 d0 f7 c7 70 11  |.........J(...p.|
+00003c40  03 07 0d 33 ed 77 1e 9b  ef 05 00 00 00 00 05 00  |...3.w..........|
+00003c50  00 00 01 00 00 00 15 15  01 00 03 77 63 97 3e ab  |...........wc.>.|
+00003c60  02 00 00 00 00 00 ad 70  a2 e7 ac 2c 4f 6b 70 11  |.......p...,Okp.|
+00003c70  03 07 0d 33 ed 77 05 22  00 00 00 00 00 00 05 00  |...3.w."........|
+00003c80  00 00 01 00 00 00 cb 01  00 00 6d b9 de c1 ad 0c  |..........m.....|
+00003c90  00 00 00 00 00 00 8e c7  6a 58 7c 86 62 33 70 11  |........jX|.b3p.|
+00003ca0  03 07 0d 33 ed 77 e0 23  00 00 00 00 00 00 05 00  |...3.w.#........|
+00003cb0  00 00 01 00 00 00 65 00  00 00 f1 d2 87 5a d2 00  |......e......Z..|
+00003cc0  00 00 00 00 00 00 8e 43  3d e9 cf 49 52 a4 70 11  |.......C=..IR.p.|
+00003cd0  03 07 0d 33 ed 77 4d 1f  6a 05 00 00 00 00 05 00  |...3.wM.j.......|
+00003ce0  00 00 01 00 00 00 bb 19  00 00 f7 53 4a b1 38 ab  |...........SJ.8.|
+00003cf0  00 00 00 00 00 00 0e 3c  9a 6d 22 de 7b da 70 11  |.......<.m".{.p.|
+00003d00  03 07 0d 33 ed 77 55 24  00 00 00 00 00 00 05 00  |...3.wU$........|
+00003d10  00 00 01 00 00 00 72 0d  00 00 83 0a 72 88 a3 5c  |......r.....r..\|
+00003d20  00 00 00 00 00 00 98 45  00 7a 16 6e 84 21 70 11  |.......E.z.n.!p.|
+00003d30  03 07 0d 33 ed 77 73 ce  cb 06 00 00 00 00 05 00  |...3.ws.........|
+00003d40  00 00 01 00 00 00 f9 b6  b7 00 ff 7e f7 7b 5b 30  |...........~.{[0|
+00003d50  b8 00 00 00 00 00 98 51  4a 00 2c 12 71 ad 70 11  |.......QJ.,.q.p.|
+00003d60  03 07 0d 33 ed 77 7e 63  75 05 00 00 00 00 05 00  |...3.w~cu.......|
+[...]
+00007100  00 00 01 00 00 00 6f 09  00 00 fc 56 94 f8 9a 37  |......o....V...7|
+00007110  00 00 00 00 00 00 21 67  ac 70 22 ec ca b8 70 11  |......!g.p"...p.|
+00007120  03 07 0d 33 ed 77 28 f9  15 0a 00 00 00 00 05 00  |...3.w(.........|
+00007130  00 00 01 00 00 00 0b 2d  00 00 03 bd b0 50 67 e9  |.......-.....Pg.|
+00007140  00 00 00 00 00 00 15 00  00 00 00 00 00 00 18 00  |................|
+00007150  00 00 00 00 00 00 70 11  03 07 0d 33 ed 77 73 79  |......p....3.wsy|
+00007160  73 74 65 6d 5f 64 61 74  61 5f 30 30 30 31 2e 70  |stem_data_0001.p|
+00007170  6b 67 00                                          |kg.|
+00007173
+(END)
+```
+
+This section contains 384-bit records (48 bytes each) linking files to their data in `.pkg` files through IDs and offsets.
+
+Each record contains metadata IDs, PKG file offsets, data sizes, and compression types.
+
+```shell
+# let's skip the first 6 bytes to align hexdump output
 kakwa@linux 6775398/idx » hexdump -s 6 -C system_data.idx| less
 ```
 
 ```
 [...]
+00003be6  6f 6e 5f 64 75 6d 6d 79  2e 64 64 73 00 77 61 76  |on_dummy.dds.wav|
+00003bf6  65 73 5f 68 65 69 67 68  74 73 30 2e 64 64 73 00  |es_heights0.dds.|
+00003c06  8f 0c 9a ba 4f 40 b6 93  70 11 03 07 0d 33 ed 77  |....O@..p....3.w|
+00003c16  00 00 00 00 00 00 00 00  05 00 00 00 01 00 00 00  |................|
+00003c26  f5 21 00 00 bf 00 45 5c  6c 36 00 00 00 00 00 00  |.!....E\l6......|
+00003c36  8f ec 87 4a 28 d0 f7 c7  70 11 03 07 0d 33 ed 77  |...J(...p....3.w|
+00003c46  1e 9b ef 05 00 00 00 00  05 00 00 00 01 00 00 00  |................|
+00003c56  15 15 01 00 03 77 63 97  3e ab 02 00 00 00 00 00  |.....wc.>.......|
+00003c66  ad 70 a2 e7 ac 2c 4f 6b  70 11 03 07 0d 33 ed 77  |.p...,Okp....3.w|
+[...]
+```
+
+Much nicer!
+
+With that, we immediately notice a cycle, with the `70 11 03 07 0d 33 ed 77` value.
+
+There are 6 × 64 = 384 bits between each `70 11 03 07 0d 33 ed 77` value.
+
+Let's try to confirm that with the IDs.
+
+We are spotting the `bf 00 45 5c 6c 36` seen previously in the `.pkg` file. 384 bits later, we see `03 77 63 97 3e ab 02`.
+
+With a bit of digging (it's right in the middle of the `.pkg` file, and this ID is not neatly in a 64-bit aligned chunk because of the variable size of the DEFLATE blocks), we indeed find it.
+
+We have indeed a 384-bit cycle, which neatly fits in 3 lines of hexdump!
+
+So each of these is one record:
+
+```
+00003c06  8f 0c 9a ba 4f 40 b6 93  70 11 03 07 0d 33 ed 77  |....O@..p....3.w|
+00003c16  00 00 00 00 00 00 00 00  05 00 00 00 01 00 00 00  |................|
+00003c26  f5 21 00 00 bf 00 45 5c  6c 36 00 00 00 00 00 00  |.!....E\l6......|
+```
+
+```
+00003c36  8f ec 87 4a 28 d0 f7 c7  70 11 03 07 0d 33 ed 77  |...J(...p....3.w|
+00003c46  1e 9b ef 05 00 00 00 00  05 00 00 00 01 00 00 00  |................|
+00003c56  15 15 01 00 03 77 63 97  3e ab 02 00 00 00 00 00  |.....wc.>.......|
+```
+
+```
+00003c66  ad 70 a2 e7 ac 2c 4f 6b  70 11 03 07 0d 33 ed 77  |.p...,Okp....3.w|
+00003c76  05 22 00 00 00 00 00 00  05 00 00 00 01 00 00 00  |."..............|
+00003c86  cb 01 00 00 6d b9 de c1  ad 0c 00 00 00 00 00 00  |....m...........|
+```
+
+```
+00003c96  8e c7 6a 58 7c 86 62 33  70 11 03 07 0d 33 ed 77  |..jX|.b3p....3.w|
+00003ca6  e0 23 00 00 00 00 00 00  05 00 00 00 01 00 00 00  |.#..............|
+00003cb6  65 00 00 00 f1 d2 87 5a  d2 00 00 00 00 00 00 00  |e......Z........|
+```
+
+```
+00003cc6  8e 43 3d e9 cf 49 52 a4  70 11 03 07 0d 33 ed 77  |.C=..IR.p....3.w|
+00003cd6  4d 1f 6a 05 00 00 00 00  05 00 00 00 01 00 00 00  |M.j.............|
+00003ce6  bb 19 00 00 f7 53 4a b1  38 ab 00 00 00 00 00 00  |.....SJ.8.......|
+```
+
+All these records are from the same file,
+
+let's grab a few from other files:
+
+File 2:
+
+```
+0000f6fd  58 fe 65 b4 59 b6 b0 77  a4 8c 78 6a 58 aa 65 84  |X.e.Y..w..xjX.e.|
+0000f70d  00 00 00 00 00 00 00 00  05 00 00 00 01 00 00 00  |................|
+0000f71d  bc 99 05 00 f4 3a 67 8b  80 00 08 00 00 00 00 00  |.....:g.........|
+```
+
+```
+0000f72d  a0 e5 c7 22 cc 49 d3 31  a4 8c 78 6a 58 aa 65 84  |...".I.1..xjX.e.|
+0000f73d  3e 9e 7e 05 00 00 00 00  05 00 00 00 01 00 00 00  |>.~.............|
+0000f74d  79 c6 03 00 dc b8 5f 80  80 00 08 00 00 00 00 00  |y....._.........|
+```
+
+File 3:
+
+```
+00002d0c  ed cf 33 f8 a5 94 53 56  0d a7 9c b9 bf 60 f5 3e  |..3...SV.....`.>|
+00002d1c  40 a8 08 07 00 00 00 00  00 00 00 00 00 00 00 00  |@...............|
+00002d2c  38 ab 00 00 5d cf 4e b6  38 ab 00 00 00 00 00 00  |8...].N.8.......|
+```
+
+```
+00002d3c  ed ea da 52 4e 8f 70 ed  0d a7 9c b9 bf 60 f5 3e  |...RN.p......`.>|
+00002d4c  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
+00002d5c  98 00 00 00 a4 63 f2 9b  98 00 00 00 00 00 00 00  |.....c..........|
+```
+
+Lets study:
+
+```
+00003c06  8f 0c 9a ba 4f 40 b6 93  70 11 03 07 0d 33 ed 77  |....O@..p....3.w|
+00003c16  00 00 00 00 00 00 00 00  05 00 00 00 01 00 00 00  |................|
+00003c26  f5 21 00 00 bf 00 45 5c  6c 36 00 00 00 00 00 00  |.!....E\l6......|
+```
+
+For the first 128 bits we get:
+
+```
+00003c06  8f 0c 9a ba 4f 40 b6 93  70 11 03 07 0d 33 ed 77  |....O@..p....3.w|
+```
+
+From the fact the last 64 bits are constant, we can deduce we have probably two 64 bits integers in the first 128 bits
+
+Once again, these are using all the available bits and seem rather random. It's difficult to link these to their role, so... lets simply ignore these for now.
+
+```
++====+====+====+====+====+====+====+====++====+====+====+====+====+====+====+====+
+| UO | UO | UO | UO | UO | UO | UO | UO || UT | UT | UT | UT | UT | UT | UT | UT |
++====+====+====+====+====+====+====+====++====+====+====+====+====+====+====+====+
+|<------------ unknown 1 -------------->||<------------- unknow 2 -------------->|
+|               64 bits                 ||               64 bits                 |
+```
+
+Next 64 bits, we have a low value 64 bits integer, so most likely an offset. It is also suspiciously at `0x0` for the first record which is also the first data chunk in the `.pkg` file.
+
+So, it's most likely the start of a data chunk in a `.pkg` file. Looking at other records confirms that.
+
+Next, we have two extremely low value 32 bits (0x5 and 0x1). So once again, most likely some kind of enum, lets call them `type1` and `type2`.
+
+```
++====+====+====+====+====+====+====+====++====+====+====+====++====+====+====+====+
+| OF | OF | OF | OF | OF | OF | OF | OF || T1 | T1 | T1 | T1 || T2 | T2 | T2 | T2 |
++====+====+====+====+====+====+====+====++====+====+====+====++====+====+====+====+
+|<----------start offset pkg ---------->||<---- type 1 ----->||<----- type 2 ---->|
+|               64 bits                 ||     32 bits       ||      32 bits      |
+```
+
+For the Last 128 bits, we get the following:
+
+```
+00003c26  f5 21 00 00 bf 00 45 5c  6c 36 00 00 00 00 00 00  |.!....E\l6......|
+```
+
+So, here, we see our `.pkg` ID (`bf 00 45 5c  6c 36`) right in the middle. Given its size, this ID is probably stored on 64 bits.
+
+After that, last 32 bits, we get a bunch of `00`, maybe a reserved field, but more likely some kind of padding.
+
+Before that, we get a low value 32 bits integer. When comparing with the `.pkg` file, `f5 21 00 00` is the offset where the first data chunk ends.
+
+So it's the end offset. But 32 bits seems rather small to store such offset (specially given the start offset is 64 bits. Also, for other data chunks, this doesn't line-up.
+
+However, it could very much be a relative offset (to the start of the data chunk).
+
+Lets validate that with the second record:
+
+```
+00003c36  8f ec 87 4a 28 d0 f7 c7  70 11 03 07 0d 33 ed 77  |...J(...p....3.w|
+00003c46  1e 9b ef 05 00 00 00 00  05 00 00 00 01 00 00 00  |................|
+00003c56  15 15 01 00 03 77 63 97  3e ab 02 00 00 00 00 00  |.....wc.>.......|
+```
+
+More hexdump! (searching the data chunk using the `03 77 63 97  3e ab 02` ID and the start offset `1e 9b ef 05 00 00 00 00`, or `0x05ef9b1e` once we take endianess into account):
+
+```shell
+kakwa@linux World of Warships/res_packages » hexdump -C system_data_0001.pkg | less
+```
+
+```
+[...]
+05ef9b10  00 00 17 4b 28 42 80 40  00 00 00 00 00 00 8c 7d  |...K(B.@.......}|
+05ef9b20  3b 50 5d d9 b6 dd 7d b6  3e 76 15 b2 5f 20 89 04  |;P]...}.>v.._ ..|
+05ef9b30  55 bd 00 44 82 aa ec 7a  9c bd f7 79 45 57 39 40  |U..D...z...yEW9@|
+05ef9b40  90 d0 4e 8c c0 01 9d 21  48 e8 0c 41 a2 ce 10 24  |..N....!H..A...$|
+[...]
+05f0b010  d1 d7 52 b0 de cc fa 9c  2b 8d b5 57 a4 02 ff 1a  |..R.....+..W....|
+05f0b020  43 5d 2d 43 3f cc d1 0b  f8 88 92 a8 9f 5a 70 64  |C]-C?........Zpd|
+05f0b030  46 fb 7f 00 00 00 00 03  77 63 97 3e ab 02 00 00  |F.......wc.>....|
+05f0b040  00 00 00 94 b7 67 90 db  68 9e e6 d9 1f 36 62 6f  |.....g..h....6bo|
+05f0b050  6f 22 76 f6 62 e3 62 77  67 7a 7a ba ab bb 8c aa  |o"v.b.bwgzz.....|
+05f0b060  4a 52 95 5c ca a5 cf 64  d2 24 bd 27 41 d0 00 04  |JR.\...d.$.'A...|
+[...]
+```
+
+We indeed find the start of our data chunk at `05ef9b1e` (`8c` after a bunch of `00` on the first line).
+
+And looking for the `00 00 00 00 ID ID [...]` pattern in between the data chunks, we can determine the end of this chunk to be at `0x05f0b032`.
+
+Doing `0x05f0b032 - 0x05ef9b1e`, we get `0x11514`, that's almost our `15 15 01 00` once we swap endianess, and add `1`.
+
+```
++====+====+====+====++====+====+====+====+====+====+====+====++====+====+====+====+
+| OE | OE | OE | OE || ID | ID | ID | ID | ID | ID | ID | ID || 00 | 00 | 00 | 00 |
++====+====+====+====++====+====+====+====+====+====+====+====++====+====+====+====+
+|<-- offset end --->||<------------- ID '.pkg' ------------->||<---- padding ---->|
+|     32 bits       ||               64 bits                 ||      32 bits      |
+```
+
+So to recap, we have:
+
+```
++====+====+====+====+====+====+====+====++=====+====+====+====+====+====+====+====+
+| UO | UO | UO | UO | UO | UO | UO | UO ||  UT | UT | UT | UT | UT | UT | UT | UT |
++====+====+====+====+====+====+====+====++=====+====+====+====+====+====+====+====+
+|<------------ unknown 1 -------------->||<-------------- unknown 2 ------------->|
+|               64 bits                 ||                64 bits                 |
++====+====+====+====+====+====+====+====++====+====+====+====++====+====+====+====+
+| OF | OF | OF | OF | OF | OF | OF | OF || T1 | T1 | T1 | T1 || T2 | T2 | T2 | T2 |
++====+====+====+====+====+====+====+====++====+====+====+====++====+====+====+====+
+|<--------- start offset pkg ---------->||<---- type 1 ----->||<----- type 2 ---->|
+|               64 bits                 ||     32 bits       ||      32 bits      |
++====+====+====+====++====+====+====+====+====+====+====+====++====+====+====+====+
+| OE | OE | OE | OE || ID | ID | ID | ID | ID | ID | ID | ID || 00 | 00 | 00 | 00 |
++====+====+====+====++====+====+====+====+====+====+====+====++====+====+====+====+
+|<-- offset end --->||<------------- ID '.pkg' ------------->||<---- padding ---->|
+|     32 bits       ||               64 bits                 ||      32 bits      |
+```
+
+## The Last Bits
+
+So, okay, we have the core of the 3 parts of the file.
+
+But we can see the last few bits don't follow this pattern (especially with the `.pkg` file name), which means we have a footer:
+
+```
+# Last block
 00007116  21 67 ac 70 22 ec ca b8  70 11 03 07 0d 33 ed 77  |!g.p"...p....3.w|
 00007126  28 f9 15 0a 00 00 00 00  05 00 00 00 01 00 00 00  |(...............|
 00007136  0b 2d 00 00 03 bd b0 50  67 e9 00 00 00 00 00 00  |.-.....Pg.......|
+# Footer
 00007146  15 00 00 00 00 00 00 00  18 00 00 00 00 00 00 00  |................|
 00007156  70 11 03 07 0d 33 ed 77  73 79 73 74 65 6d 5f 64  |p....3.wsystem_d|
 00007166  61 74 61 5f 30 30 30 31  2e 70 6b 67 00           |ata_0001.pkg.|
 ```
 
-If our previous interpretation was correct, a simple offset from the start of the index file should be `0x7146`, not `0x7136`.
+If we look at the content, we have 3 × 64 bits before the name starts (`73 79 73 74 65 6d 5f 64` for `system_d`)
 
-Maybe we are missing some fields in the footer, but given the previous 128 bits at offset `0x7136` really look like the end of a pkg metadata entry, I doubt it.
+Looking at it more closely, given all the `00`, it seems we have three 64-bit integers there.
 
-A more plausible explanation is that the offset is relative to the header `id` field at `0x10`.
-Maybe the `magic` + `unknown_1` bits, i.e., the first 128 bits, are considered to be a separate section.
+* `15 00 00 00 00 00 00 00`
+* `18 00 00 00 00 00 00 00`
+* `70 11 03 07 0d 33 ed 77`
 
-Anyway, let's just offset by 128 bits.
+`70 11 03 07 0d 33 ed 77` is the "unknown 2" we saw previously, so still no luck, but let's name it the same way.
 
-```C
-#define MAGIC_SECTION_OFFSET sizeof(uint32_t) * 4
 
-// Get the footer section
-WOWS_INDEX_FOOTER *footer = (WOWS_INDEX_FOOTER *)(contents + header->offset_idx_footer_section + MAGIC_SECTION_OFFSET);
-```
+`18 00 00 00 00 00 00 00` seems to have the same value across all files, so probably not that important.
 
-That's better:
+The only one that varies across files is the `15 00 00 00 00 00 00 00`, but always in the same kind of values around 0x15. In decimal it's 21.
 
-```
-Index Footer Content:
-* size_pkg_file_name:        23
-* unknown_7:                 0x18
-* unknown_6:                 0xb5a4fa9349d9fd0d
-```
+Strangely, `system_data_0001.pkg` is 20 chars long, 21 if we include the `\0` at the end.
 
-We can also recover the pkg file name as follows:
+So we can deduce it's actually the `.pkg` file name string size.
 
-```C
-char *pkg_filename = (char *)footer;
-pkg_filename += sizeof(WOWS_INDEX_FOOTER);
-printf("* pkg filename:              %.*s\n",
-       (int)footer->size_pkg_file_name, pkg_filename);
-```
-
-#### Safety Considerations
-
-The current implementation lacks bounds checking and trusts all offsets—this needs fixing in production code.
-
-#### PKG Data Entries
-
-Similar process for the data section:
-
-And lets add the 128 bits from the start (hexdump gives us `0x3c06`, which is again a `0x10` difference with `0x3bf6`).
-
-```C
-    // Get pkg data pointer section
-    WOWS_INDEX_DATA_FILE_ENTRY *data_file_entry =
-        (WOWS_INDEX_DATA_FILE_ENTRY *)(contents +
-                                       header->offset_idx_data_section +
-                                       MAGIC_SECTION_OFFSET);
-```
-
-From there, we are not sure if we have `header->file_plus_dir_count` or `header->file_count` entries. The latter seems more likely as this section points to the pkg files, but that's not a given.
-
-Also, we are unsure how one entry there is paired with a metadata entry. Maybe the order is simply the same in this array, maybe the matching is done through one of the unknown field.
-
-But first, lets dump the content with some `printf`:
+So we have:
 
 ```
-Data file entry [0]:
-* unknown_5:                 0x93b6404fba9a0c8f
-* unknown_6:                 0x77ed330d07031170
-* offset_pkg_data_chunk:     0x0
-* type_1:                    0x5
-* type_2:                    0x1
-* size_pkg_data_chunk:       0x21f5
-* id_pkg_data_chunk:         0x366c
-* padding:                   0x4a87ec8f
-
-Data file entry [1]:
-* unknown_5:                 0x77ed330d07031170
-* unknown_6:                 0x5ef9b1e
-* offset_pkg_data_chunk:     0x100000005
-* type_1:                    0x11515
-* type_2:                    0x97637703
-* size_pkg_data_chunk:       0x2ab3e
-* id_pkg_data_chunk:         0x6b4f2cace7a270ad
-* padding:                   0x7031170
-[...]
-```
-
-Humm, that doesn't look righ... Why is the padding not the expected `0x0`? Also why the first entry looks mostly ok, except the padding, and the rest is garbage.
-
-First, I double-check the `WOWS_INDEX_DATA_FILE_ENTRY` field sizes, and it was ok.
-
-Then, I remembered that compilers can add padding to have all the fields properly aligned in memory, this helps with performances.
-
-To avoid that, we need to add:
-
-```C
-#pragma pack(1)
-```
-
-Now the output looks like that:
-
-```
-* unknown_5:                 0x93b6404fba9a0c8f
-* unknown_6:                 0x77ed330d07031170
-* offset_pkg_data_chunk:     0x0
-* type_1:                    0x5
-* type_2:                    0x1
-* size_pkg_data_chunk:       0x21f5
-* id_pkg_data_chunk:         0x366c5c4500bf
-* padding:                   0x0
-
-Data file entry [1]:
-* unknown_5:                 0xc7f7d0284a87ec8f
-* unknown_6:                 0x77ed330d07031170
-* offset_pkg_data_chunk:     0x5ef9b1e
-* type_1:                    0x5
-* type_2:                    0x1
-* size_pkg_data_chunk:       0x11515
-* id_pkg_data_chunk:         0x2ab3e97637703
-* padding:                   0x0
-
-Data file entry [2]:
-* unknown_5:                 0x6b4f2cace7a270ad
-* unknown_6:                 0x77ed330d07031170
-* offset_pkg_data_chunk:     0x2205
-* type_1:                    0x5
-* type_2:                    0x1
-* size_pkg_data_chunk:       0x1cb
-* id_pkg_data_chunk:         0xcadc1deb96d
-* padding:                   0x0
-```
-
-That's much better.
-
-But this small issue raises a number of issues with my method of parsing. Casting to structs comes with numerous issues, from overflows to endianness.
-
-This is not that critical here since we are just trying to have a rough prototype, but on more critical software, that's not a good idea.
-
-After this prototype, it might be a good idea to start learning Rust ^^.
-
-Also, if we try to parse `header->file_plus_dir_count` entries, we get the following:
-
-```
-Data file entry [283]:
-* unknown_5:                 0xb8caec2270ac6721
-* unknown_6:                 0x77ed330d07031170
-* offset_pkg_data_chunk:     0xa15f928
-* type_1:                    0x5
-* type_2:                    0x1
-* size_pkg_data_chunk:       0x2d0b
-* id_pkg_data_chunk:         0xe96750b0bd03
-* padding:                   0x0
-
-Data file entry [284]:
-* unknown_5:                 0x15
-* unknown_6:                 0x18
-* offset_pkg_data_chunk:     0x77ed330d07031170
-* type_1:                    0x74737973
-* type_2:                    0x645f6d65
-* size_pkg_data_chunk:       0x5f617461
-* id_pkg_data_chunk:         0x676b702e31303030
-* padding:                   0x0
-
-Data file entry [285]:
-* unknown_5:                 0x0
-* unknown_6:                 0x0
-* offset_pkg_data_chunk:     0x0
-* type_1:                    0x0
-* type_2:                    0x0
-* size_pkg_data_chunk:       0x0
-* id_pkg_data_chunk:         0x0
-* padding:                   0x0
-```
-
-The entry `283` is OK. This is the 284th entry since we start at `0`, which is exactly `header->file_count`. The next one has weird values and the rest just `0`.
-
-So `header->file_count` is indeed the number of entries in this section.
-
-#### Entry Matching
-
-The fact that on one side we have `header->file_count` and on the other `header->file_plus_dir_count` means it's not a simple index matching.
-
-Lets investigate the unknown fields:
-
-```
-[...]
-Data file entry [279]:
-* unknown_5:                 0xce7afff48d1bd174
-* unknown_6:                 0x77ed330d07031170
-[...]
-
-Data file entry [280]:
-* unknown_5:                 0x199e99feb0c986f8
-* unknown_6:                 0x77ed330d07031170
-[...]
-```
-
-`unknown_6` is always the same, not really interesting.
-
-`unknown_5` on the contrary is specific to each entry:
-
-```shell
-kakwa@linux GitHub/wows-depack (main) » ./wows-depack-cli \
-    -i ~/Games/World\ of\ Warships/bin/6775398/idx/system_data.idx | \
-    grep 'unknown_5' | sort | uniq -c
-[...]
-      1 * unknown_5:                 0x14b002d7c2835863
-      1 * unknown_5:                 0x15a7b41a61f65f9c
-      1 * unknown_5:                 0x15fcab5401f27f56
-      1 * unknown_5:                 0x18a0d0dc4b05f8fa
-      1 * unknown_5:                 0x192a05120f00553e
-[...]
-```
-
-The values, however, are present two times—one in the metadata entry, the other in the data file entry:
-
-```
-Metadata entry [72]:
-[...]
-* unknown_4:                 0x1011b17d9304bb39
-[...]
-```
-
-```
-Data file entry [65]:
-[...]
-* unknown_5:                 0x1011b17d9304bb39
-[...]
-```
-
-So the link is established through these fields. These are simply random, unique IDs for each entry.
-
-In fact `unknown_4` and `unknown_5` are not the only fields leveraging this.
-
-Looking at `file_type_2` values, we get something like that:
-
-
-```shell
-kakwa@linux GitHub/wows-depack (main *) » ./wows-depack-cli \
-    -i ~/Games/World\ of\ Warships/bin/6775398/idx/system_data.idx | \
-    grep '0x937f155e4baaf562\|filename:' | grep -A 1 '0x937f155e4baaf562'
-```
-
-```
-[...]
---
-* file_type_2:               0x937f155e4baaf562
-* filename:                  LowerAftTrans.dds
---
-* file_type_2:               0x937f155e4baaf562
-* filename:                  MidBarbette.dds
---
-* file_type_2:               0x937f155e4baaf562
-* filename:                  Bulkhead.dds
---
-* file_type_2:               0x937f155e4baaf562
-* filename:                  MidBelt.dds
---
-[...]
---
-* unknown_4:                 0x937f155e4baaf562
-* filename:                  armour
---
-[...]
---
-* file_type_2:               0x937f155e4baaf562
-* filename:                  Bottom.dds
---
-* file_type_2:               0x937f155e4baaf562
-* filename:                  ConstrBig.dds
---
-* file_type_2:               0x937f155e4baaf562
-* filename:                  ConstrMid.dds
---
-* file_type_2:               0x937f155e4baaf562
-* filename:                  ConstrSm.dds
---
-* file_type_2:               0x937f155e4baaf562
-* filename:                  DoubleBottom.dds
---
-[...]
-```
-
-Ok, `file_type_2` is not a file type at all; it's the `id` (`unknown_4` right now) of just one node that really looks like a directory.
-
-`file_type_2` should probably be renamed `parent_id` or something.
-
-Also, `unknown_6` follows the same logic: it's the id of the footer entry (side note: maybe the format supports having one index for several files).
-
-#### Small Tangent
-
-By this point, I was a bit intrigued by the `type_1` and `type_2` fields in the `pkg` pointer sections.
-
-```shell
-kakwa@linux GitHub/wows-depack (main) » for i in ~/Games/World\ of\ Warships/bin/6775398/idx/*;\
-do
-    ./wows-depack-cli -i "$i" | grep 'type_[12]:';
-done | sort -n | uniq -c | sort -n
-```
-
-```
-  57265 * type_1:                    0x0
-  57265 * type_2:                    0x0
- 232089 * type_1:                    0x5
- 232089 * type_2:                    0x1
-```
-
-Ok, it seems that `(type_1, type_2)` can either have the `(0x0, 0x0)` values, or the `(0x5, 0x1)` values. In most cases, it's the latter.
-
-Looking at a few `(0x0, 0x0)`, a common file with such values are `.png`.
-
-It's a bit of a wild guess, but these might be compression levels. `(0x0, 0x0)`, i.e. no compression would be logical for `.png` as these files are already compressed. Compressing them would actually only cost CPU resources with no space gains.
-
-For now, lets just keep that in mind, we will revisit it later.
-
-#### Glueing the entries together
-
-So, we have metadata entries which can be linked together, we have pkg pointer entries which are linked to metadata entries and footer entries.
-
-It's time to link all that together.
-
-To do that, the obvious choice is to feed these IDs into an hash map, this will make look-ups easier and quicker.
-
-Once done, the output now looks like that:
-
-
-```
-File entry [259]:
-* metadata_id:               0xc90b3d356989c551
-* footer_id:                 0x77ed330d07031170
-* offset_pkg_data:           0x5d30db8
-* type_1:                    0x5
-* type_2:                    0x1
-* size_pkg_data:             0x89667
-* id_pkg_data:               0xaab740ef4f6a6
-* padding:                   0x0
-* file_name_size:            18
-* offset_idx_file_name:      0x164e
-* id:                        0xc90b3d356989c551
-* parent_id:                 0xeb7ddcfb5178376
-* filename:                  snow_tiles_ah.dds
-parent [1]:
-* file_name_size:            8
-* offset_idx_file_name:      0x19cf
-* id:                        0xeb7ddcfb5178376
-* parent_id:                 0xb220a7743c83e638
-* filename:                  weather
-parent [2]:
-* file_name_size:            5
-* offset_idx_file_name:      0x16a3
-* id:                        0xb220a7743c83e638
-* parent_id:                 0x3837637adc4586b1
-* filename:                  maps
-parent [3]:
-* file_name_size:            7
-* offset_idx_file_name:      0x1746
-* id:                        0x3837637adc4586b1
-* parent_id:                 0xdbb1a1d1b108b927
-* filename:                  system
-```
-
-This entry is for the following path: `/system/maps/weather/snow_tiles_ah.dds`
-
-This should be enough now to start thinking about the actual tool and how it will be implemented.
-
-#### Another tangent
-
-The goal is in the end is to parse all the index files, so it got me curious about the IDs across the different files.
-
-Looking at the dumps, `content` is a fairly common directory name, present in a lot of the index files.
-
-And if we look at these records, we get:
-
-
-```shell
-kakwa@linux GitHub/wows-depack (main *%) » for i in ~/Games/World\ of\ Warships/bin/6775398/idx/*;\
-do \
-    echo $i; \
-    ./wows-depack-cli -i "$i" | grep -B 5  '* filename:                  content$'; \
-done | less
-```
-
-```
-[...]
-/home/kakwa/Games/World of Warships/bin/6775398/idx/camouflage.idx
-parent [5]:
-* file_name_size:            8
-* offset_idx_file_name:      0xecae
-* id:                        0xa33046442d8327fc
-* parent_id:                 0xdbb1a1d1b108b927
-* filename:                  content
---
-parent [4]:
-* file_name_size:            8
-* offset_idx_file_name:      0xecae
-* id:                        0xa33046442d8327fc
-* parent_id:                 0xdbb1a1d1b108b927
-* filename:                  content
---
-parent [5]:
-* file_name_size:            8
-* offset_idx_file_name:      0xecae
-* id:                        0xa33046442d8327fc
-* parent_id:                 0xdbb1a1d1b108b927
-* filename:                  content
-[...]
-```
-
-Interestingly `id` is always `0xa33046442d8327fc` (and also `parent_id` is `0xdbb1a1d1b108b927`). This will make implementation a bit easier.
-
-However, it raises an interesting question: how this `id` is generated? Is it completely random? Or is it derived from the path/name?
-
-It's not really critical to read files, but might be important to write content if we ever get to that.
-
-### File System Tree
-
-Build a tree structure using:
-
-1. **HashMap** for fast ID lookups ([hashmap.c](https://github.com/tidwall/hashmap.c))
-2. **Inode types**: files and directories
-3. **Tree construction**: Start with PKG data chunks (files), resolve names via metadata, build directory hierarchy using `parent_id` relationships
-
-The result: a complete archive tree with root node and children.
-
-With a bit more work, adding a path/tree printer function, I now get something like that:
-
-```
-/postfx_animations.xml
-/settings/Default_v3.settings
-/settings/Default_v1.settings
-/settings/Default_v2.settings
-/scripts/user_data_object_defs/Barge.def
-/scripts/user_data_object_defs/SpatialUIDebugTool.def
-/scripts/user_data_object_defs/FogPoint.def
-/scripts/user_data_object_defs/StaticSoundEmitter.def
-[...]
-/helpers/maps/green_hemisphere.dds
-/helpers/maps/lev_dirt01.dds
-/helpers/maps/fat_disc_quarter.dds
-/helpers/maps/lev_grass_01.dds
-/helpers/maps/lev_grassflowers.dds
-/helpers/maps/red_ruler.dds
-/helpers/maps/hemisphere.dds
-/helpers/maps/disc_quarter.dds
-/helpers/maps/red_hemisphere_ring.dds
-/server_stats.xml
-
-```
-
-Or that in (ugly) tree form:
-
-```
--./
- |-* postfx_animations.xml
- |--settings/
- |  |-* Default_v3.settings
- |  |-* Default_v1.settings
- |  |-* Default_v2.settings
- |--scripts/
- |  |--user_data_object_defs/
- |  |  |-* Barge.def
- |  |  |-* SpatialUIDebugTool.def
- |  |  |-* FogPoint.def
- |  |  |-* StaticSoundEmitter.def
- |  |  |-* Minefield.def
- |  |  |-* SoundedEffect.def
- |  |  |-* SquadronReticleTool.def
- |  |  |-* Trigger.def
- |  |  |-* WayPoint.def
-[...]
++====+====+====+====+====+====+====+====++=====+====+====+====+====+====+====+====+
+| UO | UO | UO | UO | UO | UO | UO | UO ||  U3 | U3 | U3 | U3 | U3 | U3 | U3 | U3 |
++====+====+====+====+====+====+====+====++=====+====+====+====+====+====+====+====+
+|<--------- size pkg file name -------->||<-------------- unknown 3 ------------->|
+|               64 bits                 ||                64 bits                 |
++=====+====+====+====+====+====+====+====+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+|  UT | UT | UT | UT | UT | UT | UT | UT |             file name string
++=====+====+====+====+====+====+====+====+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+|<-------------- unknown 2 ------------->|
+|                64 bits                 |
 ```
 
 # Recap (Part 3)
 
-- We defined the C structs for the metadata/index
-- We resolved a few loose ends: filename lengths, parent IDs, unique identifiers for linking
-- We implemented a file tree using hashmaps and parent-child relationships
-- We identified compression type patterns
+- Identified `.idx` files in `./bin/<latest>/idx/` as indexes for `.pkg` archives and matched them by name.
+- Mapped overall `.idx` layout into 4 parts:
+  - Header: magic `ISFP`, counts (entries and files), header-size-like field, offsets to start/end of the third section, and a per-file id/crc-like value.
+  - Names: `\0`-separated file and directory names.
+  - Records section (per-record 384 bits): two 64-bit unknowns (likely ids, one enabling parent/child hierarchy), 64-bit start offset in `.pkg`, 2×32-bit types, 32-bit relative end size, 64-bit `.pkg` chunk id, and padding.
+  - Footer: `.pkg` filename length, an unknown 64-bit value, a repeated 64-bit constant, then the `.pkg` filename string.
+- Established the link between names and `.pkg` chunks via IDs and offsets, enough to reconstruct directories and locate data.
 
-
-In the [next and last part](/posts/wows_depack_part4/) we will tie things together and wrap up the implementation.
+In [the next part](/posts/wows_depack_part4/) of this series we will start the actual implementation.

@@ -5,9 +5,10 @@ draft = false
 +++
 
 - Part 1 — [Searching The Data](/posts/wows_depack_part1/)
-- Part 2 — [Getting The Metadata](/posts/wows_depack_part2/)
-- Part 3 — [Reading Everything](/posts/wows_depack_part3/)
-- Part 4 — [Tidying-Up The Project](/posts/wows_depack_part4/)
+- Part 2 — [Looking For The Metadata](/posts/wows_depack_part2/)
+- Part 3 — [Dissecting The Index](/posts/wows_depack_part3/)
+- Part 4 — [Reading Everything](/posts/wows_depack_part4/)
+- Part 5 — [Tidying-Up The Project](/posts/wows_depack_part5/)
 
 # Introduction
 
