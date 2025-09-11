@@ -2,7 +2,7 @@ title = "Technically some technical stuff."
 baseurl = "https://technically.kakwalab.ovh/"
 baseURL = "https://technically.kakwalab.ovh/"
 languageCode = "en"
-theme = "poison"
+theme = "kpoison"
 copyright = "&copy; <a href=\"https://github.com/kakwa\">Pierre-Francois Carpentier</a> 2024"
 googleAnalytics = ""
 enableRobotsTXT = true

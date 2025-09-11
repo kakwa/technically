@@ -1,27 +1,29 @@
-{{ .Scratch.Set "title" .Site.Title }}
+{{ $scratch := newScratch }}
+{{ $brand := default .Site.Title $.Site.Params.brand }}
+{{ $scratch.Set "title" $brand }}
 
-{{ .Scratch.Set "publisherIcon" .Site.Params.favicon }}
+{{ $scratch.Set "publisherIcon" .Site.Params.favicon }}
 {{ if .Site.Params.publisherIcon }}
-    {{ .Scratch.Set "publisherIcon" .Site.Params.publisher_icon }}
+    {{ $scratch.Set "publisherIcon" .Site.Params.publisher_icon }}
 {{ end }}
 
 {{ if eq .Kind "home" }}
-  {{ .Scratch.Set "title" $.Site.Params.brand }}
-  {{ .Scratch.Set "description" .Site.Params.Description }}
+  {{ $scratch.Set "title" $brand }}
+  {{ $scratch.Set "description" (default .Site.Params.description .Site.Params.Description) }}
 {{ else }}
-  {{ .Scratch.Set "description" .Description }}
+  {{ $scratch.Set "description" (default .Site.Params.description .Description) }}
 {{ end }}
 
 {{ if .IsSection }}
-  {{ .Scratch.Set "title" ($.Site.Params.brand) }}
-  {{ .Scratch.Add "title" " - " }}
-  {{ .Scratch.Add "title" .LinkTitle }}
+  {{ $scratch.Set "title" $brand }}
+  {{ $scratch.Add "title" " - " }}
+  {{ $scratch.Add "title" .LinkTitle }}
 {{ end }}
 
 {{ if .IsPage }}
-  {{ .Scratch.Set "title" ($.Site.Params.brand) }}
-  {{ .Scratch.Add "title" " - " }}
-  {{ .Scratch.Add "title" .LinkTitle }}
+  {{ $scratch.Set "title" $brand }}
+  {{ $scratch.Add "title" " - " }}
+  {{ $scratch.Add "title" .LinkTitle }}
 {{ end }}
 
 {{ "<!-- Open Graph image and Twitter Card metadata -->" | safeHTML }}
@@ -48,18 +50,18 @@
 {{ end -}}
 
 <!-- Title Tags -->
-<title itemprop="name">{{ .Scratch.Get "title" }}</title>
-<meta property="og:title" content={{ .Scratch.Get "title" }} />
-<meta name="twitter:title" content={{ .Scratch.Get "title" }} />
-<meta itemprop="name" content={{ .Scratch.Get "title" }} />
-<meta name="application-name" content={{ .Scratch.Get "title" }} />
+<title itemprop="name">{{ $scratch.Get "title" }}</title>
+<meta property="og:title" content={{ $scratch.Get "title" }} />
+<meta name="twitter:title" content={{ $scratch.Get "title" }} />
+<meta itemprop="name" content={{ $scratch.Get "title" }} />
+<meta name="application-name" content={{ $scratch.Get "title" }} />
 <meta property="og:site_name" content="{{ .Site.Title }}" />
 
 <!-- Description Tags -->
-<meta name="description" content="{{ .Scratch.Get "description" }}" />
-<meta itemprop="description" content="{{ .Scratch.Get "description" }}" />
-<meta property="og:description" content="{{ .Scratch.Get "description" }}" />
-<meta name="twitter:description" content="{{ .Scratch.Get "description" }}" />
+<meta name="description" content="{{ $scratch.Get "description" }}" />
+<meta itemprop="description" content="{{ $scratch.Get "description" }}" />
+<meta property="og:description" content="{{ $scratch.Get "description" }}" />
+<meta name="twitter:description" content="{{ $scratch.Get "description" }}" />
 
 <!-- Link Tags -->
 <base href="{{ .Permalink }}" />
@@ -121,7 +123,7 @@
   <meta name="author" content="{{ . }}" />
 {{ end }}
 
-{{ with.Params.category }}
+{{ with .Params.category }}
   <meta name="news_keywords" content="{{ index . 0 }}" />
   <meta property="article:section" content="{{ index . 0 }}" />
 {{ end }}
