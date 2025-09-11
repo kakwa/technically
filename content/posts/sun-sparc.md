@@ -87,7 +87,7 @@ In particular we need to take care of these little bastards:
 
 And also their lord and master:
 
-TODO pic CPU fan.
+{{< figure src="/images/sun-cpufan.jpg" alt="Sun V100 CPU 12 V fan" caption="Original CPU 12 V fan" >}}
 
 But here again, we have options, especially the one beginning with an 'N'.
 
