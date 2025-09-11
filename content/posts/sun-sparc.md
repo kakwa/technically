@@ -4,14 +4,6 @@ date = 2025-08-27T19:01:49+02:00
 draft = true
 +++
 
-# Links
-
-- [Project's git (scripts & 3D models)](https://github.com/kakwa/silly-sunv100-server).
-- [Sun's V100 Official documentation](https://dogemicrosystems.ca/pub/Sun/System_Handbook/Sun_syshbk_V3.4/Systems/SunFireV100/SunFireV100.html).
-- [Sun's LOMlite2 official documentation](https://docs.oracle.com/cd/E19102-01/n20.srvr/806-7334-13/LW2+User.LOM.html)
-- Eerie Linux's [blog post 1](https://eerielinux.wordpress.com/2019/09/22/a-sparc-in-the-night-sunfire-v100-exploration/) and [post 2](https://eerielinux.wordpress.com/2019/10/30/illumos-v9os-on-sparc64-sunfire-v100/) about his V100.
-- [Obligatory Clabretro's video](https://www.youtube.com/watch?v=5OyGwbWKWZU).
-
 # Obsolete Tech In A Modern Age
 
 ## Something Old Is New Again
@@ -775,7 +767,15 @@ pkgin update
 pkgin search neovim
 ```
 
-## Conclusion
+# Links
+
+- [Project's git (scripts & 3D models)](https://github.com/kakwa/silly-sunv100-server).
+- [Sun's V100 Official documentation](https://dogemicrosystems.ca/pub/Sun/System_Handbook/Sun_syshbk_V3.4/Systems/SunFireV100/SunFireV100.html).
+- [Sun's LOMlite2 official documentation](https://docs.oracle.com/cd/E19102-01/n20.srvr/806-7334-13/LW2+User.LOM.html)
+- Eerie Linux's [blog post 1](https://eerielinux.wordpress.com/2019/09/22/a-sparc-in-the-night-sunfire-v100-exploration/) and [post 2](https://eerielinux.wordpress.com/2019/10/30/illumos-v9os-on-sparc64-sunfire-v100/) about his V100.
+- [Obligatory Clabretro's video](https://www.youtube.com/watch?v=5OyGwbWKWZU).
+
+# Conclusion
 
 > TODO Long Project
 > Significantly improved CAD skills
@@ -783,3 +783,5 @@ pkgin search neovim
 > Fancy Deploy server
 
 TODO > Put to good use, personal stuff... but also fitting to host Sun docs.
+
+
