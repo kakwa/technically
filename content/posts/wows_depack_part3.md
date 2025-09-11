@@ -1,6 +1,6 @@
 +++
 title = 'Reversing WoWs Resource Format - Part 3: Dissecting The Index'
-date = 2025-08-25T00:02:00+02:00
+date = 2025-08-25T12:02:00+02:00
 draft = false
 +++
 
@@ -846,7 +846,6 @@ So we have:
 
 # Recap (Part 3)
 
-- Identified `.idx` files in `./bin/<latest>/idx/` as indexes for `.pkg` archives and matched them by name.
 - Mapped overall `.idx` layout into 4 parts:
   - Header: magic `ISFP`, counts (entries and files), header-size-like field, offsets to start/end of the third section, and a per-file id/crc-like value.
   - Names: `\0`-separated file and directory names.
