@@ -4,12 +4,10 @@ date = 2025-08-25T00:02:00+02:00
 draft = false
 +++
 
-# Parts
-
-- Part 1 — Searching The Data → [/posts/wows_depack_part1/](/posts/wows_depack_part1/)
-- Part 2 — Getting The Metadata → [/posts/wows_depack_part2/](/posts/wows_depack_part2/)
-- Part 3 — Reading The Database → [/posts/wows_depack_part3/](/posts/wows_depack_part3/)
-- Part 4 — Tidying-Up The Project → [/posts/wows_depack_part4/](/posts/wows_depack_part4/)
+- Part 1 — [Searching The Data](/posts/wows_depack_part1/)
+- Part 2 — [Getting The Metadata](/posts/wows_depack_part2/)
+- Part 3 — [Reading Everything](/posts/wows_depack_part3/)
+- Part 4 — [Tidying-Up The Project](/posts/wows_depack_part4/)
 
 # Searching & Reading The Metadata
 
@@ -72,8 +70,6 @@ kakwa@linux bin/6775398/idx » strings -n 5 system_data.idx
 
 ```
 #%B'E
-#%B'E
-#%B'E
 E)zj'
 FM'lb
 %}n:b
@@ -86,28 +82,14 @@ animatedMiscs.xml
 LowerDeck.dds
 [...]
 maps
-helpers
-FoamMapLowFreq.dds
-tritanopia.dds
-color_correct_default.dds
-Color.dds
-Shimmer.dds
 highlight_noise.dds
 space_variation_dummy.dds
 waves_heights0.dds
 4F$)p
-E)zjp
- |5*y
-FM'lp
-k4|W8
-%}n:p
-(	?A+
-c|'lp
-LrL)t
-atw|$
 :M+Xp
 F?mep
 wsystem_data_0001.pkg
+[...]
 ```
 
 Bingo, we have all the file names, and at the end, the name of the corresponding `.pkg` file.
@@ -120,7 +102,7 @@ Also, note that we have a few names (like `maps` or `helpers`) without extension
 
 The `./bin` directory contains build-numbered subdirectories (5241351, 6081105, etc.), with WoWs keeping the current and previous builds. We'll use the highest number for the latest indexes.
 
-# IDX File Structure
+# IDX File Reverse Engineering
 
 ## General Layout
 
