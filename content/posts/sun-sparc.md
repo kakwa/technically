@@ -2,6 +2,7 @@
 title = 'My Silly Sun Server'
 date = 2025-08-27T19:01:49+02:00
 draft = true
+summary = 'Transforming & Modernizing an Old Sun V100 Server.'
 +++
 
 # Obsolete Tech In A Modern Age

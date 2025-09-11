@@ -2,6 +2,7 @@
 title = 'Reversing WoWs Resource Format - Part 4: Reading Everything'
 date = 2025-08-26T00:03:00+02:00
 draft = false
+summary = 'Reversing WoWs Resource Format - Part 4: implementing the parser/extractor'
 +++
 
 - Part 1 — [Searching The Data](/posts/wows_depack_part1/)
