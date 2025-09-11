@@ -2,6 +2,7 @@
 title = 'Fleet Management at scale: Integrating OpenFeature with SaltStack or Ansible'
 date = 2024-11-30T16:27:05+01:00
 draft = true
+summary = 'Experimenting with feature flags'
 +++
 
 # Introduction
