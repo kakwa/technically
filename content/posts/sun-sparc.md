@@ -2,7 +2,7 @@
 title = 'My Silly Sun Server'
 date = 2025-08-27T19:01:49+02:00
 draft = true
-summary = 'Transforming & Modernizing an Old Sun V100 Server.'
+summary = 'Modernizing & Improving an Old Sun V100 Server.'
 +++
 
 # Obsolete Tech In A Modern Age
@@ -62,18 +62,16 @@ But enough said! Now we need to address the two broad complaints we had about th
 
 ### Make It Smaller
 
-This tiny server is well... a server. If it fits onto a small and standard 1U height (44.50 mm), it's also kind of big in the other dimensions: 19"/482.60 mm by 17.55"/445 mm.
+This (not so) tiny server is well... a server. If it fits onto a small and standard 1U height (44.50 mm), it's also kind of big in the other dimensions: 19"/482.60 mm by 17.55"/445 mm.
 
 Fortunately, once opened, the server looks like that:
 
 {{< figure src="/images/sun-inside.jpg" alt="Sun Fire V100 opened showing mainboard and layout in original case" caption="Sun Fire V100 with top cover removed – original layout" >}}
 
-We are in luck, this cute beast could probably be a lot more compact.
-
-In particular the main board, including the RAM sticks, is 250×190 mm.
+This cute beast could probably be a lot more compact. Tthe main board, including the RAM sticks, is 250×190 mm.
 If we ditch the original (and noisy) hard drives and PSU, plus, if we cheat a little, we could even make it fit into a 254 mm (10") case able to be used in one of these fancy small [10‑inch racks](https://mini-rack.jeffgeerling.com/).
 
-Given these racks are also quite short, 300 mm and often less, this gives goal number one: make it fit into 254x190-300x44mm.
+Given these racks are also quite short, 300 mm and often less, this gives goal number one: make it fit into 254x250x44mm.
 
 And also, if possible, retain the original "Sun Vibe".
 
@@ -107,27 +105,27 @@ To make it fit, I'm replacing the following parts:
 I will also redesign a new and far more compact case for it.
 
 Note: I'm not doing this project to save money.
-If you want a cheap option, secondhand micro PCs from Dell HP or Lenovo, or simply a Raspberry Pies, are better options.
+If you want a cheap option, secondhand micro PCs from Dell/HP/Lenovo or ARM SBCs are better options.
 
 ## PSU
 
-The Sun V100 uses an 80 Watts PSU Following the ATX standard. It has the usual Molex IDE and 20 Pins connectors of the PCs from the era.
+The Sun V100 uses an 80 Watts PSU. It has the usual Molex IDE and 20 Pins ATX connectors of the PCs from its era.
 
-It could probably be made quieter with the Noctua treatment, but it would not fix it's other issue: it's simply too big.
+While it could probably be made quieter with the Noctua treatment, but it would not fix it's other issue: it's simply too big.
 
 So to replace it. I tried my luck with a 120W PicoPSU board and, at first, also with USB-C trigger board and power brick.
 
-But unfortunately, I didn't read the fine prints close enough. While USB-C Power Delivery (TODO wiki) does have a 12V level, it's optional and seems to not be commonly implemented, at least on the fully representative size of 2 PSUs I have on hands.
+But unfortunately, I didn't read the fine prints close enough. While [USB-C Power Delivery](https://en.wikipedia.org/wiki/USB_hardware#USB_Power_Delivery) does have a 12V level, it's optional and seems to not be commonly implemented, at least on the fully representative size of 2 PSUs I have on hands.
 
-And worse, despite being set at 12V, when I plugged the trigger board to the PSU, it started outputing 15V... Lesson learned: always check the voltage with these boards.
+And worse, despite being set at 12V, when I plugged the trigger board to the PSU, it started outputting 15V... Lesson learned: always check the voltage with these boards.
 
-So it was back to a cheap noname 12V brick. At least this one is rated for 120W and is not bellow the original 80W unlike the USB C option at 60W would have been.
+So it was back to a cheap noname 12V brick. At least this one is rated for 120W and is not bellow the original 80W, unlike the USB-C option at 60W would have been.
 
-But in truth, this option is not quite right either. The PSU too frequently fails to start, and I have to cycle unplug/plug several times to get the server to start. Maybe the PicoPSU is a bit to light and cannot deliver the starting spike, but I lack the skills and equipment to properly diagnos this one.
+But the 12V brick option is not quite right either. The server frequently fails to start, and I have to cycle unplug/plug several times to get the server to work. Maybe the PicoPSU is a bit too weak and cannot deliver some startup current spike, but I lack the skills and equipment to properly diagnose this one.
 
 I might try my luck with another PicoPSU, this time, a multi-voltage one and explore the USB-C option again. I would really if the option worked, good and compact GaN USB-C PSUs are quite easy to get these days.
 
-But for now, let's forge ahead.
+I will need to revisit this topic in the future, but for now, let's forge ahead.
 
 ## Modeling
 
@@ -232,7 +230,7 @@ screen /dev/ttyUSB0
 
 You should be getting something like (when plugging in the server), or at least a `lom>` prompt:
 
-```shell
+```
 LOMlite starting up.
 
 CPU type: H8/3437S, mode 3
@@ -251,14 +249,15 @@ LOM event: +0h0m0s LOM booted
 lom>
 ```
 
-### Switching Between `ok>` & `lom>` Prompts
+### Switching Between `ok>`/`OS` & `lom>` Prompts
 
-If your box came installed, it's possible you are seeing an Open Firmware (the "BIOS/UEFI" of these machines) or Solaris prompt.
+By default the Serial Port is shared between the `lom>` prompt and the main server `ok`(OpenFirmawre)/OS shell prompt.
 
-By default the Serial Port is shared between the LOM and the main server.
+Here are a few usefull instructions from Sun Documentation to navigate between these:
 
 ```
 There are three prompts.
+
   ok>   -------------------- (normal prompt when the OS is not running)
   lom>  -------------------- (available whether OS is running or not)
   #     -------------------- (the OS prompt)
@@ -278,7 +277,7 @@ In its past life, it seems this server was configured to not share LOM and tty o
 
 I was getting LOM access via the upper port all right, but the Open Firmware/OS on the lower port remained silent.
 
-```shell
+```
 lom> break
 Console not shared.
 
@@ -295,7 +294,7 @@ I was about to give up when I stumbled [upon this email](https://marc.info/?l=cl
 
 So, as indicated by this mail, I ran the following commands to reset the eeprom:
 
-```shell
+```
 lom> set extra-cmds on
 
 Extra commands are reserved for SUN service personnel.
@@ -312,18 +311,20 @@ I was getting the `ok>` prompt and could switch back and forth between `lom>` an
 
 However, when trying to `boot net`, I was getting:
 
-```shell
+```
 ok boot net
 Fast Data Access MMU Miss
 ```
 
 The following reset seems to have solved the issue:
 
-```shell
+```
 ok set-defaults
 Setting NVRAM parameters to default values.
 ok reset-all
 ```
+
+I'm kind of curious which other magic commands are available.
 
 ## Open Firmware
 
@@ -335,7 +336,7 @@ FYI, Sun had its own implementation: [OpenBoot](https://github.com/openbios/open
 Here are a few useful commands:
 
 Main help:
-```shell
+```
 ok help
 
 Enter 'help command-name' or 'help category-name' for more help
@@ -349,7 +350,8 @@ nvramrc (making new commands permanent)
 ```
 
 Sub-help (note: need to use lowercase):
-```shell
+
+```
 ok help system
 
 devalias                 - Display all device aliases
@@ -368,7 +370,7 @@ See also: nvramrc
 ```
 
 List device aliases (boot devices):
-```shell
+```
 ok devalias
 
 dload                    /pci@1f,0/ethernet@c:,
@@ -383,7 +385,8 @@ disk0                    /pci@1f,0/ide@d/disk@0,0
 ```
 
 Get the current environment variables:
-```shell
+
+```
 ok printenv
 
 auto-boot?            true                           true
@@ -401,9 +404,9 @@ silent-mode?          false                          false
 ```
 
 Set the boot device (persistent):
-```shell
-ok setenv boot-device disk0
 
+```
+ok setenv boot-device disk0
 boot-device =         disk0
 
 ok reset
@@ -411,13 +414,11 @@ ok reset
 
 One-time boot of another device:
 
-```shell
+```
 ok boot net
 ```
 
-
-## Open Firmware Netboot Server
-
+## Netboot Server
 
 Open Firmware on these machines is able to boot over the network a bit like PXE.
 
@@ -513,14 +514,14 @@ ok boot net
 Timeout waiting for ARP/RARP packet
 ```
 
-You should see log messages like:
+You should see log messages like on your rarpd server:
 ```shell
 rarpd[16222]: RARP request from 00:03:ba:5b:ae:b3 on enp0s25
 rarpd[16222]: not found in /etc/ethers
 ```
 
+Replace with your MAC address:
 ```shell
-# Replace with your MAC address
 export SUN_V100_MAC="00:03:ba:5b:ae:b3"
 
 # Normalize MAC (uppercase, no colons)
@@ -543,6 +544,7 @@ grep -q -F "$SUN_V100_IP $HOSTNAME" /etc/hosts || \
     echo "$SUN_V100_IP $HOSTNAME" | sudo tee -a /etc/hosts
 ```
 
+After a while, the server should get an IP, and recover the boot file
 ```shell
 Boot device: /pci@1f,0/ethernet@c  File and args: 
 27a00 >> kakwa's OFW BOOT 1.29
@@ -557,21 +559,20 @@ It works! Not sure if we have created Paradise or Hell however...
 
 In truth, I'm an atheist, I don't believe in God, even the Sunnier ones.
 
-I find this setup really messy, and I'm kind of sorry if you read
+And why is that? Well, this setup really messy, and I'm kind of sorry if you read
 through it... or worse, if you actually tried to implement it. Also, spoiler, 
-for our NetBSD/OpenBSD netbooting target, even more similar setup is likely required.
+for our NetBSD/OpenBSD netbooting target, even more similar is required.
 
-So I've committed blasphemy and created my [own, all-in-one, Golang simple netboot server](https://github.com/kakwa/ofw-install-server) directly providing the RARP + TFTP combo (plus, spoiler, also BOOTP + NFSv2).
+So I've committed blasphemy and created my [own, all-in-one, Golang simple netboot server](https://github.com/kakwa/ofw-install-server) directly providing the RARP + TFTP combo (plus, spoiler, also BOOTP + NFSv2 + HTTP).
 
 I must confess I've sinned even more by letting the twin d(a)emons
 Claude & ChatGPT do most of the work, especially the network protocol implementation.
 So, expect a few bugs.
 
 On top of that, this netboot server is, by design, very limited.
-It only provides a single bootstrap path/set of boot files
-and should only be used within a dedicated LAN segment.
+It only provides a single bootstrap path/set of boot files and should only be used within a dedicated LAN segment.
 Don't rely on this server if you are still bootstrapping hundreds of SPARC servers like in the good old [Jumpstart](https://docs.oracle.com/cd/E26505_01/html/E28039/customjumpsample-5.html#scrolltoc) days.
-However for the onesies/twosies like here, let the temptation win you over, and give it a try.
+However for the onesies/twosies like here, don't hesitate to give it a try.
 
 But enough about why my masochism tendencies led me to develop a full netboot server for such a dead platform.
 Here is how to set up this damn piece of software.
@@ -594,19 +595,21 @@ Start the server with the TFTP & RARP module enabled:
 
 ```shell
 # NIC & IP to use for the boot server
-export BOOT_SERVER_NIC=enp0s25
-export BOOT_SERVER_IP=172.24.42.150
-sudo ip addr add ${BOOT_SERVER_IP}/24 dev ${BOOT_SERVER_NIC}
+export BOOT_SERVER_NIC="enp0s25"
+export BOOT_SERVER_IP="172.24.42.150"
+
+# Configure the NIC if necessary
+sudo ip addr add "${BOOT_SERVER_IP}/24" dev "${BOOT_SERVER_NIC}"
 
 # Retrieve something to boot:
 wget https://technically.kakwalab.ovh/files/ofwboot.kakwa.test
 
 # Start the server
-sudo ./ofw-install-server -iface ${BOOT_SERVER_NIC}  -rarp \
+sudo ./ofw-install-server -iface "${BOOT_SERVER_NIC}"  -rarp \
     -tftp -tftp-file ./ofwboot.kakwa.test
 ```
 
-## Netbooting & Installing an OS
+## Netbooting & Installing The OS
 
 ### Netbooting Debian 6
 
@@ -626,7 +629,7 @@ sudo ./ofw-install-server -iface ${BOOT_SERVER_NIC}  -rarp \
 
 From there, you should be able to install Debian 6, albeit with a few headaches like pointing to the archive.debian.org repository or handling expired GPG keys.
 
-Note that there is a Debian 7 version of the installer, but it kernel-oopsed on me.
+Note: there is a Debian 7 version of the installer, but it kernel-oopsed on me.
 
 ### Netbooting OpenBSD/NetBSD
 
@@ -638,16 +641,11 @@ For [NetBSD](https://www.netbsd.org/docs/network/netboot/)/[OpenBSD](https://ftp
 * It then mounts that root over good old NFSv2,
 * And finally [loads the kernel & ramdisk](https://www.netbsd.org/docs/network/netboot/local.install.html#diskimage) from there.
 
-Yes: RARP + TFTP + BOOTP + NFSv2 on the same poor L2 segment.
+Yes: RARP + TFTP + BOOTP + NFSv2 on the same LAN segment...
 
 Oh, and to add a bit of fun, NFSv2 is kind of obsolete (removed from Debian since `2022/03/13` & `nfs-utils (1:2.6.1-1~exp1)`):
 
 But once again, with a bit of vibe coding and a few tweaks, we are able to add these services to our custom netboot server.
-
-But at least, we are skipping the BOOTPARAMS RPC bits. According to the `diskless` documentation from OpenBSD and the source code of `ofwboot.net`, BOOTP could be replaced by `bootparamd`. It's still the first option used by OpenBSD’s `ofwboot.net` and I tried to make it work, but I finally gave up.
-
-I also tried to implement a version of `ofwboot.net` using the same RARP + TFTP protocols as the first stage, but without luck. If you want to give it a try, the code is available [here](https://github.com/kakwa/silly-sunv100-server/tree/main/ofwboot) and can be built under Linux (see README.md instructions).
-
 
 #### OpenBSD Install
 
@@ -655,20 +653,26 @@ In the end, I opted for NetBSD so I didn't fully install OpenBSD. But given I ma
 
 Also, just for kicks, given all the services we have in our netboot server, I've taken the liberty to add one last bit: an HTTP server to serve an OpenBSD [autoinstall](https://man.openbsd.org/autoinstall.8) configuration file.
 
-Lastly, it's worth mentioning that the OpenBSD version of `ofwboot.net` gave me quite a lot of headaches. I never quite managed to pass it the NFS server IP and file path/name given by BOOTP (typo? bug? wrong BOOTP option? magic values?).
+Lastly, it's worth mentioning that the OpenBSD version of `ofwboot.net` gave me quite a lot of headaches. I never quite managed to feed it the NFS server IP and file path/name given by BOOTP (typo? bug? wrong BOOTP option? magic values?).
 
-So in the end, I chose to use the NetBSD's `ofwboot.net` version for both NetBSD and OpenBSD.
+I also tried to tweak the OpenBSD `ofwboot.net`, but without luck. If you want to give it a try, the code is available [here](https://github.com/kakwa/silly-sunv100-server/tree/main/ofwboot) and can be built under Linux (see README.md instructions). I also tried to make it use rarp and tftp for the second boot stage instead of NFS+Bootp.
 
-FYI, both versions come from the same source, but the NetBSD one seems marginally more modern.
+In the end, I chose to use the NetBSD's `ofwboot.net` version for both NetBSD and OpenBSD and it seems to work fine. FYI, both versions come from the same source, but the NetBSD one seems marginally more modern.
+
+But enough said, here is the setup:
 
 ```shell
+# Tweak it to the latest versions
+export OPENBSD_VERSION="7.7"
+export NETBSD_VERSION="10.1"
+
 # If you want to try your luck with the OpenBSD ofwboot.net
-# wget https://ftp.openbsd.org/pub/OpenBSD/7.7/sparc64/ofwboot.net
+# wget "https://ftp.openbsd.org/pub/OpenBSD/${OPENBSD_VERSION}/sparc64/ofwboot.net"
 
 # Recover bootloader from NetBSD
-wget https://cdn.netbsd.org/pub/NetBSD/NetBSD-10.1/sparc64/installation/netboot/ofwboot.net
+wget https://cdn.netbsd.org/pub/NetBSD/NetBSD-${NETBSD_VERSION}/sparc64/installation/netboot/ofwboot.net
 # Recover OpenBSD install RamDisk
-wget https://ftp.openbsd.org/pub/OpenBSD/7.7/sparc64/bsd.rd
+wget "https://ftp.openbsd.org/pub/OpenBSD/${OPENBSD_VERSION}/sparc64/bsd.rd"
 # Recover an autoinstall file
 wget https://raw.githubusercontent.com/kakwa/silly-sun-server/refs/heads/main/misc/openbsd-autoinstall.conf
 ```
@@ -686,8 +690,11 @@ So in the end, I finally settled on installing NetBSD:
 Recover & prepare the files:
 
 ```shell
-wget https://cdn.netbsd.org/pub/NetBSD/NetBSD-10.1/sparc64/installation/netboot/ofwboot.net
-wget https://cdn.netbsd.org/pub/NetBSD/NetBSD-10.1/sparc64/binary/kernel/netbsd-INSTALL.gz
+# Tweak it to the latest version
+export NETBSD_VERSION="10.1"
+
+wget "https://cdn.netbsd.org/pub/NetBSD/NetBSD-${NETBSD_VERSION}/sparc64/installation/netboot/ofwboot.net"
+wget "https://cdn.netbsd.org/pub/NetBSD/NetBSD-${NETBSD_VERSION}/sparc64/binary/kernel/netbsd-INSTALL.gz"
 gunzip netbsd-INSTALL.gz
 ```
 
@@ -697,47 +704,26 @@ Start the server:
 sudo ./ofw-install-server -rarp -tftp -tftp-file ./ofwboot.net -bootp -nfs -nfs-file ./netbsd-INSTALL
 ```
 
-TODO mention ofwboot seems to support TFTP?
-
 #### One Last Bit
 
-And then I just did this final tweak to make it boot on disk persistently:
+And then I just did this final tweak in the `ok` prompt to make it boot on disk persistently:
 
 ```shell
-setenv boot-device disk0
+ok setenv boot-device disk0
 reset
 ```
+
 Not sure why the default boot-device config (`disk net`) didn't work. Maybe the `disk` dev alias was missing?
 
 But frankly, by this point, I could not care less.
 
 This cute little Sun server is finally working!
 
-
 # Wrapping up
 
 ## A Bit of NetBSD SysAdmin
 
-TODO this is not a blog post about NetBSD administration, but here are a few useful commands:
-
-### SSHD
-
-Service /etc/rc.conf
-
-SSH:
-```
-echo "sshd=YES" >>/etc/rc.conf
-/etc/rc.d/sshd start
-```
-
-### NTP
-
-NTP (got stuck on weird SSL errors, server in 2024... certificate not yet valid, `openssl s_client cdn.netbsd.org:443`)
-```
-ntpdate 2.netbsd.pool.ntp.org
-echo "ntpd=YES" >>/etc/rc.conf
-/etc/rc.d/ntpd start
-```
+This is not a blog post about NetBSD administration, but here are a few useful bits.
 
 ### Hardware Monitoring
 
@@ -754,18 +740,48 @@ netra-x1# envstat
      Alarm3:      TRUE
 ```
 
+### SSHD
+
+Enabling ssh access, because network access is nicer than serial:
+
+```shell
+grep -q '^sshd=YES' /etc/rc.conf || echo 'sshd=YES' >> /etc/rc.conf
+/etc/rc.d/sshd start
+```
+
+### NTP
+
+On such old server, the clock might be out of date, leading to weird errors:
+
+```shell
+# Force synchronization
+ntpdate 2.netbsd.pool.ntp.org
+
+# Enable ntp
+grep -q '^ntpd=YES' /etc/rc.conf || echo 'ntpd=YES' >> /etc/rc.conf
+/etc/rc.d/ntpd start
+```
+
 ### Getting A Package Manager
 
-```
+Install pkgin:
+```shell
 pkg_add https://cdn.NetBSD.org/pub/pkgsrc/packages/NetBSD/`uname -m`/`uname -r`/All/pkgin
 ```
 
-```
+Update the index:
+```shell
 pkgin update
 ```
 
-```
+Search for packages:
+```shell
 pkgin search neovim
+```
+
+Install packages:
+```shell
+pkgin install neovim
 ```
 
 # Links
@@ -782,7 +798,4 @@ pkgin search neovim
 > Significantly improved CAD skills
 > Side Projects (printers)
 > Fancy Deploy server
-
-TODO > Put to good use, personal stuff... but also fitting to host Sun docs.
-
-
+> TODO > Put to good use, personal stuff... but also fitting to host Sun docs.
