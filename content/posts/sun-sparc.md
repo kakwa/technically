@@ -38,7 +38,7 @@ It boasts impressive specs such as:
 - Second Serial Port
 
 In truth, this beast is a little asthmatic, even by 2001 standards.
-Still, the SPARC CPU interesting, especially for testing endianness and memory alignment issues.
+Still, the SPARC CPU is interesting, especially for testing endianness and memory alignment issues.
 And unlike most servers of that era, it doesn’t need huge amount of power (~15W TDP).
 
 I got a few of these years ago for cheap, but, in truth, never did anything really useful with them.
