@@ -13,11 +13,11 @@ One of my pet peeves is to bring new life into old hardware.
 
 Here, I'm not thinking in a retro-computing kind of way, software is not exactly like fine wine in my opinion: it usually doesn't age well.
 
-Also, old software tends to be isolated in its own bubble, amusing, but unless you are [G.R.R. Martin rocking along WordStar 4.0](https://www.youtube.com/watch?v=X5REM-3nWHg), that's not really useful.
+Also, old software tends to be isolated in its own bubble, amusing, but unless you are [G.R.R. Martin rocking along WordStar 4.0 & MS-DOS](https://www.youtube.com/watch?v=X5REM-3nWHg), that's not really useful.
 
 I prefer the challenge of trying to install modern software on these antiquities, make them able to interact with the internet, and do something useful with them.
 
-Sure, it will not run a k8s cluster, but these old machines generally still have enough oomph for lightweight use cases like, for example:
+Sure, it will not run a k8s cluster, but these old machines generally still have enough oomph for lightweight use cases like:
 
 - MPD/Music server (in an analog Hi-Fi setup).
 - Basic Web Hosting (Blog, RSS aggregator, etc)
@@ -37,14 +37,15 @@ It boasts impressive specs such as:
 - LOMlite Management over Serial
 - Second Serial Port
 
-In truth, this beast is a little asthmatic, it already was at the time, but I find the SPARC CPU interesting, particularly for testing endianness and alignment issues.
-And it doesn't need huge amounts of power (~15W TDP) to run, unlike most servers from that period.
+In truth, this beast is a little asthmatic, even by 2001 standards.
+Still, the SPARC CPU interesting, especially for testing endianness and memory alignment issues.
+And unlike most servers of that era, it doesn’t need huge amount of power (~15W TDP).
 
-I bought this V100 about 15 years ago secondhand, played a bit, but never did anything really useful with it.
-While not as bad as other monsters from the era, it's simply a bit too big and loud.
-Consequently, it sat in my cupboard for ages, in the dark, lonely and unused, away from the information highways.
+I got a few of these years ago for cheap, but, in truth, never did anything really useful with them.
+While not as bad as other monsters from the era, these cutties are simply a bit too big and loud.
+So, they sat in my cupboard for ages, in the dark, lonely, unused and far away from the information highways.
 
-But let's try to change that and maybe learn a few things along the way.
+But let's try to change that, have a fun project and maybe learn a few things along the way.
 
 ## A Two-Front Project
 
@@ -71,11 +72,17 @@ Fortunately, once opened, the server looks like that:
 This cute beast could probably be a lot more compact. Tthe main board, including the RAM sticks, is 250×190 mm.
 If we ditch the original (and noisy) hard drives and PSU, plus, if we cheat a little, we could even make it fit into a 254 mm (10") case able to be used in one of these fancy small [10‑inch racks](https://mini-rack.jeffgeerling.com/).
 
-Given these racks are also quite short, 300 mm and often less, this gives goal number one: make it fit into 254x250x44mm.
+Given these racks are also quite short, 300 mm and often less.
 
-And also, if possible, retain the original "Sun Vibe".
+This gives goal number one:
 
-### Quieter
+* make it fit into 254x250x44mm.
+
+And also, if possible, as goal number one bis:
+
+* retain the original "Sun Vibe" look.
+
+### Make It Quieter
 
 Aside from that, we also need to silence this small beast.
 
@@ -87,11 +94,14 @@ And also their lord and master:
 
 {{< figure src="/images/sun-cpufan.jpg" alt="Sun V100 CPU 12 V fan" caption="Original CPU 12 V fan" >}}
 
-But here again, we have options, especially the one beginning with an 'N'.
+Fortunately, we have options here—especially one that begins with an N.
 
-I'm aiming for a noise level in the low thirties in terms of DBs, aka something you don't really notice unless you really are paying attention. It should also remain properly cooled and with no alarm LED being triggered.
+Since I live in a small apartment, noise levels need to be reasonable, like a NAS or an active cooled wifi router.
 
-That's goal number two.
+That's goal number two:
+
+* bring the noise down to something fit for a living space.
+
 
 ## New Parts
 
@@ -104,8 +114,8 @@ To make it fit, I'm replacing the following parts:
 
 I will also redesign a new and far more compact case for it.
 
-Note: I'm not doing this project to save money.
-If you want a cheap option, secondhand micro PCs from Dell/HP/Lenovo or ARM SBCs are better options.
+And yes, it’s expensive. But this project isn’t about saving money.
+If you do want a cheap option, you’re much better off with a second-hand micro PC from Dell/HP/Lenovo, or even an ARM SBC: cheaper, more reliable, more energy-efficient, and far more powerful.
 
 ## PSU
 
