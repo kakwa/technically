@@ -7,7 +7,9 @@ summary = 'Recommissioning an Old Sun V100 Server - The Hardware'
 
 # Hardware Rework
 
-TODO remind goals + Small Intro
+In the [introduction](/posts/silly-sun-server-intruduction/), we outlined the four goals we have for our server.
+
+In this part, we will deal with goals 1. and 2., aka the hardware rework — PSU, hard drive, cooling and creating a custom enclosure that nods to Sun’s original design.
 
 ## New Parts
 
@@ -25,23 +27,37 @@ If you do want a cheap option, you’re much better off with a second-hand micro
 
 ## PSU
 
-The Sun V100 uses an 80 Watts PSU. It has the usual Molex IDE and 20 Pins ATX connectors of the PCs from its era.
+The Sun V100 uses an 80 W PSU. It has the usual Molex IDE and 20‑pin ATX
+connectors of the PCs from its era.
 
-While it could probably be made quieter with the Noctua treatment, but it would not fix it's other issue: it's simply too big.
+While it could probably be made quieter with the Noctua treatment, it wouldn’t
+fix the other issue: it’s simply too big.
 
-So to replace it. I tried my luck with a 120W PicoPSU board and, at first, also with USB-C trigger board and power brick.
+To replace it, I used a 120 W 12V PicoPSU board combined, at first, with USB‑C PD
+trigger board with a GaN power brick.
 
-But unfortunately, I didn't read the fine prints close enough. While [USB-C Power Delivery](https://en.wikipedia.org/wiki/USB_hardware#USB_Power_Delivery) does have a 12V level, it's optional and seems to not be commonly implemented, at least on the fully representative size of 2 PSUs I have on hands.
+Unfortunately I didn’t read the fine print closely enough. While
+[USB‑C Power Delivery](https://en.wikipedia.org/wiki/USB_hardware#USB_Power_Delivery)
+does define a 12 V level, it’s optional and seems uncommon — at least in my
+very scientific sample size of two chargers I had on hand.
 
-And worse, despite being set at 12V, when I plugged the trigger board to the PSU, it started outputting 15V... Lesson learned: always check the voltage with these boards.
+Worse, despite being set to 12 V, when I plugged the trigger board into the
+PSU, it delivered 15 V… Lesson learned: always measure the output of these
+boards before connecting anything valuable.
 
-So it was back to a cheap noname 12V brick. At least this one is rated for 120W and is not bellow the original 80W, unlike the USB-C option at 60W would have been.
+So it was back to a cheap no‑name 12 V brick. At least this one is rated for
+120 W and is not below the original 80 W, unlike the USB‑C option at 60 W would
+have been.
 
-But the 12V brick option is not quite right either. The server frequently fails to start, and I have to cycle unplug/plug several times to get the server to work. Maybe the PicoPSU is a bit too weak and cannot deliver some startup current spike, but I lack the skills and equipment to properly diagnose this one.
+But, in truth, the 12 V brick option is still not quite right. The server often fails
+to start, and I may have to unplug/plug several times to get it to work.
 
-I might try my luck with another PicoPSU, this time, a multi-voltage one and explore the USB-C option again. I would really if the option worked, good and compact GaN USB-C PSUs are quite easy to get these days.
+I might try my luck with another PicoPSU, this time a multi‑voltage model, and
+explore the USB‑C option again. I would really like if this option worked —
+compact GaN USB‑C PSUs are easy to find these days.
 
-I will need to revisit this topic in the future, but for now, let's forge ahead.
+I will need to revisit this topic in the future, but for now, let’s forge
+ahead.
 
 ## Modeling
 
@@ -99,4 +115,8 @@ TODO
 
 TODO quite please, but not perfect (top panel flexes a bit to much, may fix with some glued-on ribbs, noise level OK but not perfect).
 
-TODO next part.
+TODO link to sun case 3d model.
+
+If you missed it, start with the
+[intro](/posts/silly-sun-server-intro/). Next up is the
+[software side →](/posts/silly-sun-server-software/).
