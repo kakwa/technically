@@ -11,7 +11,7 @@ In the [introduction](/posts/silly-sun-server-intruduction/), we outlined the fo
 
 In this part, we will deal with goals 1. and 2., aka the hardware rework — PSU, hard drive, cooling and creating a custom enclosure that nods to Sun’s original design.
 
-## New Parts
+# A Bunch Of New Parts
 
 Here is the shopping list to reach our goals:
 
@@ -22,8 +22,66 @@ Here is the shopping list to reach our goals:
 
 I will also redesign a new and far more compact case for it.
 
-And yes, it’s expensive. But this project isn’t about saving money.
+And yes, it ended-up being quite expensive. But this project isn’t about saving money.
 If you do want a cheap option, you’re much better off with a second-hand micro PC from Dell/HP/Lenovo, or even an ARM SBC: cheaper, more reliable, more energy-efficient, and far more powerful.
+
+# Case Modeling
+
+## Caveman meets CAD
+
+I’m a firm believer in Open Source (and maybe a bit of a masochist), so FreeCAD it is, even if it can be a tad frustrating at times.
+
+Truth be told, FreeCAD is the only CAD software I’ve ever dabbled in, and even then mostly in a "smash some basic shapes together and call it a model" kind of way.
+I'm quite CAD illiterate and my experience so far has felt like being a caveman wandering into a machinist’s workshop with all its lathe, mill, saws, or drills... only to end-up bashing them together like rocks.
+
+This project is also a good excuse to finally learn CAD properly and move beyond my caveman methods.
+
+I you also want to learn FreeCAD, I highly recommend [Mango Jelly's Youtube channel](https://www.youtube.com/@MangoJellySolutions). His tutorials, in addition to being numerous and extensive, are also extremely well made. I particularly love his habit to start from a blank page and build step by step an actual part, demonstrating a FreeCAD concept or functionality along the way.
+
+## Panels
+
+TODO
+
+* Dimension choices
+* Scanner technique for the back panel cutouts
+* 2 mm PMMA (?) -> too weak -> 3 mm minimum
+* Switch to 3 mm + recess if necessary.
+
+{{< figure src="/images/sun-cracked-2mm-pmma.jpg" alt="Cracked 2mm PMMA panel" caption="2 mm PMMA cracked – too flimsy" >}}
+
+## Brackets
+
+TODO
+
+* Nut corner bracket -> bad idea
+* Switch to inserts
+
+## Bezel
+
+TODO
+
+* Start from Photo of V210 (prettier than V100)
+* Two outlines: front + back
+* lofting
+* finishing features
+* extend concept to other server fronts/bezels (Dell, HP, Fujitsu, IBM)
+
+## Logo
+
+TODO
+
+* Take SVG (Wikipedia)
+* Close path
+* FreeCAD
+* Print with filament change (M400).
+
+{{< figure src="/images/sun-logo-3dprint.jpg" alt="3D printed Sun logo" caption="3D‑printed Sun logo with filament color change" >}}
+
+# Other Parts
+
+## Hard Drive Replacement
+
+TODO
 
 ## PSU
 
@@ -58,56 +116,6 @@ compact GaN USB‑C PSUs are easy to find these days.
 
 I will need to revisit this topic in the future, but for now, let’s forge
 ahead.
-
-## Modeling
-
-### A Caveman And A CAD
-
-I'm a masochist and a fervent OSS believer.
-So FreeCAD it is... even if this option is let's say frustrating...
-
-In truth it's the only CAD software I ever used and let's say I've never really gone beyond the most basic features. I'm really CAD illiterate, brute forcing my way to a half-assed model like a caveman.
-
-Actually, this project is also an excuse/motivation to properly learn CAD beyond the caveman's usage I had until now.
-
-### Case
-
-TODO
-
-* Dimension choices
-* Scanner technique for the back panel cutouts
-* 2 mm PMMA (?) -> too weak -> 3 mm minimum
-* Switch to 3 mm + recess if necessary.
-
-{{< figure src="/images/sun-cracked-2mm-pmma.jpg" alt="Cracked 2mm PMMA panel" caption="2 mm PMMA cracked – too flimsy" >}}
-
-### Brackets
-
-TODO
-
-* Nut corner bracket -> bad idea
-* Switch to inserts
-
-### Bezel
-
-TODO
-
-* Start from Photo of V210 (prettier than V100)
-* Two outlines: front + back
-* lofting
-* finishing features
-* extend concept to other server fronts/bezels (Dell, HP, Fujitsu, IBM)
-
-### Logo
-
-TODO
-
-* Take SVG (Wikipedia)
-* Close path
-* FreeCAD
-* Print with filament change (M400).
-
-{{< figure src="/images/sun-logo-3dprint.jpg" alt="3D printed Sun logo" caption="3D‑printed Sun logo with filament color change" >}}
 
 ### Final Result
 
