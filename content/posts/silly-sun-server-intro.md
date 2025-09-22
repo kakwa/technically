@@ -137,6 +137,6 @@ So to recap, we have the following four goals:
 3. (Net-)Install NetBSD and/or OpenBSD
 4. Configure some basic web hosting
 
-TODO 1. 2. -> we will detail the hardware side + INSERT link
+Next, we'll focus on the [hardware track](/posts/silly-sun-server-hardware/) (1 and 2): taming the noise and re‑housing the V100 into a compact 10‑inch chassis while keeping the original Sun aesthetic.
 
-TODO 3. 4. -> we will detail the software side + INSERT link
+After that, we'll dive into the [software track](/posts/silly-sun-server-software/) (3 and 4): net‑installing NetBSD/OpenBSD and automating a minimal web stack (nginx, Let's Encrypt, maybe a dash of Postgres/PHP) with Ansible.
