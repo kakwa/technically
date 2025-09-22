@@ -1,212 +1,13 @@
 +++
-title = 'My Silly Sun Server'
+title = 'My Silly Sun Servers - The Software'
 date = 2025-08-27T19:01:49+02:00
 draft = true
-summary = 'Modernizing & Improving an Old Sun V100 Server.'
+summary = 'Recommissioning an Old Sun V100 Server - The Software'
 +++
-
-# Obsolete Tech In A Modern Age
-
-## Something Old Is New Again
-
-One of my pet peeves is to bring new life into old hardware.
-
-Here, I'm not thinking in a retro-computing kind of way, software is not exactly like fine wine in my opinion: it usually doesn't age well.
-
-Also, old software tends to be isolated in its own bubble, amusing, but unless you are [G.R.R. Martin rocking along WordStar 4.0 & MS-DOS](https://www.youtube.com/watch?v=X5REM-3nWHg), that's not really useful.
-
-I prefer the challenge of trying to install modern software on these antiquities, make them able to interact with the internet, and do something useful with them.
-
-Sure, it will not run a k8s cluster, but these old machines generally still have enough oomph for lightweight use cases like:
-
-- MPD/Music server (in an analog Hi-Fi setup).
-- Basic Web Hosting (Blog, RSS aggregator, etc)
-- Mail Server
-- Test/Lab Machines
-
-## The Little Server That Could (Not)
-
-Enters the Sun V100, the 2001 entry-level server from Sun Microsystems.
-
-It boasts impressive specs such as:
-- UltraSPARC-IIe CPU @548MHz
-- No GPU whatsoever (not great for AI, I guess :p)
-- 2GB RAM (if maxed out)
-- 2 x 80GB IDE Hard Drives
-- Two 100 Mbit/s NICs
-- LOMlite Management over Serial
-- Second Serial Port
-
-In truth, this beast is a little asthmatic, even by 2001 standards.
-Still, the SPARC CPU is interesting, especially for testing endianness and memory alignment issues.
-And unlike most servers of that era, it doesn’t need huge amount of power (~15W TDP).
-
-I got a few of these years ago for cheap, but, in truth, never did anything really useful with them.
-While not as bad as other monsters from the era, these cutties are simply a bit too big and loud.
-So, they sat in my cupboard for ages, in the dark, lonely, unused and far away from the information highways.
-
-But let's try to change that, have a fun project and maybe learn a few things along the way.
-
-## A Two-Front Project
-
-So, yes, I aim to do something with this cute little server from another time.
-Not very rational and somewhat challenging, yet fun... at least in my eyes.
-
-But enough said! Now we need to address the two broad complaints we had about this relic:
-
-1. Make this server way smaller and quieter
-2. Find and install a modern OS + up-to-date software to make it useful
-
-# The Hardware Side
-
-## The Goals
-
-### Make It Smaller
-
-This (not so) tiny server is well... a server. If it fits onto a small and standard 1U height (44.50 mm), it's also kind of big in the other dimensions: 19"/482.60 mm by 17.55"/445 mm.
-
-Fortunately, once opened, the server looks like that:
-
-{{< figure src="/images/sun-inside.jpg" alt="Sun Fire V100 opened showing mainboard and layout in original case" caption="Sun Fire V100 with top cover removed – original layout" >}}
-
-This cute beast could probably be a lot more compact. Tthe main board, including the RAM sticks, is 250×190 mm.
-If we ditch the original (and noisy) hard drives and PSU, plus, if we cheat a little, we could even make it fit into a 254 mm (10") case able to be used in one of these fancy small [10‑inch racks](https://mini-rack.jeffgeerling.com/).
-
-Given these racks are also quite short, 300 mm and often less.
-
-This gives goal number one:
-
-* make it fit into 254x250x44mm.
-
-And also, if possible, as goal number one bis:
-
-* retain the original "Sun Vibe" look.
-
-### Make It Quieter
-
-Aside from that, we also need to silence this small beast.
-
-In particular we need to take care of these little bastards:
-
-{{< figure src="/images/sun-fan.jpg" alt="Sun V100 40×40 mm 12 V fan" caption="Original 40×40 mm 12 V fan" >}}
-
-And also their lord and master:
-
-{{< figure src="/images/sun-cpufan.jpg" alt="Sun V100 CPU 12 V fan" caption="Original CPU 12 V fan" >}}
-
-Fortunately, we have options here—especially one that begins with an N.
-
-Since I live in a small apartment, noise levels need to be reasonable, like a NAS or an active cooled wifi router.
-
-That's goal number two:
-
-* bring the noise down to something fit for a living space.
-
-
-## New Parts
-
-To make it fit, I'm replacing the following parts:
-
-* The original IDE HDs are too big & noisy, so I'm replacing them with a [SanDisk 32GB CF Card](https://shop.sandisk.com/products/memory-cards/cfast-cfexpress-compactflash/sandisk-extreme-compactflash?sku=SDCFXSB-032G-G46) + [adapter thingy](https://www.startech.com/en-us/hdd/35baycf2ide) (CF cards are generally pin-compatible with IDE, giving good odds of it working with decent performance).
-* The original PSU is quite bulky, but relatively small at 80 W. So I will also try my luck with a [Pico PSU](https://www.rgeek.com/portfolio-item/rgeek-pico-dc-psu-rp-120lq-dc-12v-24pin-power-supply-module/) + external 12 V power brick.
-* Let's also try our luck with a GaN USB-C charger + [trigger board](https://www.aliexpress.com/p/tesla-landing/index.html?scenario=c_ppc_item_bridge&productId=1005004356272196&_immersiveMode=true&withMainCard=true&src=google&aff_platform=true&isdl=y). On paper, it could provide us with a great little PSU instead of a rather large and sketchy black brick from an unknown manufacturer.
-* The original 40×40 mm 12 V fans are getting the [Noctua treatment](https://noctua.at/en/products/fan?size=2645&connector=10&voltage=12).
-
-I will also redesign a new and far more compact case for it.
-
-And yes, it’s expensive. But this project isn’t about saving money.
-If you do want a cheap option, you’re much better off with a second-hand micro PC from Dell/HP/Lenovo, or even an ARM SBC: cheaper, more reliable, more energy-efficient, and far more powerful.
-
-## PSU
-
-The Sun V100 uses an 80 Watts PSU. It has the usual Molex IDE and 20 Pins ATX connectors of the PCs from its era.
-
-While it could probably be made quieter with the Noctua treatment, but it would not fix it's other issue: it's simply too big.
-
-So to replace it. I tried my luck with a 120W PicoPSU board and, at first, also with USB-C trigger board and power brick.
-
-But unfortunately, I didn't read the fine prints close enough. While [USB-C Power Delivery](https://en.wikipedia.org/wiki/USB_hardware#USB_Power_Delivery) does have a 12V level, it's optional and seems to not be commonly implemented, at least on the fully representative size of 2 PSUs I have on hands.
-
-And worse, despite being set at 12V, when I plugged the trigger board to the PSU, it started outputting 15V... Lesson learned: always check the voltage with these boards.
-
-So it was back to a cheap noname 12V brick. At least this one is rated for 120W and is not bellow the original 80W, unlike the USB-C option at 60W would have been.
-
-But the 12V brick option is not quite right either. The server frequently fails to start, and I have to cycle unplug/plug several times to get the server to work. Maybe the PicoPSU is a bit too weak and cannot deliver some startup current spike, but I lack the skills and equipment to properly diagnose this one.
-
-I might try my luck with another PicoPSU, this time, a multi-voltage one and explore the USB-C option again. I would really if the option worked, good and compact GaN USB-C PSUs are quite easy to get these days.
-
-I will need to revisit this topic in the future, but for now, let's forge ahead.
-
-## Modeling
-
-### A Caveman And A CAD
-
-I'm a masochist and a fervent OSS believer.
-So FreeCAD it is... even if this option is let's say frustrating...
-
-In truth it's the only CAD software I ever used and let's say I've never really gone beyond the most basic features. I'm really CAD illiterate, brute forcing my way to a half-assed model like a caveman.
-
-Actually, this project is also an excuse/motivation to properly learn CAD beyond the caveman's usage I had until now.
-
-### Case
-
-TODO
-
-* Dimension choices
-* Scanner technique for the back panel cutouts
-* 2 mm PMMA (?) -> too weak -> 3 mm minimum
-* Switch to 3 mm + recess if necessary.
-
-{{< figure src="/images/sun-cracked-2mm-pmma.jpg" alt="Cracked 2mm PMMA panel" caption="2 mm PMMA cracked – too flimsy" >}}
-
-### Brackets
-
-TODO
-
-* Nut corner bracket -> bad idea
-* Switch to inserts
-
-### Bezel
-
-TODO
-
-* Start from Photo of V210 (prettier than V100)
-* Two outlines: front + back
-* lofting
-* finishing features
-* extend concept to other server fronts/bezels (Dell, HP, Fujitsu, IBM)
-
-### Logo
-
-TODO
-
-* Take SVG (Wikipedia)
-* Close path
-* FreeCAD
-* Print with filament change (M400).
-
-{{< figure src="/images/sun-logo-3dprint.jpg" alt="3D printed Sun logo" caption="3D‑printed Sun logo with filament color change" >}}
-
-### Final Result
-
-{{< figure src="/images/sun-front-opened.jpg" alt="Sun Fire V100 Custom Tiny" caption="Sun Tiny Custom Case" >}}
-
 
 # The Software Side
 
-## Operating System Choice
-
-The sad reality is SPARC is a dying architecture. So our choices, as of 2025, are limited:
-
-* (Open)Solaris -> dead
-* Illumos (OpenSolaris successor) -> [Support is being dropped](https://github.com/illumos/ipd/blob/master/ipd/0019/README.md)
-* Linux -> SPARC64 is still supported by the kernel, but nearly no mainstream distribution supports it ([Debian unofficially](https://wiki.debian.org/Sparc64), and [Gentoo](https://wiki.gentoo.org/wiki/Project:SPARC)).
-* FreeBSD -> Support dropped with [FreeBSD 13](https://www.freebsd.org/platforms/sparc/)
-
-This leaves more or less two choices:
-
-* [NetBSD](https://wiki.netbsd.org/ports/sparc64/)
-* [OpenBSD](https://www.openbsd.org/sparc64.html)
+TODO remind software goals + small intro
 
 ## LOMlite2
 
@@ -796,10 +597,12 @@ pkgin install neovim
 
 # Links
 
-- [Project's git (scripts & 3D models)](https://github.com/kakwa/silly-sunv100-server).
-- [Sun's V100 Official documentation](https://dogemicrosystems.ca/pub/Sun/System_Handbook/Sun_syshbk_V3.4/Systems/SunFireV100/SunFireV100.html).
-- [Sun's LOMlite2 official documentation](https://docs.oracle.com/cd/E19102-01/n20.srvr/806-7334-13/LW2+User.LOM.html)
-- Eerie Linux's [blog post 1](https://eerielinux.wordpress.com/2019/09/22/a-sparc-in-the-night-sunfire-v100-exploration/) and [post 2](https://eerielinux.wordpress.com/2019/10/30/illumos-v9os-on-sparc64-sunfire-v100/) about his V100.
+- [This project's git (scripts, programs & 3D models)](https://github.com/kakwa/silly-sun-server).
+- [Sun's V100 Handbook Documentation](https://sun.kakwalab.ovh/Systems/SunFireV100/SunFireV100.html).
+- [Misc Sun/Orace's PDFs](https://docs.oracle.com/cd/E19088-01/v100.srvr/index.html).
+- [Sun's LOMlite2 Documentation](https://docs.oracle.com/cd/E19102-01/n20.srvr/806-7334-13/LW2+User.LOM.html).
+- [DogeMicroSystems Wiki](https://dogemicrosystems.ca/wiki/Sun_Fire_V100).
+- Various blogs like: Eerie's [blog post 1](https://eerielinux.wordpress.com/2019/09/22/a-sparc-in-the-night-sunfire-v100-exploration/) and [2](https://eerielinux.wordpress.com/2019/10/30/illumos-v9os-on-sparc64-sunfire-v100/), Scott Alan Miller's [series](https://sheepguardingllama.com/2007/09/sunfire-v100-server/) or Andrew Rawlins's [solar-powered Sun V100](https://www.fermit.org.uk/green_computing/solar_power_solaris/).
 - [Obligatory Clabretro's video](https://www.youtube.com/watch?v=5OyGwbWKWZU).
 
 # Conclusion
