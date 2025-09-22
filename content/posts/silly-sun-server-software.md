@@ -7,11 +7,11 @@ summary = 'Recommissioning an Old Sun V100 Server - The Software'
 
 # The Software Side
 
-TODO remind software goals + small intro
+In the [intro](/posts/silly-sun-server-intro/) and [hardware part](/posts/silly-sun-server-hardware/), we dealt with the hardware side, and rebuilt our cute V100 into a more manageable beast. In this post, we will cover the software journey: using the LOM and Open Firmware, setuping up a netboot server, installing a usable OS and finally setuping some services.
 
 ## LOMlite2
 
-### Intro
+### Presentation
 
 LOM stands for Lights Out Management. Not sure if it fulfills the [IPMI](https://en.wikipedia.org/wiki/Intelligent_Platform_Management_Interface) spec, but it has the same role.
 
@@ -62,9 +62,9 @@ lom>
 
 ### Switching Between `ok>`/`OS` & `lom>` Prompts
 
-By default the Serial Port is shared between the `lom>` prompt and the main server `ok`(OpenFirmawre)/OS shell prompt.
+By default the Serial Port is shared between the `lom>` prompt and the main server `ok` (Open Firmware)/OS shell prompt.
 
-Here are a few usefull instructions from Sun Documentation to navigate between these:
+Here are a few useful instructions from Sun Documentation to navigate between these:
 
 ```
 There are three prompts.
@@ -370,9 +370,9 @@ It works! Not sure if we have created Paradise or Hell however...
 
 In truth, I'm an atheist, I don't believe in God, even the Sunnier ones.
 
-And why is that? Well, this setup really messy, and I'm kind of sorry if you read
+And why is that? Well, this setup is really messy, and I'm kind of sorry if you read
 through it... or worse, if you actually tried to implement it. Also, spoiler, 
-for our NetBSD/OpenBSD netbooting target, even more similar is required.
+for our NetBSD/OpenBSD netbooting target, even more services are required.
 
 So I've committed blasphemy and created my [own, all-in-one, Golang simple netboot server](https://github.com/kakwa/ofw-install-server) directly providing the RARP + TFTP combo (plus, spoiler, also BOOTP + NFSv2 + HTTP).
 
@@ -385,7 +385,7 @@ It only provides a single bootstrap path/set of boot files and should only be us
 Don't rely on this server if you are still bootstrapping hundreds of SPARC servers like in the good old [Jumpstart](https://docs.oracle.com/cd/E26505_01/html/E28039/customjumpsample-5.html#scrolltoc) days.
 However for the onesies/twosies like here, don't hesitate to give it a try.
 
-But enough about why my masochism tendencies led me to develop a full netboot server for such a dead platform.
+But enough about why my masochistic tendencies led me to develop a full netboot server for such a dead platform.
 Here is how to set up this damn piece of software.
 
 Building the server:
@@ -599,7 +599,7 @@ pkgin install neovim
 
 - [This project's git (scripts, programs & 3D models)](https://github.com/kakwa/silly-sun-server).
 - [Sun's V100 Handbook Documentation](https://sun.kakwalab.ovh/Systems/SunFireV100/SunFireV100.html).
-- [Misc Sun/Orace's PDFs](https://docs.oracle.com/cd/E19088-01/v100.srvr/index.html).
+- [Misc Sun/Oracle's PDFs](https://docs.oracle.com/cd/E19088-01/v100.srvr/index.html).
 - [Sun's LOMlite2 Documentation](https://docs.oracle.com/cd/E19102-01/n20.srvr/806-7334-13/LW2+User.LOM.html).
 - [DogeMicroSystems Wiki](https://dogemicrosystems.ca/wiki/Sun_Fire_V100).
 - Various blogs like: Eerie's [blog post 1](https://eerielinux.wordpress.com/2019/09/22/a-sparc-in-the-night-sunfire-v100-exploration/) and [2](https://eerielinux.wordpress.com/2019/10/30/illumos-v9os-on-sparc64-sunfire-v100/), Scott Alan Miller's [series](https://sheepguardingllama.com/2007/09/sunfire-v100-server/) or Andrew Rawlins's [solar-powered Sun V100](https://www.fermit.org.uk/green_computing/solar_power_solaris/).
