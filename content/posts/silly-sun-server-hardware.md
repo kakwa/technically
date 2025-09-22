@@ -1,6 +1,6 @@
 +++
-title = 'My Silly Sun Servers - The Hardware'
-date = 2025-09-22T19:01:49+02:00
+title = 'My Silly Sun Server - The Hardware'
+date = 2025-09-20T19:01:49+02:00
 draft = true
 summary = 'Recommissioning an Old Sun V100 Server - The Hardware'
 +++
