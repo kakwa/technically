@@ -7,13 +7,17 @@ summary = 'Recommissioning an Old Sun V100 Server - The Software'
 
 # The Software Side
 
-In the [intro](/posts/silly-sun-server-intro/) and [hardware part](/posts/silly-sun-server-hardware/), we dealt with the hardware side, and rebuilt our cute V100 into a more manageable beast. In this post, we will cover the software journey: using the LOM and Open Firmware, setuping up a netboot server, installing a usable OS and finally setuping some services.
+In the [intro](/posts/silly-sun-server-intro/) and [hardware part](/posts/silly-sun-server-hardware/), we dealt with the hardware side, and rebuilt our cute V100 into a more manageable format.
+
+Now it's time to bring a SPARC of life into this server.
+
+For that we will need to interact with the server's firmware (LOMlite2 & Open Firmware), setup up a netboot server, install a usable OS and finally, configure some services.
 
 ## LOMlite2
 
 ### Presentation
 
-LOM stands for Lights Out Management. Not sure if it fulfills the [IPMI](https://en.wikipedia.org/wiki/Intelligent_Platform_Management_Interface) spec, but it has the same role.
+LOM stands for Lights Out Management. It fulfills the same role as [IPMI](https://en.wikipedia.org/wiki/Intelligent_Platform_Management_Interface) compatible devices.
 
 It's a small Baseboard Management Controller (BMC), similar to HP's iLO or Dell iDRAC, monitoring the hardware (fans, PSUs), setting the boot sequence, and of course, [turning it off and on again](https://www.youtube.com/watch?v=5UT8RkSmN4k).
 
@@ -534,7 +538,9 @@ This cute little Sun server is finally working!
 
 ## A Bit of NetBSD SysAdmin
 
-This is not a blog post about NetBSD administration, but here are a few useful bits.
+I will not delve to deep into software configuration as this is not a blog post about NetBSD administration.
+
+But none the less, I will present a few useful bits.
 
 ### Hardware Monitoring
 
@@ -595,6 +601,44 @@ Install packages:
 pkgin install neovim
 ```
 
+### Configuring Services
+
+Now that I had a working server, I used Ansible to configure a bunch of services:
+
+- Reverse Proxies+Basic Auth for my 3D printers & other IOTs.
+- A bit of public static hosting
+- A personal FreshRSS instance
+
+I managed to get everything working, but my NetBSD experience has been a bit rough around the edges.
+
+In particular, the binary packages are rather inconsistent, and frequently have dependencies/linking issues or are really outdated.
+I had to fallback on `pkgsrc` quite often, and well... compiling big projects like `php` or `nginx` feels like torturing this poor old machine.
+Given I've already angered our Machine Overlords (sketchy story involving compiling Gentoo on a Powerbook Titanium 1 Ghz... inside a fridge), it's something I would prefer to avoid.
+
+If you are in the same SPARCy boat, I've published [the resulting binary packages here](https://netbsd.kakwalab.ovh/pkgsrc/packages/NetBSD/sparc64/10/All/).
+
+But I manage to make everything work in the end, [here are my Ansible playbook & roles](https://github.com/kakwa/ansible-netbsd) if you are interested.
+They are a bit buggy and not fully indempotent, but they can help you getting started if you want to work on NetBSD, even with other CPU architectures.
+
+Lastly, as a final touch, I though it was fitting to host a copy of [Sun System Handbook](https://sun.kakwalab.ovh/) on this server.
+
+# Conclusion
+
+It was a long project, lasting several months. The CAD/case design part in particular took me quite a while, which was
+not unexpected given my starting skills. Yet, I'm really pleased of the result, and I've learnt a lot,
+from drawing properly constrained sketchs to parts assembly.
+Firing-up FreeCAD is no longer a dreaded experience, and I'm now much quicker at designing accurate parts.
+
+It also lead me to numerous side projects, like playing with USB-C PD, rebuilding my ender3 with a new board and Klipper or learning about laser cutting.
+
+On the software side, it made me discover NetBSD and in the end, I managed to host everything I wanted on this small server.
+
+I hope this cute thing will serve me well enough for at least few years.
+SPARC may be on borrowed time, and things may get harder and harder to run,
+but I trust the NetBSD folks to not drop it soon (they have a reputation to upheld).
+
+In any case, I had a lot of fun doing this project, and I hope you had at least a some reading about it.
+
 # Links
 
 - [This project's git (scripts, programs & 3D models)](https://github.com/kakwa/silly-sun-server).
@@ -604,11 +648,3 @@ pkgin install neovim
 - [DogeMicroSystems Wiki](https://dogemicrosystems.ca/wiki/Sun_Fire_V100).
 - Various blogs like: Eerie's [blog post 1](https://eerielinux.wordpress.com/2019/09/22/a-sparc-in-the-night-sunfire-v100-exploration/) and [2](https://eerielinux.wordpress.com/2019/10/30/illumos-v9os-on-sparc64-sunfire-v100/), Scott Alan Miller's [series](https://sheepguardingllama.com/2007/09/sunfire-v100-server/) or Andrew Rawlins's [solar-powered Sun V100](https://www.fermit.org.uk/green_computing/solar_power_solaris/).
 - [Obligatory Clabretro's video](https://www.youtube.com/watch?v=5OyGwbWKWZU).
-
-# Conclusion
-
-> TODO Long Project
-> Significantly improved CAD skills
-> Side Projects (printers)
-> Fancy Deploy server
-> TODO > Put to good use, personal stuff... but also fitting to host Sun docs.
