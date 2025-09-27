@@ -142,13 +142,27 @@ TODO
 
 ## Final Result
 
+Overall, I’m really happy with the result. This new case is much more compact, quiet and fit to be used in my small appartment.
+
+Plus, it still looks like a Sun Server:
+
 {{< figure src="/images/sun-final-front.jpg" alt="SunFire V100 Custom Case - Front" caption="Silly Sun Server - Front" >}}
+
+Round the back, the I/O cut‑outs fit also nicely:
+
 {{< figure src="/images/sun-final-back.jpg"  alt="SunFire V100 Custom Case - Back" caption="Silly Sun Server - Back" >}}
 
-TODO quite please, but not perfect (top panel flexes a bit to much, may fix with some glued-on ribbs, noise level OK but not perfect, a bit hot (~70). Power Consumption not great not terrible (20-25W vs 5-10W mini-PC/laptop).
+The 3D CAD models are available here: [sun‑v100‑case](https://github.com/kakwa/sun-v100-case).
 
-TODO link to sun case 3d model.
+To be honest, it’s not perfect. The top/bottom panels still flexes a bit and the CPU temperature is somewhat high at ~70 °C.
+Also, the power consumption side, it's "not great - not terrible".
+This server draws 20–25 W, vs 5–10 W for a more typical mini‑PC or old laptop.
 
-If you missed it, start with the
-[intro](/posts/silly-sun-server-intro/). Next up is the
-[software side →](/posts/silly-sun-server-software/).
+But these are far from deal breakers, and now, this server can actually become useful... if we manage to install something onto it,
+and believe or not, [it's exactly what we will address in the next post](/posts/silly-sun-server-software/).
+
+## Links
+
+* [Post 1 - Introduction](/posts/silly-sun-server-intro/).
+* [Post 3 - Software](/posts/silly-sun-server-software/).
+* [Case 3D models](https://github.com/kakwa/sun-v100-case).
