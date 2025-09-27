@@ -20,10 +20,48 @@ Here is the shopping list to reach our goals:
 * Let's also try our luck with a [GaN USB‑C charger](https://www.anker.com/products/b2679-nano-100w-usb-c-charger) + [USB‑C PD trigger board](https://aliexpress.com/item/1005004356272196.html) + [Wide Input 12–25 V PicoPSU](https://www.mini-itx.com/~picoPSU-120-WI-25). On paper, it could provide us with a great little PSU instead of a rather large and sketchy black brick from an unknown manufacturer.
 * The original 40 × 40 mm 12 V fans are getting the [Noctua treatment](https://noctua.at/en/products/fan/nf-a4x20-flx).
 
-I will also design a new, far more compact case for it.
+I also want to design a new and far more compact case for our cute server
 
-And yes, it ended up being quite expensive. But this project isn’t about saving money.
-If you do want a cheap option, you’re much better off with a second-hand micro PC from Dell/HP/Lenovo, or even an ARM SBC: cheaper, more reliable, more energy-efficient, and far more powerful.
+If you ask, yes all that is not cheap, but saving money isn't the goal here. If you need a budget-friendly option, a second-hand Dell/HP/Lenovo micro PC or an ARM SBC is way cheaper, reliable, efficient and powerful.
+
+
+## Hard Drive
+
+TODO
+
+## PSU
+
+The Sun V100 uses an 80 W PSU. It has the usual Molex IDE and 20‑pin ATX
+connectors of the PCs from its era.
+
+While it could probably be made quieter with the Noctua treatment, it wouldn’t
+fix the other issue: it’s simply too big.
+
+To replace it, I used a 120 W 12 V PicoPSU board combined, at first, with a USB‑C PD
+trigger board and a GaN power brick.
+
+Unfortunately I didn’t read the fine print closely enough. While
+[USB‑C Power Delivery](https://en.wikipedia.org/wiki/USB_hardware#USB_Power_Delivery)
+does define a 12 V level, it’s optional and seems uncommon — at least in my
+very scientific sample size of two chargers I had on hand.
+
+Worse, despite being set to 12 V, when I plugged the trigger board into the
+PSU, it delivered 15 V… Lesson learned: always measure the output of these
+boards before connecting anything valuable.
+
+So it was back to a cheap no‑name 12 V brick. At least this one is rated for
+120 W and is not below the original 80 W, unlike the USB‑C option at 60 W would
+have been.
+
+But, in truth, the 12 V brick option is still not quite right. The server often fails
+to start, and I may have to unplug/plug several times to get it to work.
+
+I might try my luck with another PicoPSU, this time a multi‑voltage model, and
+explore the USB‑C option again. I would really like it if this option worked —
+compact GaN USB‑C PSUs are easy to find these days.
+
+I will need to revisit this topic in the future, but for now, let’s forge
+ahead.
 
 # Case Modeling
 
@@ -88,46 +126,6 @@ TODO
 * Print with filament change (M400).
 
 {{< figure src="/images/sun-logo-3dprint.jpg" alt="3D printed Sun logo" caption="3D‑printed Sun logo with filament color change" >}}
-
-# Other Parts
-
-## Hard Drive Replacement
-
-TODO
-
-## PSU
-
-The Sun V100 uses an 80 W PSU. It has the usual Molex IDE and 20‑pin ATX
-connectors of the PCs from its era.
-
-While it could probably be made quieter with the Noctua treatment, it wouldn’t
-fix the other issue: it’s simply too big.
-
-To replace it, I used a 120 W 12 V PicoPSU board combined, at first, with a USB‑C PD
-trigger board and a GaN power brick.
-
-Unfortunately I didn’t read the fine print closely enough. While
-[USB‑C Power Delivery](https://en.wikipedia.org/wiki/USB_hardware#USB_Power_Delivery)
-does define a 12 V level, it’s optional and seems uncommon — at least in my
-very scientific sample size of two chargers I had on hand.
-
-Worse, despite being set to 12 V, when I plugged the trigger board into the
-PSU, it delivered 15 V… Lesson learned: always measure the output of these
-boards before connecting anything valuable.
-
-So it was back to a cheap no‑name 12 V brick. At least this one is rated for
-120 W and is not below the original 80 W, unlike the USB‑C option at 60 W would
-have been.
-
-But, in truth, the 12 V brick option is still not quite right. The server often fails
-to start, and I may have to unplug/plug several times to get it to work.
-
-I might try my luck with another PicoPSU, this time a multi‑voltage model, and
-explore the USB‑C option again. I would really like it if this option worked —
-compact GaN USB‑C PSUs are easy to find these days.
-
-I will need to revisit this topic in the future, but for now, let’s forge
-ahead.
 
 ## Assembly
 
