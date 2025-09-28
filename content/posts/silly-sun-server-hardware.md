@@ -145,7 +145,7 @@ TODO
 
 TODO lose ends about the design (corner bracket, standoff for the board), planned to use epoxy glue to fix the board.
 
-{{< figure src="/images/sun-case-design.jpg" alt="Sun V100 Case Design" caption="Final Case Design" >}}
+{{< figure src="/images/sun-case-design.png" alt="Sun V100 Case Design" caption="Final Case Design" >}}
 
 {{< figure src="/images/sun-parts.jpg" alt="Sun V100 10‑inch parts" caption="All the parts" >}}
 
