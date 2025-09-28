@@ -31,7 +31,7 @@ If you ask: yes, all that is not cheap, but saving money isn't the goal here. If
 
 TODO CF CARD IDE, mostly compatible
 
-{{< figure src="/images/sun-ide-cf.jpg" alt="ide adapater + cf card" caption="Hard Drive replacement" >}}
+{{< figure src="/images/sun-ide-cf.jpg" alt="ide adapter + cf card" caption="Hard Drive replacement" >}}
 
 TODO Perf looks ok, but unsure about durability. if issue industrial SLC CF cards exists.
 
@@ -58,7 +58,7 @@ The server often fails to start (switch-on current surge?), and need to be unplu
 
 I will need to revisit the PSU part, this time a multi‑voltage model PicoPSU.
 Being able to use USB-C would be really nice, both to get quality chargers and
-maybe to use USB-C power banks as makeshift UPSs.
+maybe to use USB-C power banks as makeshift UPS.
 
 But for now, let’s forge ahead.
 
@@ -141,7 +141,11 @@ TODO
 
 {{< figure src="/images/sun-logo-3dprint.jpg" alt="3D printed Sun logo" caption="3D‑printed Sun logo with filament color change" >}}
 
-## Assembly
+## Final Design & Assembly
+
+TODO lose ends about the design (corner bracket, standoff for the board), planned to use epoxy glue to fix the board.
+
+{{< figure src="/images/sun-case-design.jpg" alt="Sun V100 Case Design" caption="Final Case Design" >}}
 
 {{< figure src="/images/sun-parts.jpg" alt="Sun V100 10‑inch parts" caption="All the parts" >}}
 
