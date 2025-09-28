@@ -11,7 +11,7 @@ In the [intro](/posts/silly-sun-server-intro/) and [hardware part](/posts/silly-
 
 Now it's time to bring a SPARC of life into this server.
 
-For that we will need to interact with the server's firmware (LOMlite2 & Open Firmware), setup up a netboot server, install a usable OS and finally, configure some services.
+For that we will need to interact with the server's firmware (LOMlite2 & Open Firmware), set up a netboot server, install a usable OS, and finally, configure some services.
 
 ## LOMlite2
 
@@ -25,7 +25,7 @@ On this V100, we have the LOMlite2 version, which is only accessible through ser
 
 ### Serial Cabling
 
-To access LOM, you need one of these blue "Cisco cable" with DB9 + RJ45 connectors and a serial adapter:
+To access LOM, you need one of these blue 'Cisco' cables with DB9 + RJ45 connectors and a serial adapter:
 
 {{< figure src="/images/sun-cable-serial-usb.jpg" alt="DB9 to RJ45 console cable with USB serial adapter" caption="Blue Cisco console cable with USB serial adapter" >}}
 
@@ -43,7 +43,7 @@ Because I'm lazy, I'm using good old `screen` but you could use something else l
 screen /dev/ttyUSB0
 ```
 
-You should be getting something like (when plugging in the server), or at least a `lom>` prompt:
+You should see something like the following when plugging in the server, or at least a `lom>` prompt:
 
 ```
 LOMlite starting up.
@@ -68,7 +68,7 @@ lom>
 
 By default the Serial Port is shared between the `lom>` prompt and the main server `ok` (Open Firmware)/OS shell prompt.
 
-Here are a few useful instructions from Sun Documentation to navigate between these:
+Here are a few useful instructions from Sun documentation to navigate between these:
 
 ```
 There are three prompts.
@@ -242,8 +242,7 @@ Open Firmware on these machines is able to boot over the network a bit like PXE.
 The major difference is the lack of DHCP support: it instead relies on RARP (static MAC -> IP mapping).
 
 Also, the netboot server needs to be on the same LAN subnet (or plugged directly into) as our cute Sun server.
-And the netboot server must also be a TFTP server hosting the boot file at a set location (derived from the IP
-we give to our Sun server)
+And the netboot server must also be a TFTP server hosting the boot file at a set location (derived from the IP we give to our Sun server).
 
 ### Netboot Server Setup - The Annoying & Legacy Way
 
@@ -359,7 +358,7 @@ grep -q -F "$SUN_V100_IP $HOSTNAME" /etc/hosts || \
     echo "$SUN_V100_IP $HOSTNAME" | sudo tee -a /etc/hosts
 ```
 
-After a while, the server should get an IP, and recover the boot file
+After a while, the server should get an IP and retrieve the boot file:
 ```shell
 Boot device: /pci@1f,0/ethernet@c  File and args: 
 27a00 >> kakwa's OFW BOOT 1.29
@@ -368,9 +367,9 @@ TFTP IP address: 172.24.42.150
 Fast Data Access MMU Miss
 ```
 
-It works! Not sure if we have created Paradise or Hell however...
+It works! Not sure if we have created Paradise or Hell, however...
 
-### Netboot Server Setup - The Modern & Masochist Way
+### Netboot Server Setup - The Modern & Masochistic Way
 
 In truth, I'm an atheist, I don't believe in God, even the Sunnier ones.
 
@@ -378,7 +377,7 @@ And why is that? Well, this setup is really messy, and I'm kind of sorry if you 
 through it... or worse, if you actually tried to implement it. Also, spoiler, 
 for our NetBSD/OpenBSD netbooting target, even more services are required.
 
-So I've committed blasphemy and created my [own, all-in-one, Golang simple netboot server](https://github.com/kakwa/ofw-install-server) directly providing the RARP + TFTP combo (plus, spoiler, also BOOTP + NFSv2 + HTTP).
+So I've committed blasphemy and created my [own all-in-one Go netboot server](https://github.com/kakwa/ofw-install-server) directly providing the RARP + TFTP combo (plus, spoiler, also BOOTP + NFSv2 + HTTP).
 
 I must confess I've sinned even more by letting the twin d(a)emons
 Claude & ChatGPT do most of the work, especially the network protocol implementation.
@@ -458,7 +457,7 @@ For [NetBSD](https://www.netbsd.org/docs/network/netboot/)/[OpenBSD](https://ftp
 
 Yes: RARP + TFTP + BOOTP + NFSv2 on the same LAN segment...
 
-Oh, and to add a bit of fun, NFSv2 is kind of obsolete (removed from Debian since `2022/03/13` & `nfs-utils (1:2.6.1-1~exp1)`):
+Oh, and to add a bit of fun, NFSv2 is kind of obsolete (removed from Debian since 2022-03-13 in nfs-utils 1:2.6.1-1~exp1).
 
 But once again, with a bit of vibe coding and a few tweaks, we are able to add these services to our custom netboot server.
 
@@ -470,7 +469,7 @@ Also, just for kicks, given all the services we have in our netboot server, I've
 
 Lastly, it's worth mentioning that the OpenBSD version of `ofwboot.net` gave me quite a lot of headaches. I never quite managed to feed it the NFS server IP and file path/name given by BOOTP (typo? bug? wrong BOOTP option? magic values?).
 
-I also tried to tweak the OpenBSD `ofwboot.net`, but without luck. If you want to give it a try, the code is available [here](https://github.com/kakwa/silly-sunv100-server/tree/main/ofwboot) and can be built under Linux (see README.md instructions). I also tried to make it use rarp and tftp for the second boot stage instead of NFS+Bootp.
+I also tried to tweak the OpenBSD `ofwboot.net`, but without luck. If you want to give it a try, the code is available [here](https://github.com/kakwa/silly-sunv100-server/tree/main/ofwboot) and can be built under Linux (see README.md instructions). I also tried to make it use RARP and TFTP for the second boot stage instead of NFS+BOOTP.
 
 In the end, I chose to use the NetBSD's `ofwboot.net` version for both NetBSD and OpenBSD and it seems to work fine. FYI, both versions come from the same source, but the NetBSD one seems marginally more modern.
 
@@ -495,7 +494,7 @@ wget https://raw.githubusercontent.com/kakwa/silly-sun-server/refs/heads/main/mi
 Start the install server:
 
 ```shell
-sudo ./ofw-install-server -rarp -tftp -tftp-file ./ofwboot.net -bootp -nfs -nfs-file ./bsd.rd -http -http-file ./openbsd-install.conf 
+sudo ./ofw-install-server -rarp -tftp -tftp-file ./ofwboot.net -bootp -nfs -nfs-file ./bsd.rd -http -http-file ./openbsd-autoinstall.conf
 ```
 
 #### NetBSD Install
@@ -538,9 +537,9 @@ This cute little Sun server is finally working!
 
 ## A Bit of NetBSD SysAdmin
 
-I will not delve to deep into software configuration as this is not a blog post about NetBSD administration.
+I will not delve too deep into software configuration as this is not a blog post about NetBSD administration.
 
-But none the less, I will present a few useful bits.
+But nonetheless, I will present a few useful bits.
 
 ### Hardware Monitoring
 
@@ -568,13 +567,13 @@ grep -q '^sshd=YES' /etc/rc.conf || echo 'sshd=YES' >> /etc/rc.conf
 
 ### NTP
 
-On such old server, the clock might be out of date, leading to weird errors:
+On such an old server, the clock might be out of date, leading to weird errors:
 
 ```shell
 # Force synchronization
 ntpdate 2.netbsd.pool.ntp.org
 
-# Enable ntp
+# Enable NTP
 grep -q '^ntpd=YES' /etc/rc.conf || echo 'ntpd=YES' >> /etc/rc.conf
 /etc/rc.d/ntpd start
 ```
@@ -605,39 +604,39 @@ pkgin install neovim
 
 Now that I had a working server, I used Ansible to configure a bunch of services:
 
-- Reverse Proxies+Basic Auth for my 3D printers & other IOTs.
-- A bit of public static hosting
-- A personal FreshRSS instance
+- Reverse proxies + basic auth for my 3D printers & other IOTs.
+- A bit of public static hosting.
+- A personal FreshRSS instance.
 
 I managed to get everything working, but my NetBSD experience has been a bit rough around the edges.
 
 In particular, the binary packages are rather inconsistent, and frequently have dependencies/linking issues or are really outdated.
-I had to fallback on `pkgsrc` quite often, and well... compiling big projects like `php` or `nginx` feels like torturing this poor old machine.
-Given I've already angered our Machine Overlords (sketchy story involving compiling Gentoo on a Powerbook Titanium 1 Ghz... inside a fridge), it's something I would prefer to avoid.
+I had to fall back on `pkgsrc` quite often, and well... compiling big projects like `php` or `nginx` feels like torturing this poor old machine.
+Given I've already angered our Machine Overlords (sketchy story involving compiling Gentoo on a PowerBook Titanium 1 GHz... inside a fridge), it's something I would prefer to avoid.
 
 If you are in the same SPARCy boat, I've published [the resulting binary packages here](https://netbsd.kakwalab.ovh/pkgsrc/packages/NetBSD/sparc64/10/All/).
 
-But I manage to make everything work in the end, [here are my Ansible playbook & roles](https://github.com/kakwa/ansible-netbsd) if you are interested.
-They are a bit buggy and not fully indempotent, but they can help you getting started if you want to work on NetBSD, even with other CPU architectures.
+But I managed to make everything work in the end. [Here are my Ansible playbook & roles](https://github.com/kakwa/ansible-netbsd) if you are interested.
+They are a bit buggy and not fully idempotent, but they can help you get started if you want to work on NetBSD, even with other CPU architectures.
 
-Lastly, as a final touch, I though it was fitting to host a copy of [Sun System Handbook](https://sun.kakwalab.ovh/) on this server.
+Lastly, as a final touch, I thought it was fitting to host a copy of the [Sun System Handbook](https://sun.kakwalab.ovh/) on this server.
 
 # Conclusion
 
 It was a long project, lasting several months. The CAD/case design part in particular took me quite a while, which was
-not unexpected given my starting skills. Yet, I'm really pleased of the result, and I've learnt a lot,
-from drawing properly constrained sketchs to parts assembly.
-Firing-up FreeCAD is no longer a dreaded experience, and I'm now much quicker at designing accurate parts.
+not unexpected given my starting skills. Yet, I'm really pleased with the result, and I've learned a lot,
+from drawing properly constrained sketches to part assembly.
+Firing up FreeCAD is no longer a dreaded experience, and I'm now much quicker at designing accurate parts.
 
-It also lead me to numerous side projects, like playing with USB-C PD, rebuilding my ender3 with a new board and Klipper or learning about laser cutting.
+It also led me to numerous side projects, like playing with USB-C PD, rebuilding my Ender 3 with a new board and Klipper, or learning about laser cutting.
 
 On the software side, it made me discover NetBSD and in the end, I managed to host everything I wanted on this small server.
 
-I hope this cute thing will serve me well enough for at least few years.
+I hope this cute thing will serve me well enough for at least a few years.
 SPARC may be on borrowed time, and things may get harder and harder to run,
-but I trust the NetBSD folks to not drop it soon (they have a reputation to upheld).
+but I trust the NetBSD folks to not drop it soon (they have a reputation to uphold after all).
 
-In any case, I had a lot of fun doing this project, and I hope you had at least a some reading about it.
+In any case, I had a lot of fun doing this project, and I hope you had some of this fun reading it.
 
 # Links
 
@@ -647,4 +646,6 @@ In any case, I had a lot of fun doing this project, and I hope you had at least 
 - [Sun's LOMlite2 Documentation](https://docs.oracle.com/cd/E19102-01/n20.srvr/806-7334-13/LW2+User.LOM.html).
 - [DogeMicroSystems Wiki](https://dogemicrosystems.ca/wiki/Sun_Fire_V100).
 - Various blogs like: Eerie's [blog post 1](https://eerielinux.wordpress.com/2019/09/22/a-sparc-in-the-night-sunfire-v100-exploration/) and [2](https://eerielinux.wordpress.com/2019/10/30/illumos-v9os-on-sparc64-sunfire-v100/), Scott Alan Miller's [series](https://sheepguardingllama.com/2007/09/sunfire-v100-server/) or Andrew Rawlins's [solar-powered Sun V100](https://www.fermit.org.uk/green_computing/solar_power_solaris/).
+- [NetBSD Netboot](https://www.netbsd.org/docs/network/netboot/) & [SPARC64 specific](https://www.netbsd.org/docs/network/netboot/intro.sun.ofw.html) install instructions
+- [OpenBSD diskless](https://man.openbsd.org/diskless) & [SPARC64 specific](https://ftp.eu.openbsd.org/pub/OpenBSD/7.7/sparc64/INSTALL.sparc64) install instructions
 - [Obligatory Clabretro's video](https://www.youtube.com/watch?v=5OyGwbWKWZU).

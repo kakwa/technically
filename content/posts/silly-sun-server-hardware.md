@@ -20,9 +20,9 @@ Here is the shopping list to reach our goals:
 * Let's also try our luck with a [GaN USB‑C charger](https://www.anker.com/products/b2679-nano-100w-usb-c-charger) + [USB‑C PD trigger board](https://aliexpress.com/item/1005004356272196.html) + [Wide Input 12–25 V PicoPSU](https://www.mini-itx.com/~picoPSU-120-WI-25). On paper, it could provide us with a great little PSU instead of a rather large and sketchy black brick from an unknown manufacturer.
 * The original 40 × 40 mm 12 V fans are getting the [Noctua treatment](https://noctua.at/en/products/fan/nf-a4x20-flx).
 
-I also want to design a new and far more compact case for our cute server
+I also want to design a new and far more compact case for our cute server.
 
-If you ask, yes all that is not cheap, but saving money isn't the goal here. If you need a budget-friendly option, a second-hand Dell/HP/Lenovo micro PC or an ARM SBC is way cheaper, reliable, efficient and powerful.
+If you ask: yes, all that is not cheap, but saving money isn't the goal here. If you need a budget‑friendly option, a second‑hand Dell/HP/Lenovo micro PC or an ARM SBC is far cheaper, reliable, efficient, and powerful.
 
 
 ## Hard Drive
@@ -50,14 +50,14 @@ PSU, it delivered 15 V… Lesson learned: always measure the output of these
 boards before connecting anything valuable.
 
 So it was back to a cheap no‑name 12 V brick. At least this one is rated for
-120 W and is not below the original 80 W, unlike the USB‑C option at 60 W would
+120 W and is not below the original 80 W, unlike the 60 W USB‑C option would
 have been.
 
 But, in truth, the 12 V brick option is still not quite right. The server often fails
 to start, and I may have to unplug/plug several times to get it to work.
 
 I might try my luck with another PicoPSU, this time a multi‑voltage model, and
-explore the USB‑C option again. I would really like it if this option worked —
+explore the USB‑C option again. I would really like it if this option worked—
 compact GaN USB‑C PSUs are easy to find these days.
 
 I will need to revisit this topic in the future, but for now, let’s forge
@@ -156,7 +156,7 @@ To be honest, it’s not perfect. The top/bottom panels still flex a bit and the
 Also, on the power‑consumption side, it's “not great — not terrible”.
 This server draws 20–25 W, vs 5–10 W for a more typical mini‑PC or old laptop.
 
-But these are far from deal‑breakers, and now, this server can actually become useful… if we manage to install something onto it,
+But these are far from deal‑breakers, and now this server can actually become useful… if we manage to install something onto it,
 and believe it or not, [it's exactly what we will address in the next post](/posts/silly-sun-server-software/).
 
 ## Links

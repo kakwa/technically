@@ -13,20 +13,20 @@ One of my pet peeves is to bring new life into old hardware.
 
 Here, I'm not thinking in a retro‑computing kind of way. Software is not exactly like fine wine, in my opinion—it usually doesn't age well.
 
-Also, old software tends to be isolated in its own bubble—amusing, but unless you are [George R. R. Martin rocking WordStar 4.0 on MS‑DOS](https://www.youtube.com/watch?v=X5REM-3nWHg), that's not really useful.
+Also, old software tends to be isolated in its own bubble—amusing, but unless you are [George R. R. Martin rocking WordStar 4.0 on MS‑DOS](https://www.youtube.com/watch?v=X5REM-3nWHg), it's not really useful.
 
 I prefer the challenge of trying to install modern software on these antiquities, make them able to interact with the internet, and do something useful with them.
 
-Sure, it will not run a Kubernetes cluster, but these old machines generally still have enough oomph for lightweight use cases like:
+Sure, it will not run a Kubernetes cluster, but these old machines generally still have enough oomph for lightweight use cases such as:
 
-- MPD/Music server (for example, coupled with an analog Hi-Fi system)
+- MPD/Music server (for example, coupled with an analog hi‑fi system)
 - Basic web hosting (blog, RSS aggregator, etc)
 - Mail server
 - Test/lab machines
 
 ## The Little Server That Could (Not)
 
-Enters the Sun V100, the 2001 entry-level server from Sun Microsystems.
+Enter the Sun V100, the 2001 entry‑level server from Sun Microsystems.
 
 It boasts impressive specs such as:
 - UltraSPARC‑IIe CPU @ 548 MHz
@@ -45,12 +45,12 @@ I got a few of these years ago for cheap, but, in truth, never did anything real
 While not as bad as other monsters from the era, these cuties are simply a bit too big and loud.
 So, they sat in my cupboard for ages, in the dark, lonely, unused and far away from the information highways.
 
-But let's try to change that, have a fun project and maybe learn a few things along the way.
+But let's try to change that, have a fun project, and maybe learn a few things along the way.
 
 ## A Two-Front Project
 
-So, yes, I aim to do something with this cute little server from another time.
-Not very rational and probably a bit challenging, but that's what makes it fun!
+So yes, I aim to do something with this cute little server from another time.
+Not very rational and probably a bit challenging—but that's what makes it fun!
 
 But enough said! Now, we need to address the two broad complaints we have about this relic:
 
@@ -126,7 +126,7 @@ That's goal number three:
 
 Here, nothing fancy: we will go for basic web hosting (nginx, Let's Encrypt, maybe a bit of Postgres & PHP), but since I'm an infra guy who likes infrastructure‑as‑code, let's set goal number four:
 
-* Create a bit of Ansible to do something with our new toy
+* Create a bit of Ansible to do something with our new toy.
 
 # The Next Steps
 
