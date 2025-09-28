@@ -32,36 +32,27 @@ TODO
 ## PSU
 
 The Sun V100 uses an 80 W PSU. It has the usual Molex IDE and 20‑pin ATX
-connectors of the PCs from its era.
+connectors of the PCs from its era. While it could probably be made quieter with the Noctua treatment, it’s simply too bulky.
 
-While it could probably be made quieter with the Noctua treatment, it wouldn’t
-fix the other issue: it’s simply too big.
-
-To replace it, I used a 120 W 12 V PicoPSU board combined, at first, with a USB‑C PD
-trigger board and a GaN power brick.
+So I chose to replace it. I initially tried to use a 120 W 12 V PicoPSU board combined,
+with a USB‑C PD trigger board and a GaN charger.
 
 Unfortunately I didn’t read the fine print closely enough. While
 [USB‑C Power Delivery](https://en.wikipedia.org/wiki/USB_hardware#USB_Power_Delivery)
-does define a 12 V level, it’s optional and seems uncommon — at least in my
+does define a 12 V level, it’s optional and seems uncommon — at least in the
 very scientific sample size of two chargers I had on hand.
 
 Worse, despite being set to 12 V, when I plugged the trigger board into the
-PSU, it delivered 15 V… Lesson learned: always measure the output of these
-boards before connecting anything valuable.
+PSU, it delivered 15 V… Lesson learned: always check the output voltage on these.
 
-So it was back to a cheap no‑name 12 V brick. At least this one is rated for
-120 W and is not below the original 80 W, unlike the 60 W USB‑C option would
-have been.
+So it was back to a cheap no‑name 12 V brick. But this option is still not quite right.
+The server often fails to start (switch-on current surge?), and need to be unplugged/plugged several times to get it working.
 
-But, in truth, the 12 V brick option is still not quite right. The server often fails
-to start, and I may have to unplug/plug several times to get it to work.
+I will need to revisit the PSU part, this time a multi‑voltage model PicoPSU.
+Being able to use USB-C would be really nice, both to get quality chargers and
+maybe to use USB-C power banks as makeshift UPSs.
 
-I might try my luck with another PicoPSU, this time a multi‑voltage model, and
-explore the USB‑C option again. I would really like it if this option worked—
-compact GaN USB‑C PSUs are easy to find these days.
-
-I will need to revisit this topic in the future, but for now, let’s forge
-ahead.
+But for now, let’s forge ahead.
 
 # Case Modeling
 
