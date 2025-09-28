@@ -13,6 +13,8 @@ In this part, we will deal with goals 1 and 2, i.e., the hardware rework — PSU
 
 # New Parts!
 
+## The Shopping List
+
 Here is the shopping list to reach our goals:
 
 * The original IDE hard drives are too big and noisy, so I'm replacing them with a [SanDisk 64 GB CF card](https://shop.sandisk.com/products/memory-cards/cfast-cfexpress-compactflash/sandisk-extreme-compactflash?sku=SDCFXSB-064G-G46) + [adapter thingy](https://www.startech.com/en-us/hdd/35baycf2ide) (CF cards are generally pin-compatible with IDE, giving good odds that it will work with decent performance).
@@ -62,7 +64,7 @@ But for now, let’s forge ahead.
 
 # Case Modeling
 
-## Caveman meets CAD
+## Caveman Meets CAD
 
 I’m a firm believer in open source (and maybe a bit of a masochist), so FreeCAD it is, even if it can be a tad frustrating at times.
 
@@ -83,13 +85,13 @@ TODO
 * 2 mm PMMA (?) -> too weak -> 3 mm minimum
 * Switch to 3 mm + recess if necessary.
 
-{{< figure src="/images/sun-back-pannel.jpg" alt="scanning board IO ports" caption="Is it physical nmap?" >}}
+{{< figure src="/images/sun-back-panel.jpg" alt="scanning board IO ports" caption="Is it physical nmap?" >}}
 
-{{< figure src="/images/sun-back-pannel.jpg" alt="back pannel design in CAD" caption="Using the scan for the design" >}}
+{{< figure src="/images/sun-back-panel.jpg" alt="back panel design in CAD" caption="Using the scan for the design" >}}
 
 {{< figure src="/images/sun-cracked-2mm-pmma.jpg" alt="Cracked 2mm PMMA panel" caption="2 mm PMMA cracked – too flimsy" >}}
 
-{{< figure src="/images/sun-3mm-pannel.jpg" alt="3mm pannel + reliefs" caption="Switching to 3mm + reliefs" >}}
+{{< figure src="/images/sun-3mm-panel.jpg" alt="3mm panel + reliefs" caption="Switching to 3mm + reliefs" >}}
 
 ## Air Duct
 
