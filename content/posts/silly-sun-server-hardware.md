@@ -27,7 +27,11 @@ If you ask: yes, all that is not cheap, but saving money isn't the goal here. If
 
 ## Hard Drive
 
-TODO
+TODO CF CARD IDE, mostly compatible
+
+{{< figure src="/images/sun-ide-cf.jpg" alt="ide adapater + cf card" caption="Hard Drive replacement" >}}
+
+TODO Perf looks ok, but unsure about durability. if issue industrial SLC CF cards exists.
 
 ## PSU
 
@@ -41,6 +45,8 @@ Unfortunately I didn’t read the fine print closely enough. While
 [USB‑C Power Delivery](https://en.wikipedia.org/wiki/USB_hardware#USB_Power_Delivery)
 does define a 12 V level, it’s optional and seems uncommon — at least in the
 very scientific sample size of two chargers I had on hand.
+
+{{< figure src="/images/sun-trigger-board.jpg" alt="USB-C Trigger Board" caption="USB-C Trigger Board" >}}
 
 Worse, despite being set to 12 V, when I plugged the trigger board into the
 PSU, it delivered 15 V… Lesson learned: always check the output voltage on these.
@@ -77,14 +83,26 @@ TODO
 * 2 mm PMMA (?) -> too weak -> 3 mm minimum
 * Switch to 3 mm + recess if necessary.
 
+{{< figure src="/images/sun-back-pannel.jpg" alt="scanning board IO ports" caption="Is it physical nmap?" >}}
+
+{{< figure src="/images/sun-back-pannel.jpg" alt="back pannel design in CAD" caption="Using the scan for the design" >}}
+
 {{< figure src="/images/sun-cracked-2mm-pmma.jpg" alt="Cracked 2mm PMMA panel" caption="2 mm PMMA cracked – too flimsy" >}}
 
-## Brackets
+{{< figure src="/images/sun-3mm-pannel.jpg" alt="3mm pannel + reliefs" caption="Switching to 3mm + reliefs" >}}
+
+## Air Duct
 
 TODO
 
-* Nut corner bracket -> bad idea
-* Switch to inserts
+* re-use the radiator, but not the fan shroud (to noisy)
+* need air duct to replace it
+* most complex geometry of the project (limited room, cables)
+* Required to mock board
+
+I ended-up with this design:
+
+{{< figure src="/images/sun-duct-design.png" alt="Fan Duct Design" caption="Final Fan Duct Design" >}}
 
 ## Bezel
 
@@ -112,6 +130,9 @@ I'm quite happy with the result. I'm actually wondering if the concept could be 
 TODO
 
 * Take SVG (Wikipedia)
+
+{{< figure src="/images/Sun-Logo.svg" alt="sun logo svg" caption="Sun Microsystems SVG Logo" >}}
+
 * Close path
 * FreeCAD
 * Print with filament change (M400).
