@@ -294,7 +294,8 @@ tbody tr:nth-child(odd) th {
 }
 .article-toc ol {
     margin-left: 0;
-    padding-left: 0;
+    padding: 0;
+    padding-left: 0.5em;
 }
 
 .article-toc nav {
@@ -308,9 +309,17 @@ tbody tr:nth-child(odd) th {
     padding: 0;
 }
 .article-toc li {
-    list-style: none;
     margin-left: 20px;
     margin-top: 2px;
+}
+.article-toc ol li {
+    list-style: upper-roman;
+}
+.article-toc ol li ol li {
+    list-style: lower-alpha;
+}
+.article-toc li::marker {
+    color: var(--text-color);
 }
 .article-toc li a {
     color: var(--text-color);
