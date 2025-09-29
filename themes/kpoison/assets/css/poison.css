@@ -113,6 +113,7 @@ body > .wrapper {
 .container.content {
     overflow-y: auto;
     flex-grow: 1;
+    margin-right: 0;
 }
 .layout-reverse .container.content {
     padding-right: 0;
@@ -278,6 +279,7 @@ tbody tr:nth-child(odd) th {
     order: 2;
 }
 .article-toc {
+    padding-left: 0em;
     display: none;
     font-size: 0.9em;
     width: 20em;
@@ -288,7 +290,13 @@ tbody tr:nth-child(odd) th {
 }
 .article-toc .toc-wrapper{
     position: fixed;
+    padding-left: 0em;
 }
+.article-toc ol {
+    margin-left: 0;
+    padding-left: 0;
+}
+
 .article-toc nav {
     margin-left: 0;
 }
@@ -306,7 +314,6 @@ tbody tr:nth-child(odd) th {
 }
 .article-toc li a {
     color: var(--text-color);
-    text-decoration: none;
 }
 .article-toc li.active {
     font-weight: bold;
