@@ -290,7 +290,7 @@ tbody tr:nth-child(odd) th {
     position: fixed;
 }
 .article-toc nav {
-    margin-left: 1em;
+    margin-left: 0;
 }
 .article-toc h4 {
     margin-left: 0;
