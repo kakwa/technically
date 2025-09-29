@@ -141,6 +141,8 @@ TODO
 
 {{< figure src="/images/sun-logo-3dprint.jpg" alt="3D printed Sun logo" caption="3D‑printed Sun logo with filament color change" >}}
 
+# Let's Build
+
 ## Final Design & Assembly
 
 TODO lose ends about the design (corner bracket, standoff for the board), planned to use epoxy glue to fix the board.
@@ -156,7 +158,7 @@ TODO
 * standoff glues
 * cable management photo
 
-## Final Result
+## Look At This Beauty!
 
 Overall, I’m really happy with the result. This new case is much more compact, quiet, and fit to be used in my small apartment.
 
@@ -177,7 +179,7 @@ This server draws 20–25 W, vs 5–10 W for a more typical mini‑PC or old
 But these are far from deal‑breakers, and now this server can actually become useful… if we manage to install something onto it,
 and believe it or not, [it's exactly what we will address in the next post](/posts/silly-sun-server-software/).
 
-## Links
+# Links
 
 * [Post 1 - Introduction](/posts/silly-sun-server-intro/).
 * [Post 3 - Software](/posts/silly-sun-server-software/).

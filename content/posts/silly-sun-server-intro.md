@@ -47,7 +47,7 @@ So, they sat in my cupboard for ages, in the dark, lonely, unused and far away f
 
 But let's try to change that, have a fun project, and maybe learn a few things along the way.
 
-## A Two-Front Project
+# A Two-Front Project
 
 So yes, I aim to do something with this cute little server from another time.
 Not very rational and probably a bit challenging—but that's what makes it fun!
@@ -56,8 +56,6 @@ But enough said! Now, we need to address the two broad complaints we have about 
 
 1. Make this server way smaller and quieter
 2. Find and install a modern OS + up‑to‑date software to make it useful
-
-# Project Goals
 
 ## The Hardware Side
 

@@ -13,9 +13,9 @@ Now it's time to bring a SPARC of life into this server.
 
 For that we will need to interact with the server's firmware (LOMlite2 & Open Firmware), set up a netboot server, install a usable OS, and finally, configure some services.
 
-## LOMlite2
+# LOMlite2
 
-### Presentation
+## Presentation
 
 LOM stands for Lights Out Management. It fulfills the same role as [IPMI](https://en.wikipedia.org/wiki/Intelligent_Platform_Management_Interface) compatible devices.
 
@@ -23,7 +23,7 @@ It's a small Baseboard Management Controller (BMC), similar to HP's iLO or Dell 
 
 On this V100, we have the LOMlite2 version, which is only accessible through serial (bigger & newer servers, like V210s or T2000s, have ALOM & ILOM with network & telnet/ssh capabilities).
 
-### Serial Cabling
+## Serial Cabling
 
 To access LOM, you need one of these blue 'Cisco' cables with DB9 + RJ45 connectors and a serial adapter:
 
@@ -33,7 +33,7 @@ Connect it to the upper port on the server, and use your favorite serial termina
 
 {{< figure src="/images/sun-serial-port.jpg" alt="Sun V100 RJ45 serial console port" caption="Upper RJ45 serial console (LOM) on the Sun V100 rear panel" >}}
 
-### It's Alive!
+## It's Alive!
 
 The serial connection settings are the common `9600 baud`, `no parity`, `one stop bit` and `full duplex` mode (should be the default of your preferred software).
 
@@ -64,7 +64,7 @@ LOM event: +0h0m0s LOM booted
 lom>
 ```
 
-### Switching Between `ok>`/`OS` & `lom>` Prompts
+## Switching Between `ok>`/`OS` & `lom>` Prompts
 
 By default the Serial Port is shared between the `lom>` prompt and the main server `ok` (Open Firmware)/OS shell prompt.
 
@@ -85,7 +85,7 @@ To move between the "lom>" prompt and the "ok>" prompt type:
   lom> console
 ```
 
-### Factory EEPROM Reset
+## Factory EEPROM Reset
 
 I initially had issues getting to [Open Firmware](https://en.wikipedia.org/wiki/Open_Firmware).
 In its past life, it seems this server was configured to not share LOM and tty on the same serial port.
@@ -141,12 +141,12 @@ ok reset-all
 
 I'm kind of curious which other magic commands are available.
 
-## Open Firmware
+# Open Firmware
 
 [Open Firmware](https://github.com/openbios/openfirmware) is the Forth-powered (a fun little language) boot firmware used by Sun servers and other non‑x86 platforms from that period, like PowerPC Macs and IBM POWER servers.
 FYI, Sun had its own implementation: [OpenBoot](https://github.com/openbios/openboot).
 
-### Useful Commands
+## Useful Commands
 
 Here are a few useful commands:
 
@@ -233,7 +233,7 @@ One-time boot of another device:
 ok boot net
 ```
 
-## Netboot Server
+# Netboot & OS Install
 
 Open Firmware on these machines is able to boot over the network a bit like PXE.
 
@@ -244,7 +244,7 @@ The major difference is the lack of DHCP support: it instead relies on RARP (sta
 Also, the netboot server needs to be on the same LAN subnet (or plugged directly into) as our cute Sun server.
 And the netboot server must also be a TFTP server hosting the boot file at a set location (derived from the IP we give to our Sun server).
 
-### Netboot Server Setup - The Annoying & Legacy Way
+## Netboot Server Setup - The Annoying & Legacy Way
 
 Let's set up a netboot server (Debian/Ubuntu based) as our Sunny God intended.
 
@@ -369,7 +369,7 @@ Fast Data Access MMU Miss
 
 It works! Not sure if we have created Paradise or Hell, however...
 
-### Netboot Server Setup - The Modern & Masochistic Way
+## Netboot Server Setup - The Modern & Masochistic Way
 
 In truth, I'm an atheist, I don't believe in God, even the Sunnier ones.
 
@@ -423,9 +423,8 @@ sudo ./ofw-install-server -iface "${BOOT_SERVER_NIC}"  -rarp \
     -tftp -tftp-file ./ofwboot.kakwa.test
 ```
 
-## Netbooting & Installing The OS
 
-### Netbooting Debian 6
+## Netbooting Debian 6
 
 Just for reference, here is how to get and netboot the last working Debian installer:
 
@@ -445,9 +444,7 @@ From there, you should be able to install Debian 6, albeit with a few headaches 
 
 Note: there is a Debian 7 version of the installer, but it kernel-oopsed on me.
 
-### Netbooting OpenBSD/NetBSD
-
-#### More Netboot Setup...
+## `*BSD` ==  More Netboot Setup...
 
 For [NetBSD](https://www.netbsd.org/docs/network/netboot/)/[OpenBSD](https://ftp.openbsd.org/pub/OpenBSD/7.7/sparc64/INSTALL.sparc64), this is "slightly" more complex than the Debian case:
 * Open Firmware first RARPs & TFTP‑loads a tiny second‑stage loader (`ofwboot.net`).
@@ -461,7 +458,7 @@ Oh, and to add a bit of fun, NFSv2 is kind of obsolete (removed from Debian sinc
 
 But once again, with a bit of vibe coding and a few tweaks, we are able to add these services to our custom netboot server.
 
-#### OpenBSD Install
+## OpenBSD Install
 
 In the end, I opted for NetBSD so I didn't fully install OpenBSD. But given I managed to start the installer, I'm fairly confident I would be able to install it if needed.
 
@@ -497,7 +494,7 @@ Start the install server:
 sudo ./ofw-install-server -rarp -tftp -tftp-file ./ofwboot.net -bootp -nfs -nfs-file ./bsd.rd -http -http-file ./openbsd-autoinstall.conf
 ```
 
-#### NetBSD Install
+## NetBSD Install
 
 So in the end, I finally settled on installing NetBSD:
 
@@ -518,7 +515,7 @@ Start the server:
 sudo ./ofw-install-server -rarp -tftp -tftp-file ./ofwboot.net -bootp -nfs -nfs-file ./netbsd-INSTALL
 ```
 
-#### One Last Bit
+## One Last Bit
 
 And then I just did this final tweak in the `ok` prompt to make it boot on disk persistently:
 
@@ -533,15 +530,14 @@ But frankly, by this point, I could not care less.
 
 This cute little Sun server is finally working!
 
-# Wrapping up
 
-## A Bit of NetBSD SysAdmin
+# A Bit of NetBSD SysAdmin
 
 I will not delve too deep into software configuration as this is not a blog post about NetBSD administration.
 
 But nonetheless, I will present a few useful bits.
 
-### Hardware Monitoring
+## Hardware Monitoring
 
 ```shell
 netra-x1# envstat
@@ -556,7 +552,7 @@ netra-x1# envstat
      Alarm3:      TRUE
 ```
 
-### SSHD
+## SSHD
 
 Enabling ssh access, because network access is nicer than serial:
 
@@ -565,7 +561,7 @@ grep -q '^sshd=YES' /etc/rc.conf || echo 'sshd=YES' >> /etc/rc.conf
 /etc/rc.d/sshd start
 ```
 
-### NTP
+## NTP
 
 On such an old server, the clock might be out of date, leading to weird errors:
 
@@ -578,7 +574,7 @@ grep -q '^ntpd=YES' /etc/rc.conf || echo 'ntpd=YES' >> /etc/rc.conf
 /etc/rc.d/ntpd start
 ```
 
-### Getting A Package Manager
+## Getting A Package Manager
 
 Install pkgin:
 ```shell
@@ -600,7 +596,7 @@ Install packages:
 pkgin install neovim
 ```
 
-### Configuring Services
+## Configuring Services
 
 Now that I had a working server, I used Ansible to configure a bunch of services:
 
