@@ -9,7 +9,7 @@ summary = 'Recommissioning an Old Sun V100 Server - The Software'
 
 In the [intro](/posts/silly-sun-server-intro/) and [hardware part](/posts/silly-sun-server-hardware/), we dealt with the hardware side, and rebuilt our cute V100 into a more manageable format.
 
-Now it's time to bring a SPARC of life into this server.
+Now it's time to ressuicitate this server.
 
 For that we will need to interact with the server's firmware (LOMlite2 & Open Firmware), set up a netboot server, install a usable OS, and finally, configure some services.
 
@@ -33,7 +33,7 @@ Connect it to the upper port on the server, and use your favorite serial termina
 
 {{< figure src="/images/sun/sun-serial-port.jpg" alt="Sun V100 RJ45 serial console port" caption="Upper RJ45 serial console (LOM) on the Sun V100 rear panel" >}}
 
-## It's Alive!
+## A SPARC of Life!
 
 The serial connection settings are the common `9600 baud`, `no parity`, `one stop bit` and `full duplex` mode (should be the default of your preferred software).
 
@@ -644,6 +644,6 @@ In any case, I had a lot of fun doing this project, and I hope you had some of t
 - [Sun's LOMlite2 Documentation](https://docs.oracle.com/cd/E19102-01/n20.srvr/806-7334-13/LW2+User.LOM.html).
 - [DogeMicroSystems Wiki](https://dogemicrosystems.ca/wiki/Sun_Fire_V100).
 - Various blogs like: Eerie's [blog post 1](https://eerielinux.wordpress.com/2019/09/22/a-sparc-in-the-night-sunfire-v100-exploration/) and [2](https://eerielinux.wordpress.com/2019/10/30/illumos-v9os-on-sparc64-sunfire-v100/), Scott Alan Miller's [series](https://sheepguardingllama.com/2007/09/sunfire-v100-server/) or Andrew Rawlins's [solar-powered Sun V100](https://www.fermit.org.uk/green_computing/solar_power_solaris/).
-- [NetBSD Netboot](https://www.netbsd.org/docs/network/netboot/) & [SPARC64 specific](https://www.netbsd.org/docs/network/netboot/intro.sun.ofw.html) install instructions
+- [NetBSD netboot](https://www.netbsd.org/docs/network/netboot/) & [SPARC64 specific](https://www.netbsd.org/docs/network/netboot/intro.sun.ofw.html) install instructions
 - [OpenBSD diskless](https://man.openbsd.org/diskless) & [SPARC64 specific](https://ftp.eu.openbsd.org/pub/OpenBSD/7.7/sparc64/INSTALL.sparc64) install instructions
 - [Obligatory Clabretro's video](https://www.youtube.com/watch?v=5OyGwbWKWZU).
