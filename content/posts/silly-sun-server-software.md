@@ -9,7 +9,7 @@ summary = 'Recommissioning an Old Sun V100 Server - The Software'
 
 In the [intro](/posts/silly-sun-server-intro/) and [hardware part](/posts/silly-sun-server-hardware/), we dealt with the hardware side, and rebuilt our cute V100 into a more manageable format.
 
-Now it's time to ressuicitate this server.
+Now it's time to resuscitate this server.
 
 For that we will need to interact with the server's firmware (LOMlite2 & Open Firmware), set up a netboot server, install a usable OS, and finally, configure some services.
 
@@ -19,9 +19,9 @@ For that we will need to interact with the server's firmware (LOMlite2 & Open Fi
 
 LOM stands for Lights Out Management. It fulfills the same role as [IPMI](https://en.wikipedia.org/wiki/Intelligent_Platform_Management_Interface) compatible devices.
 
-It's a small Baseboard Management Controller (BMC), similar to HP's iLO or Dell iDRAC, monitoring the hardware (fans, PSUs), setting the boot sequence, and of course, [turning it off and on again](https://www.youtube.com/watch?v=5UT8RkSmN4k).
+It's a small Baseboard Management Controller (BMC), similar to HP's iLO or Dell's iDRAC, monitoring the hardware (fans, PSUs), setting the boot sequence, and of course, [turning it off and on again](https://www.youtube.com/watch?v=5UT8RkSmN4k).
 
-On this V100, we have the LOMlite2 version, which is only accessible through serial (bigger & newer servers, like V210s or T2000s, have ALOM & ILOM with network & telnet/ssh capabilities).
+On this V100, we have the LOMlite2 version, which is only accessible through serial (bigger & newer servers, like V210s or T2000s, have ALOM & ILOM with network & telnet/SSH capabilities).
 
 ## Serial Cabling
 
@@ -386,10 +386,10 @@ So, expect a few bugs.
 On top of that, this netboot server is, by design, very limited.
 It only provides a single bootstrap path/set of boot files and should only be used within a dedicated LAN segment.
 Don't rely on this server if you are still bootstrapping hundreds of SPARC servers like in the good old [Jumpstart](https://docs.oracle.com/cd/E26505_01/html/E28039/customjumpsample-5.html#scrolltoc) days.
-However for the onesies/twosies like here, don't hesitate to give it a try.
+However, for the onesies/twosies like here, don't hesitate to give it a try.
 
 But enough about why my masochistic tendencies led me to develop a full netboot server for such a dead platform.
-Here is how to set up this damn piece of software.
+Here's how to set up this damn piece of software.
 
 Building the server:
 ```shell
@@ -470,7 +470,7 @@ I also tried to tweak the OpenBSD `ofwboot.net`, but without luck. If you want t
 
 In the end, I chose to use the NetBSD's `ofwboot.net` version for both NetBSD and OpenBSD and it seems to work fine. FYI, both versions come from the same source, but the NetBSD one seems marginally more modern.
 
-But enough said, here is the setup:
+But enough said, here's the setup:
 
 ```shell
 # Tweak it to the latest versions
@@ -554,7 +554,7 @@ netra-x1# envstat
 
 ## SSHD
 
-Enabling ssh access, because network access is nicer than serial:
+Enabling SSH access, because network access is nicer than serial:
 
 ```shell
 grep -q '^sshd=YES' /etc/rc.conf || echo 'sshd=YES' >> /etc/rc.conf
@@ -600,7 +600,7 @@ pkgin install neovim
 
 Now that I had a working server, I used Ansible to configure a bunch of services:
 
-- Reverse proxies + basic auth for my 3D printers & other IOTs.
+- Reverse proxies + basic auth for my 3D printers & other IoTs.
 - A bit of public static hosting.
 - A personal FreshRSS instance.
 

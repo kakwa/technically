@@ -31,7 +31,7 @@ If you ask: yes, all that is not cheap, but saving money isn't the goal here. If
 
 The original Sun V100 came with a pair of 3.5" IDE hard drives. These were a bit too bulky, and depending on the brand, to noisy.
 
-So I chose to replace then with CompactFlash Card. [CF cards](https://en.wikipedia.org/wiki/CompactFlash) are generally pin compatible with PATA/IDE, and only requires very basic and mostly passive adapter which makes then decent (and compact) replacement for old spinning rust.
+So I chose to replace them with CompactFlash Card. [CF cards](https://en.wikipedia.org/wiki/CompactFlash) are generally pin compatible with PATA/IDE, and only requires very basic and mostly passive adapter which makes then decent (and compact) replacement for old spinning rust.
 
 {{< figure src="/images/sun/sun-ide-cf.jpg" alt="ide adapter + cf card" caption="Hard Drive replacement" >}}
 
@@ -42,7 +42,7 @@ The only unknown is how long these CF cards will last when subject to more regul
 The Sun V100 uses an 80 W PSU. It has the usual Molex IDE and 20‑pin ATX
 connectors of the PCs from its era. While it could probably be made quieter with the Noctua treatment, it’s simply too bulky.
 
-So I chose to replace it. I initially tried to use a 120 W 12 V PicoPSU board combined,
+So I chose to replace it. I initially tried to use a 120 W 12 V PicoPSU board combined
 with a USB‑C PD trigger board and a GaN charger.
 
 Unfortunately I didn’t read the fine print closely enough. While
@@ -115,11 +115,9 @@ To do so, I've designed an air duct that fits on the heatsink on one end, and to
 This was by far the most complex pieces I designed for this project, and it even required mocking the main board to check the fit,
 specially given the limited space, and the need to leave room for the cabling.
 
-I ended-up with this three part design:
+I ended up with a three-part design, constituted of separate top and bottom parts (for easy printing), and a fan shroud, designed to simply slide, and also adapt to different fan depths.
 
-I ended-up with a thee parts design, constituted of separate top and bottom parts (for easy printing), and a fan shroud, designed to simply slide, and also adapt to different fan depths.
-
-Here how it looks in CAD:
+Here's how it looks in CAD:
 
 {{< figure src="/images/sun/sun-duct-design.png" alt="Fan Duct Design" caption="Final Fan Duct Design" >}}
 
@@ -189,11 +187,11 @@ After a bit of 3D printers go BRRRRH, I was left with this collection of part:
 
 {{< figure src="/images/sun/sun-parts.jpg" alt="Sun V100 10‑inch parts" caption="All the parts" >}}
 
-I Started we cpu duct assembly, and by fitting the inserts. Here, we must install them carefully, as they play double duty: fixation point for the heatsink and used to join the bottom and top parts of the air duct:
+I started with the CPU duct assembly by fitting the inserts. Here, we must install them carefully, as they play double duty: fixation point for the heatsink and used to join the bottom and top parts of the air duct:
 
 {{< figure src="/images/sun/sun-duct-insert.jpg" alt="duct insert" caption="double duty inserts: attach to heatsink and join upper and lower parts" >}}
 
-From there, we just screw the assembly from bellow the heatsink.
+From there, we just screw the assembly from below the heatsink.
 
 {{< figure src="/images/sun/sun-duct-heatsink.jpg" alt="duct attached to heatsink" caption="Heatsink attachement" >}}
 
@@ -205,7 +203,7 @@ And then it was the tedious job of installing the inserts into all the brackets 
 
 {{< figure src="/images/sun/sun-bracket-insert.jpg" alt="bracket plus insert" caption="5 inserts done, 46 to go" >}}
 
-From there, and with a few screws, things starting to take shape.
+From there, and with a few screws, things started to take shape.
 
 {{< figure src="/images/sun/sun-partial-case.jpg" alt="partially assembled case" caption="Partially assembled case" >}}
 
