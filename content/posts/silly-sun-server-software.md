@@ -634,6 +634,8 @@ but I trust the NetBSD folks to not drop it soon (they have a reputation to upho
 
 In any case, I had a lot of fun doing this project, and I hope you had some of this fun reading it.
 
+{{< figure src="/images/sun-double-trouble.jpg" alt="two 10 inch Sun V100" caption="Prepare for trouble, make it double" >}}
+
 # Links
 
 - [This project's git (scripts, programs & 3D models)](https://github.com/kakwa/silly-sun-server).

@@ -151,6 +151,18 @@ TODO lose ends about the design (corner bracket, standoff for the board), planne
 
 {{< figure src="/images/sun-parts.jpg" alt="Sun V100 10‑inch parts" caption="All the parts" >}}
 
+{{< figure src="/images/sun-duct-insert.jpg" alt="duct insert" caption="double duty inserts: attach to heatsink and join upper and lower parts" >}}
+
+{{< figure src="/images/sun-duct-heatsink.jpg" alt="duct attached to heatsink" caption="Heatsink attachement" >}}
+
+{{< figure src="/images/sun-front-fan.jpg" alt="front panel with fan" caption="Front panel with fan" >}}
+
+{{< figure src="/images/sun-bracket-insert.jpg" alt="bracket plus insert" caption="5 inserts done, 35 to go" >}}
+
+{{< figure src="/images/sun-partial-case.jpg" alt="partially assembled case" caption="Partially assembled case" >}}
+
+{{< figure src="/images/sun-case-inside.jpg" alt="sun case inside and cable management" caption="final assembly" >}}
+
 TODO
 
 * Inserts
