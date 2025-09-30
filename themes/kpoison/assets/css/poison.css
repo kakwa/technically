@@ -376,6 +376,7 @@ figcaption p {
 
 figure img {
   margin: 0;
+  max-height: 85vh;
 }
 
 figure {
