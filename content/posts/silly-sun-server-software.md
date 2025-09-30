@@ -27,11 +27,11 @@ On this V100, we have the LOMlite2 version, which is only accessible through ser
 
 To access LOM, you need one of these blue 'Cisco' cables with DB9 + RJ45 connectors and a serial adapter:
 
-{{< figure src="/images/sun-cable-serial-usb.jpg" alt="DB9 to RJ45 console cable with USB serial adapter" caption="Blue Cisco console cable with USB serial adapter" >}}
+{{< figure src="/images/sun/sun-cable-serial-usb.jpg" alt="DB9 to RJ45 console cable with USB serial adapter" caption="Blue Cisco console cable with USB serial adapter" >}}
 
 Connect it to the upper port on the server, and use your favorite serial terminal software.
 
-{{< figure src="/images/sun-serial-port.jpg" alt="Sun V100 RJ45 serial console port" caption="Upper RJ45 serial console (LOM) on the Sun V100 rear panel" >}}
+{{< figure src="/images/sun/sun-serial-port.jpg" alt="Sun V100 RJ45 serial console port" caption="Upper RJ45 serial console (LOM) on the Sun V100 rear panel" >}}
 
 ## It's Alive!
 
@@ -237,7 +237,7 @@ ok boot net
 
 Open Firmware on these machines is able to boot over the network a bit like PXE.
 
-{{< figure src="/images/sun-install-setup.jpg" alt="Network install setup with cables" caption="Ad‑hoc netboot lab setup for Open Firmware testing" >}}
+{{< figure src="/images/sun/sun-install-setup.jpg" alt="Network install setup with cables" caption="Ad‑hoc netboot lab setup for Open Firmware testing" >}}
 
 The major difference is the lack of DHCP support: it instead relies on RARP (static MAC -> IP mapping).
 
@@ -634,7 +634,7 @@ but I trust the NetBSD folks to not drop it soon (they have a reputation to upho
 
 In any case, I had a lot of fun doing this project, and I hope you had some of this fun reading it.
 
-{{< figure src="/images/sun-double-trouble.jpg" alt="two 10 inch Sun V100" caption="Prepare for trouble, make it double" >}}
+{{< figure src="/images/sun/sun-double-trouble.jpg" alt="two 10 inch Sun V100" caption="Prepare for trouble, make it double" >}}
 
 # Links
 

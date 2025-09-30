@@ -31,7 +31,7 @@ If you ask: yes, all that is not cheap, but saving money isn't the goal here. If
 
 TODO CF CARD IDE, mostly compatible
 
-{{< figure src="/images/sun-ide-cf.jpg" alt="ide adapter + cf card" caption="Hard Drive replacement" >}}
+{{< figure src="/images/sun/sun-ide-cf.jpg" alt="ide adapter + cf card" caption="Hard Drive replacement" >}}
 
 TODO Perf looks ok, but unsure about durability. if issue industrial SLC CF cards exists.
 
@@ -48,7 +48,7 @@ Unfortunately I didn’t read the fine print closely enough. While
 does define a 12 V level, it’s optional and seems uncommon — at least in the
 very scientific sample size of two chargers I had on hand.
 
-{{< figure src="/images/sun-trigger-board.jpg" alt="USB-C Trigger Board" caption="USB-C Trigger Board" >}}
+{{< figure src="/images/sun/sun-trigger-board.jpg" alt="USB-C Trigger Board" caption="USB-C Trigger Board" >}}
 
 Worse, despite being set to 12 V, when I plugged the trigger board into the
 PSU, it delivered 15 V… Lesson learned: always check the output voltage on these.
@@ -85,13 +85,13 @@ TODO
 * 2 mm PMMA (?) -> too weak -> 3 mm minimum
 * Switch to 3 mm + recess if necessary.
 
-{{< figure src="/images/sun-back-panel.jpg" alt="scanning board IO ports" caption="Is it physical nmap?" >}}
+{{< figure src="/images/sun/sun-back-panel.jpg" alt="scanning board IO ports" caption="Is it physical nmap?" >}}
 
-{{< figure src="/images/sun-back-panel.jpg" alt="back panel design in CAD" caption="Using the scan for the design" >}}
+{{< figure src="/images/sun/sun-back-panel.jpg" alt="back panel design in CAD" caption="Using the scan for the design" >}}
 
-{{< figure src="/images/sun-cracked-2mm-pmma.jpg" alt="Cracked 2mm PMMA panel" caption="2 mm PMMA cracked – too flimsy" >}}
+{{< figure src="/images/sun/sun-cracked-2mm-pmma.jpg" alt="Cracked 2mm PMMA panel" caption="2 mm PMMA cracked – too flimsy" >}}
 
-{{< figure src="/images/sun-3mm-panel.jpg" alt="3mm panel + reliefs" caption="Switching to 3mm + reliefs" >}}
+{{< figure src="/images/sun/sun-3mm-panel.jpg" alt="3mm panel + reliefs" caption="Switching to 3mm + reliefs" >}}
 
 ## Air Duct
 
@@ -104,28 +104,28 @@ TODO
 
 I ended-up with this design:
 
-{{< figure src="/images/sun-duct-design.png" alt="Fan Duct Design" caption="Final Fan Duct Design" >}}
+{{< figure src="/images/sun/sun-duct-design.png" alt="Fan Duct Design" caption="Final Fan Duct Design" >}}
 
 ## Bezel
 
 In all honesty, I don't quite like the V100 front bezel. I don't know, maybe it's a bit too stubby, or too cheap?
 I much prefer the V210/V240 front, so I chose to model my bezel after it:
 
-{{< figure src="/images/sun-V100-bezel.jpg" alt="V100 Front Bezel" caption="V100 Front Bezel" >}}
+{{< figure src="/images/sun/sun-V100-bezel.jpg" alt="V100 Front Bezel" caption="V100 Front Bezel" >}}
 
-{{< figure src="/images/sun-V210-bezel.jpg" alt="V210 Front Bezel" caption="V210 Front Bezel" >}}
+{{< figure src="/images/sun/sun-V210-bezel.jpg" alt="V210 Front Bezel" caption="V210 Front Bezel" >}}
 
 To get the basic shape, I imported the front image, resized to fit 254 × 44.50 mm, and then sketched out the front and back outline:
 
-{{< figure src="/images/sun-bezel-design1.png" alt="Sketches Bezel" caption="Sketches for bezel" >}}
+{{< figure src="/images/sun/sun-bezel-design1.png" alt="Sketches Bezel" caption="Sketches for bezel" >}}
 
 From there, it was just a matter of lofting the two sketches:
 
-{{< figure src="/images/sun-bezel-design2.png" alt="Bezel Lofting" caption="Loft between the two sketches" >}}
+{{< figure src="/images/sun/sun-bezel-design2.png" alt="Bezel Lofting" caption="Loft between the two sketches" >}}
 
 And finally, adding the remaining features (holes, fillets, cut‑out for the logo):
 
-{{< figure src="/images/sun-bezel-design3.png" alt="Bezel Final" caption="Bezel final design" >}}
+{{< figure src="/images/sun/sun-bezel-design3.png" alt="Bezel Final" caption="Bezel final design" >}}
 
 I'm quite happy with the result. I'm actually wondering if the concept could be extended to other servers (Dell, HP, Fujitsu, IBM) to pimp out 10‑inch racks.
 
@@ -135,13 +135,13 @@ TODO
 
 * Take SVG (Wikipedia)
 
-{{< figure src="/images/Sun-Logo.svg" alt="sun logo svg" caption="Sun Microsystems SVG Logo" >}}
+{{< figure src="/images/sun/Sun-Logo.svg" alt="sun logo svg" caption="Sun Microsystems SVG Logo" >}}
 
 * Close path
 * FreeCAD
 * Print with filament change (M400).
 
-{{< figure src="/images/sun-logo-3dprint.jpg" alt="3D printed Sun logo" caption="3D‑printed Sun logo with filament color change" >}}
+{{< figure src="/images/sun/sun-logo-3dprint.jpg" alt="3D printed Sun logo" caption="3D‑printed Sun logo with filament color change" >}}
 
 # Let's Build
 
@@ -149,21 +149,21 @@ TODO
 
 TODO lose ends about the design (corner bracket, standoff for the board), planned to use epoxy glue to fix the board.
 
-{{< figure src="/images/sun-case-design.png" alt="Sun V100 Case Design" caption="Final Case Design" >}}
+{{< figure src="/images/sun/sun-case-design.png" alt="Sun V100 Case Design" caption="Final Case Design" >}}
 
-{{< figure src="/images/sun-parts.jpg" alt="Sun V100 10‑inch parts" caption="All the parts" >}}
+{{< figure src="/images/sun/sun-parts.jpg" alt="Sun V100 10‑inch parts" caption="All the parts" >}}
 
-{{< figure src="/images/sun-duct-insert.jpg" alt="duct insert" caption="double duty inserts: attach to heatsink and join upper and lower parts" >}}
+{{< figure src="/images/sun/sun-duct-insert.jpg" alt="duct insert" caption="double duty inserts: attach to heatsink and join upper and lower parts" >}}
 
-{{< figure src="/images/sun-duct-heatsink.jpg" alt="duct attached to heatsink" caption="Heatsink attachement" >}}
+{{< figure src="/images/sun/sun-duct-heatsink.jpg" alt="duct attached to heatsink" caption="Heatsink attachement" >}}
 
-{{< figure src="/images/sun-front-fan.jpg" alt="front panel with fan" caption="Front panel with fan" >}}
+{{< figure src="/images/sun/sun-front-fan.jpg" alt="front panel with fan" caption="Front panel with fan" >}}
 
-{{< figure src="/images/sun-bracket-insert.jpg" alt="bracket plus insert" caption="5 inserts done, 35 to go" >}}
+{{< figure src="/images/sun/sun-bracket-insert.jpg" alt="bracket plus insert" caption="5 inserts done, 35 to go" >}}
 
-{{< figure src="/images/sun-partial-case.jpg" alt="partially assembled case" caption="Partially assembled case" >}}
+{{< figure src="/images/sun/sun-partial-case.jpg" alt="partially assembled case" caption="Partially assembled case" >}}
 
-{{< figure src="/images/sun-case-inside.jpg" alt="sun case inside and cable management" caption="final assembly" >}}
+{{< figure src="/images/sun/sun-case-inside.jpg" alt="sun case inside and cable management" caption="final assembly" >}}
 
 TODO
 
@@ -178,11 +178,11 @@ Overall, I’m really happy with the result. This new case is much more compact,
 
 Plus, it still looks like a Sun Server:
 
-{{< figure src="/images/sun-final-front.jpg" alt="SunFire V100 Custom Case - Front" caption="Silly Sun Server - Front" >}}
+{{< figure src="/images/sun/sun-final-front.jpg" alt="SunFire V100 Custom Case - Front" caption="Silly Sun Server - Front" >}}
 
 Round the back, the I/O cut‑outs also fit nicely:
 
-{{< figure src="/images/sun-final-back.jpg"  alt="SunFire V100 Custom Case - Back" caption="Silly Sun Server - Back" >}}
+{{< figure src="/images/sun/sun-final-back.jpg"  alt="SunFire V100 Custom Case - Back" caption="Silly Sun Server - Back" >}}
 
 The 3D CAD models are available here: [sun‑v100‑case](https://github.com/kakwa/sun-v100-case).
 

@@ -65,7 +65,7 @@ This (not so) tiny server is well... a server. If it fits onto a small and stand
 
 Fortunately, once opened, the server looks like this:
 
-{{< figure src="/images/sun-inside.jpg" alt="Sun Fire V100 opened showing mainboard and layout in original case" caption="Sun Fire V100 with top cover removed – original layout" >}}
+{{< figure src="/images/sun/sun-inside.jpg" alt="Sun Fire V100 opened showing mainboard and layout in original case" caption="Sun Fire V100 with top cover removed – original layout" >}}
 
 This cute beast could probably be a lot more compact. The main board, including the RAM sticks (low‑height variant), is 250 × 190 mm.
 If we ditch the original (and noisy) hard drives and PSU and cheat a little, we could even make it fit into a 254 mm (10") case and mount it in one of these fancy small [10‑inch racks](https://mini-rack.jeffgeerling.com/)... if we also manage to make it short enough (less than 300 mm).
@@ -84,11 +84,11 @@ Aside from that, we also need to silence this small beast.
 
 In particular, we need to take care of these little bastards:
 
-{{< figure src="/images/sun-fan.jpg" alt="Sun V100 40×40 mm 12 V fan" caption="Original 40×40 mm 12 V fan" >}}
+{{< figure src="/images/sun/sun-fan.jpg" alt="Sun V100 40×40 mm 12 V fan" caption="Original 40×40 mm 12 V fan" >}}
 
 And also their lord and master:
 
-{{< figure src="/images/sun-cpufan.jpg" alt="Sun V100 CPU 12 V fan" caption="Original CPU 12 V fan" >}}
+{{< figure src="/images/sun/sun-cpufan.jpg" alt="Sun V100 CPU 12 V fan" caption="Original CPU 12 V fan" >}}
 
 Fortunately, we have options here—especially one that begins with an N.
 
