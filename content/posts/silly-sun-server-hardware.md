@@ -84,7 +84,7 @@ In the end, I settled on the following dimension: 254x220x44.50 mm. It leaves en
 
 The most complex part to sketch-out was the back panel and the IO ports. But using a scanner, I managed to get an accurate layout.
 
-{{< figure src="/images/sun/sun-port-scanner.png" alt="scanning board IO ports" caption="Is it physical nmap?" >}}
+{{< figure src="/images/sun/sun-board-scanner.jpg" alt="scanning board IO ports" caption="Is it physical nmap?" >}}
 
 From there, I was able to use this scan to sketch out the panel:
 
@@ -104,16 +104,25 @@ This option is far more rigid, and I might do something similar to the top and b
 
 ## Air Duct
 
-TODO
+Silencing our little beast requires reworking the CPU heatsink.
 
-* re-use the radiator, but not the fan shroud (to noisy)
-* need air duct to replace it
-* most complex geometry of the project (limited room, cables)
-* Required to mock board
+In particular, the CPU FAN needs to go and fortunately it (and its plastic shroud can easily be detached from the heatsink itself.
 
-I ended-up with this design:
+But we need to replace it and have some forced draft on the heatsink to keep our venerable server cool.
+
+To do so, I've designed an air duct that fits on the heatsink on one end, and to a case mounted 40mm fan on the other.
+
+This was by far the most complex pieces I designed for this project, and it even required mocking the main board to check the fit,
+specially given the limited space, and the need to leave room for the cabling.
+
+I ended-up with this three part design:
+
+I ended-up with a thee parts design, constituted of separate top and bottom parts (for easy printing), and a fan shroud, designed to simply slide, and also adapt to different fan depths.
+
+Here how it looks in CAD:
 
 {{< figure src="/images/sun/sun-duct-design.png" alt="Fan Duct Design" caption="Final Fan Duct Design" >}}
+
 
 ## Bezel
 
