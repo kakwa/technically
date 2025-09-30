@@ -202,14 +202,16 @@ Round the back, the I/O cut‑outs also fit nicely:
 
 {{< figure src="/images/sun/sun-final-back.jpg"  alt="SunFire V100 Custom Case - Back" caption="Silly Sun Server - Back" >}}
 
-The 3D CAD models are available here: [sun‑v100‑case](https://github.com/kakwa/sun-v100-case).
+In case that interests you, I've made the CAD files for this project available [on Github](https://github.com/kakwa/sun-v100-case).
 
 To be honest, it’s not perfect. The top/bottom panels still flex a bit and the CPU temperature is somewhat high at ~70 °C.
-Also, on the power‑consumption side, it's “not great — not terrible”.
-This server draws 20–25 W, vs 5–10 W for a more typical mini‑PC or old laptop.
 
-But these are far from deal‑breakers, and now this server can actually become useful… if we manage to install something onto it,
-and believe it or not, [it's exactly what we will address in the next post](/posts/silly-sun-server-software/).
+On the power‑consumption side, it's “not great — not terrible”.
+This server draws 20–25 W, vs the typical 5–10 W of mini‑PC or laptop.
+
+But these are far from deal‑breakers, and now this server can actually become useful… if we manage to install something onto it.
+
+Believe it or not, [it's exactly what we will address in the next post](/posts/silly-sun-server-software/) (huge plot twist, I know...).
 
 # Links
 
