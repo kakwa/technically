@@ -111,6 +111,8 @@ I ended-up with this design:
 In all honesty, I don't quite like the V100 front bezel. I don't know, maybe it's a bit too stubby, or too cheap?
 I much prefer the V210/V240 front, so I chose to model my bezel after it:
 
+{{< figure src="/images/sun-V100-bezel.jpg" alt="V100 Front Bezel" caption="V100 Front Bezel" >}}
+
 {{< figure src="/images/sun-V210-bezel.jpg" alt="V210 Front Bezel" caption="V210 Front Bezel" >}}
 
 To get the basic shape, I imported the front image, resized to fit 254 × 44.50 mm, and then sketched out the front and back outline:
