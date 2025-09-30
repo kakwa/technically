@@ -29,11 +29,13 @@ If you ask: yes, all that is not cheap, but saving money isn't the goal here. If
 
 ## Hard Drive
 
-TODO CF CARD IDE, mostly compatible
+The original Sun V100 came with a pair of 3.5" IDE hard drives. These were a bit too bulky, and depending on the brand, to noisy.
+
+So I chose to replace then with CompactFlash Card. [CF cards](https://en.wikipedia.org/wiki/CompactFlash) are generally pin compatible with PATA/IDE, and only requires very basic and mostly passive adapter which makes then decent (and compact) replacement for old spinning rust.
 
 {{< figure src="/images/sun/sun-ide-cf.jpg" alt="ide adapter + cf card" caption="Hard Drive replacement" >}}
 
-TODO Perf looks ok, but unsure about durability. if issue industrial SLC CF cards exists.
+The only unknown is how long these CF cards will last when subject to more regular IOs. If it becomes an issue, I might just bit the bullet, and buy [a rather expensive industrial SLC variant](https://www.mouser.ie/c/embedded-solutions/memory-data-storage/memory-modules-memory-cards/memory-cards/?nand%20flash%20technology=SLC&product=Compact%20Flash%20Cards&sort=memory%20size%7C1).
 
 ## PSU
 
@@ -78,20 +80,27 @@ Side note: If you are also on that path, I highly recommend the great & numerous
 
 ## Panels
 
-TODO
+In the end, I settled on the following dimension: 254x220x44.50 mm. It leaves enough room for the main board and its RAM sticks plus a 30mm buffer on the front for fans and a PicoPSU board.
 
-* Dimension choices
-* Scanner technique for the back panel cut‑outs
-* 2 mm PMMA (?) -> too weak -> 3 mm minimum
-* Switch to 3 mm + recess if necessary.
+The most complex part to sketch-out was the back panel and the IO ports. But using a scanner, I managed to get an accurate layout.
 
 {{< figure src="/images/sun/sun-back-panel.jpg" alt="scanning board IO ports" caption="Is it physical nmap?" >}}
 
+From there, I was able to use this scan to sketch out the panel:
+
 {{< figure src="/images/sun/sun-back-panel.jpg" alt="back panel design in CAD" caption="Using the scan for the design" >}}
+
+The other panels, apart maybe from the fan cutouts, were far simpler to model: a rectangle with four chamferred holes and some recesses for the top panel.
+
+Initially, due to the lack of space (254mm width for a 250mm board), I tried to use laser cut 2mm PMMA (aka plexiglas). But it proved to be too thin, flexible and britle:
 
 {{< figure src="/images/sun/sun-cracked-2mm-pmma.jpg" alt="Cracked 2mm PMMA panel" caption="2 mm PMMA cracked – too flimsy" >}}
 
+In the end, I switched back to 3mm PLA printed panels, with reliefs in places for the board and ram sticks.
+
 {{< figure src="/images/sun/sun-3mm-panel.jpg" alt="3mm panel + reliefs" caption="Switching to 3mm + reliefs" >}}
+
+This option is far more rigid, and I might do something similar to the top and bottom panels (these are still in 2mm PMMA).
 
 ## Air Duct
 
