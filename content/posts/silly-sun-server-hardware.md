@@ -207,7 +207,7 @@ and believe it or not, [it's exactly what we will address in the next post](/pos
 * [Post 1 - Introduction](/posts/silly-sun-server-intro/).
 * [Post 3 - Software](/posts/silly-sun-server-software/).
 * [My 10 inch case CAD models](https://github.com/kakwa/sun-v100-case).
-* [FreeCAD](https://www.freecad.org/)
+* [FreeCAD Project](https://www.freecad.org/)
 * [Mango Jelly's FreeCAD Tutorials](https://www.youtube.com/@MangoJellySolutions)
 * [CompactFlact Wikipedia](https://en.wikipedia.org/wiki/CompactFlash)
 * [USB Power Delivery Wikipedia](https://en.wikipedia.org/wiki/USB_hardware#USB_Power_Delivery)
