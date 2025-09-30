@@ -61,10 +61,11 @@ front_page_content = ["posts"]
 # Sidebar/menu
 menu = [
     {Name = "Blog Posts", URL = "/posts/"},
-    {Name = "External Links", External = true, URL = ""},
+    {Name = "Other Links", External = true, URL = ""},
     {Name = "Software Projects", External = true, URL = "https://github.com/kakwa?tab=repositories&q=&type=&language=&sort=stargazers", HasChildren = false},
     {Name = "3D Printing Models", External = true, URL = "https://www.printables.com/@kakwa_3337391/models", HasChildren = false},
     {Name = "Photos", External = true, URL = "https://lens.kakwalab.ovh/", HasChildren = false},
+    {Name = "Projects I like", External = true, URL = "/projects-i-like/"},
 ]
 
 # Social links (used by theme)

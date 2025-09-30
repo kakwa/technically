@@ -25,6 +25,11 @@ jobs:
           hugo-version: '0.128.0'
           extended: true
 
+      - name: Update starred  projects
+        run: |
+          chmod +x scripts/update-projects.sh
+          ./scripts/update-projects.sh
+
       - name: Build site
         run: hugo --minify
 
