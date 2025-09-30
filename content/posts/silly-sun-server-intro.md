@@ -88,7 +88,7 @@ In particular, we need to take care of these little bastards:
 
 And also their lord and master:
 
-{{< figure src="/images/sun/sun-cpufan.jpg" alt="Sun V100 CPU 12 V fan" caption="Original CPU 12 V fan" >}}
+{{< figure src="/images/sun/sun-cpu-fan.jpg" alt="Sun V100 CPU 12 V fan" caption="Original CPU 12 V fan" >}}
 
 Fortunately, we have options here—especially one that begins with an N.
 
