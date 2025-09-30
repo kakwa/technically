@@ -1,13 +1,13 @@
 +++
-title = 'My Silly Sun Server - The Hardware'
-date = 2025-09-20T19:01:49+02:00
-draft = true
-summary = 'Recommissioning an Old Sun V100 Server - The Hardware'
+title = 'My Silly Sun Server - Part 2/3: The Hardware'
+date = 2025-09-30T23:01:49+02:00
+draft = false
+summary = 'Recommissioning an Old Sun V100 Server - Part 2/3: The Hardware'
 +++
 
 # A Hardware Reinvention
 
-In the [introduction](/posts/silly-sun-server-intro/), we outlined the four goals we have for our server.
+In the [introduction (Part 1/3)](/posts/silly-sun-server-intro/), we outlined the four goals we have for our server.
 
 In this part, we will deal with goals 1 and 2, i.e., the hardware rework — PSU, hard drive, cooling, and creating a custom enclosure that nods to Sun’s original design.
 
@@ -234,12 +234,12 @@ This server draws 20–25 W, vs the typical 5–10 W of mini‑PC or laptop.
 
 But these are far from deal‑breakers, and now this server can actually become useful… if we manage to install something onto it.
 
-Believe it or not, [it's exactly what we will address in the next post](/posts/silly-sun-server-software/) (huge plot twist, I know...).
+Believe it or not, [it's exactly what we will address in the next post (Part 3/3)](/posts/silly-sun-server-software/) (huge plot twist, I know...).
 
 # Links
 
-* [Post 1 - Introduction](/posts/silly-sun-server-intro/).
-* [Post 3 - Software](/posts/silly-sun-server-software/).
+* [Part 1/3 - Introduction](/posts/silly-sun-server-intro/).
+* [Part 3/3 - Software](/posts/silly-sun-server-software/).
 * [My 10 inch case CAD models](https://github.com/kakwa/sun-v100-case).
 * [FreeCAD Project](https://www.freecad.org/)
 * [Mango Jelly's FreeCAD Tutorials](https://www.youtube.com/@MangoJellySolutions)

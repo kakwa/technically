@@ -1,13 +1,13 @@
 +++
-title = 'My Silly Sun Server - The Software'
-date = 2025-09-21T19:01:49+02:00
-draft = true
-summary = 'Recommissioning an Old Sun V100 Server - The Software'
+title = 'My Silly Sun Server - Part 3/3: The Software'
+date = 2025-10-01T00:01:49+02:00
+draft = false
+summary = 'Recommissioning an Old Sun V100 Server - Part 3/3: The Software'
 +++
 
 # The Software Side
 
-In the [intro](/posts/silly-sun-server-intro/) and [hardware part](/posts/silly-sun-server-hardware/), we dealt with the hardware side, and rebuilt our cute V100 into a more manageable format.
+In [Part 1/3 (intro)](/posts/silly-sun-server-intro/) and [Part 2/3 (hardware)](/posts/silly-sun-server-hardware/), we dealt with the hardware side, and rebuilt our cute V100 into a more manageable format.
 
 Now it's time to resuscitate this server.
 
@@ -638,6 +638,8 @@ In any case, I had a lot of fun doing this project, and I hope you had some of t
 
 # Links
 
+- [Part 1/3 - Introduction](/posts/silly-sun-server-intro/).
+- [Part 2/3 - Hardware](/posts/silly-sun-server-hardware/).
 - [This project's git (scripts, programs & 3D models)](https://github.com/kakwa/silly-sun-server).
 - [Sun's V100 Handbook Documentation](https://sun.kakwalab.ovh/Systems/SunFireV100/SunFireV100.html).
 - [Misc Sun/Oracle's PDFs](https://docs.oracle.com/cd/E19088-01/v100.srvr/index.html).

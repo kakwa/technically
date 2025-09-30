@@ -1,8 +1,8 @@
 +++
-title = 'My Silly Sun Server - Introduction'
+title = 'My Silly Sun Server - Part 1/3: Introduction'
 date = 2025-08-27T19:01:49+02:00
 draft = false
-summary = 'Recommissioning an Old Sun V100 Server - Introduction'
+summary = 'Recommissioning an Old Sun V100 Server - Part 1/3: Introduction'
 +++
 
 # Obsolete Tech In A Modern Age
@@ -135,6 +135,6 @@ So to recap, we have the following four goals:
 3. Net‑install NetBSD and/or OpenBSD
 4. Configure some basic web hosting
 
-Next, we'll focus on the [hardware track](/posts/silly-sun-server-hardware/) (1 and 2): taming the noise and re‑housing the V100 into a compact 10‑inch chassis while keeping the original Sun aesthetic.
+Next, we'll focus on the [hardware track (Part 2/3)](/posts/silly-sun-server-hardware/) (1 and 2): taming the noise and re‑housing the V100 into a compact 10‑inch chassis while keeping the original Sun aesthetic.
 
-After that, we'll dive into the [software track](/posts/silly-sun-server-software/) (3 and 4): net‑installing NetBSD/OpenBSD and automating a minimal web stack (nginx, Let's Encrypt, maybe a dash of Postgres/PHP) with Ansible.
+After that, we'll dive into the [software track (Part 3/3)](/posts/silly-sun-server-software/) (3 and 4): net‑installing NetBSD/OpenBSD and automating a minimal web stack (nginx, Let's Encrypt, maybe a dash of Postgres/PHP) with Ansible.
