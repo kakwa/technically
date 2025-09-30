@@ -149,15 +149,23 @@ I'm quite happy with the result. I'm actually wondering if the concept could be 
 
 ## Logo
 
-TODO
+The process to create the logo is a bit tedious, mainly due to FreeCAD performance issues, but works as follows:
 
-* Take SVG (Wikipedia)
+* I started by downloading the Sun logo in the SVG format from wikipedia:
 
-{{< figure src="/images/sun/Sun-Logo.svg" alt="sun logo svg" caption="Sun Microsystems SVG Logo" >}}
+{{< figure src="/images/sun/Sun-Logo.svg" alt="sun logo svg" width="300px" >}}
 
-* Close path
-* FreeCAD
-* Print with filament change (M400).
+* Then, opened it in Inkscape and cleaned-it up (closing path in particular)
+* I opened it in FreeCAD
+* Switched to the `Draft` Workbench
+* Select all the parts -> `Modification` -> `Draft to Sketch` to transform it into a sketch
+* Closed the sketches whenever necessary
+
+From there, I created a body, a base support (ellipse), ticked `Allow Compound` in the body properties, padded the ellipse at 1mm, padded the sketch of the logo at 2mm, and added an outter border also at 2mm.
+
+To print it, I did a [M600](https://marlinfw.org/docs/gcode/M600.html) filament/color change mid-print. Here is a ([PrusaSlicer article on how to do it](https://help.prusa3d.com/article/color-change_1687)).
+
+And here is the result (printed with a 0.25 nozzle):
 
 {{< figure src="/images/sun/sun-logo-3dprint.jpg" alt="3D printed Sun logo" caption="3D‑printed Sun logo with filament color change" >}}
 
@@ -165,30 +173,47 @@ TODO
 
 ## Final Design & Assembly
 
-TODO lose ends about the design (corner bracket, standoff for the board), planned to use epoxy glue to fix the board.
+Finally I created the remaining bits (stanoffs, corner brackets, etc), and used the rather new FreeCAD assembly workbench.
+
+It worked and enabled me to validate and fix numerous dimension & positioning mistakes (holes missaligned, cutouts in the wrong place, parts colliding, etc).
+
+The Workbench was a really valuable tool, but quite unstable (save as often as possible). Performance also left something to be desired (I fairness, I didn't exactly helped it when for completeness, I added all the nuts and bolts to the assembly).
+
+But enough complaining, here how the design looks:
 
 {{< figure src="/images/sun/sun-case-design.png" alt="Sun V100 Case Design" caption="Final Case Design" >}}
 
+And now, it's time to actually build the thing!
+
+After a bit of 3D printers go BRRRRH, I was left with this collection of part:
+
 {{< figure src="/images/sun/sun-parts.jpg" alt="Sun V100 10‑inch parts" caption="All the parts" >}}
+
+I Started we cpu duct assembly, and by fitting the inserts. Here, we must install them carefully, as they play double duty: fixation point for the heatsink and used to join the bottom and top parts of the air duct:
 
 {{< figure src="/images/sun/sun-duct-insert.jpg" alt="duct insert" caption="double duty inserts: attach to heatsink and join upper and lower parts" >}}
 
+From there, we just screw the assembly from bellow the heatsink.
+
 {{< figure src="/images/sun/sun-duct-heatsink.jpg" alt="duct attached to heatsink" caption="Heatsink attachement" >}}
+
+After that, I just fixed the last part of the air duct to the 40mm FAN, itself screwed to the front panel alongside its twin.
 
 {{< figure src="/images/sun/sun-front-fan.jpg" alt="front panel with fan" caption="Front panel with fan" >}}
 
-{{< figure src="/images/sun/sun-bracket-insert.jpg" alt="bracket plus insert" caption="5 inserts done, 35 to go" >}}
+And then it was the tedious job of installing the inserts into all the brackets and stand-offs.
+
+{{< figure src="/images/sun/sun-bracket-insert.jpg" alt="bracket plus insert" caption="5 inserts done, 46 to go" >}}
+
+From there, and with a few screws, things starting to take shape.
 
 {{< figure src="/images/sun/sun-partial-case.jpg" alt="partially assembled case" caption="Partially assembled case" >}}
 
+And with a bit of epoxy glue to fix the standoffs to the bottom panel (and also to the top for the CF card), the boards were finally secured inside the case, and with a bit of cable management, things looked like that:
+
 {{< figure src="/images/sun/sun-case-inside.jpg" alt="sun case inside and cable management" caption="final assembly" >}}
 
-TODO
-
-* Inserts
-* hack for the air duct insert
-* standoff glues
-* cable management photo
+Time to close it up and admire the result.
 
 ## Look At This Beauty!
 
