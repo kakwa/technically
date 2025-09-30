@@ -368,3 +368,21 @@ div.highlight pre {
 .current {
     color: var(--text-color);
 }
+
+figcaption p {
+  font-size: 0.9em;
+  margin: 0;
+}
+
+figure img {
+  margin: 0;
+}
+
+figure {
+  border: 1px solid gray;
+  padding: 6px;
+  display: inline-block;
+  border-radius: 8px;
+  background: #FFFEF6;
+  --text-color: black;
+}
