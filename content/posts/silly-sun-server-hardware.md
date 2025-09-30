@@ -84,11 +84,11 @@ In the end, I settled on the following dimension: 254x220x44.50 mm. It leaves en
 
 The most complex part to sketch-out was the back panel and the IO ports. But using a scanner, I managed to get an accurate layout.
 
-{{< figure src="/images/sun/sun-back-panel.jpg" alt="scanning board IO ports" caption="Is it physical nmap?" >}}
+{{< figure src="/images/sun/sun-port-scanner.png" alt="scanning board IO ports" caption="Is it physical nmap?" >}}
 
 From there, I was able to use this scan to sketch out the panel:
 
-{{< figure src="/images/sun/sun-back-panel.jpg" alt="back panel design in CAD" caption="Using the scan for the design" >}}
+{{< figure src="/images/sun/sun-back-panel.png" alt="back panel design in CAD" caption="Using the scan for the design" >}}
 
 The other panels, apart maybe from the fan cutouts, were far simpler to model: a rectangle with four chamferred holes and some recesses for the top panel.
 
