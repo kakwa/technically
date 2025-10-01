@@ -73,6 +73,47 @@ fragment ModelThumbnail on ThumbnailPrintType {
   __typename
 }"""
 
+# Query for individual model details
+MODEL_QUERY = """query Print($id: ID!) {
+  print(id: $id) {
+    id
+    name
+    slug
+    nsfw
+    image {
+      filePath
+      rotation
+      __typename
+    }
+    __typename
+  }
+}"""
+
+
+def fetch_model_details(model_id: str) -> Dict[str, Any]:
+    """Fetch individual model details from Printables API"""
+    payload = {
+        "operationName": "Print",
+        "query": MODEL_QUERY,
+        "variables": {"id": model_id}
+    }
+
+    try:
+        response = requests.post(API_URL, headers=HEADERS, json=payload)
+        if response.status_code != 200:
+            print(f"Model API Error for {model_id}: {response.status_code}")
+            return {}
+        response.raise_for_status()
+        data = response.json()
+
+        if 'data' in data and 'print' in data['data']:
+            return data['data']['print']
+        else:
+            return {}
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching model {model_id}: {e}")
+        return {}
+
 
 def fetch_collections(user_id: str) -> List[Dict[str, Any]]:
     """Fetch user collections from Printables API"""
@@ -81,12 +122,12 @@ def fetch_collections(user_id: str) -> List[Dict[str, Any]]:
         "query": QUERY,
         "variables": {"userId": user_id}
     }
-    
+
     try:
         response = requests.post(API_URL, headers=HEADERS, json=payload)
         response.raise_for_status()
         data = response.json()
-        
+
         if 'data' in data and 'collections' in data['data']:
             return data['data']['collections']
         else:
@@ -100,7 +141,7 @@ def fetch_collections(user_id: str) -> List[Dict[str, Any]]:
 def generate_markdown(collections: List[Dict[str, Any]], user_id: str) -> str:
     """Generate markdown content from collections data"""
     md_lines = []
-    
+
     # Header
     md_lines.append(
 """
@@ -112,7 +153,7 @@ summary = "A curated list of interesting models I've liked on Printables"
 +++
 """)
     md_lines.append("---\n")
-    
+
     # Table of Contents
     collections = sorted(collections, key=lambda c: c['name'])
 #    if collections:
@@ -122,7 +163,7 @@ summary = "A curated list of interesting models I've liked on Printables"
 #            anchor = collection_name.lower().replace(' ', '-').replace('/', '')
 #            md_lines.append(f"{i}. [{collection_name}](#{anchor})")
 #        md_lines.append("\n---\n")
-    
+
     # Collections
     for collection in collections:
         name = collection.get('name', 'Unnamed Collection')
@@ -131,13 +172,13 @@ summary = "A curated list of interesting models I've liked on Printables"
         likes_count = collection.get('likesCount', 0)
         is_private = collection.get('private', False)
         models = collection.get('models', [])
-        
-        
+
+
         # Collection metadata
         collection_url = f"https://www.printables.com/@{USER_NICK}_{USER_ID}/collections/{collection_id}"
         md_lines.append(f"# {name}")
-        md_lines.append(f"View on printables.com: [🔗]({collection_url})")
-        
+        md_lines.append(f"collection page: [🔗]({collection_url})")
+
         # Models in collection
         if models:
             for model in models:
@@ -146,19 +187,30 @@ summary = "A curated list of interesting models I've liked on Printables"
                 is_nsfw = model.get('nsfw', False)
                 image = model.get('image', {})
                 image_path = image.get('filePath', '') if image else ''
-                
+
+                # Fetch detailed model information
+                model_details = fetch_model_details(model_id)
+                model_name = model_details.get('name', '') if model_details else ''
+
                 model_url = f"https://www.printables.com/model/{model_id}"
-                # Convert slug to title (replace hyphens with spaces and capitalize)
-                model_title = model_slug.replace('-', ' ').title() if model_slug else f"Model {model_id}"
-                
+                # Use actual model name if available, otherwise fall back to slug conversion
+                if model_name:
+                    display_title = model_name
+                else:
+                    # Fallback: Convert slug to title (replace hyphens with spaces and capitalize)
+                    display_title = model_slug.replace('-', ' ').title() if model_slug else f"Model {model_id}"
+
+                # Debug output
+                print(f"  Model: {display_title} (ID: {model_id}, Name: '{model_name}', Slug: '{model_slug}')")
+
                 nsfw_tag = " [NSFW]" if is_nsfw else ""
-                md_lines.append(f"* [{model_title}]({model_url}){nsfw_tag}")
+                md_lines.append(f"* [{display_title}]({model_url}){nsfw_tag}")
             md_lines.append("")
         else:
             md_lines.append("*No models in this collection yet.*\n")
 
         md_lines.append("\n---\n")
-        
+
     md_lines.append(f"\n*last refresh: {datetime.now().isoformat(timespec='seconds')}*\n")
     return "\n".join(md_lines)
 
@@ -176,21 +228,21 @@ def save_readme(content: str, filename: str = "README.md"):
 def main():
     """Main execution function"""
     print(f"Fetching collections for user ID: {USER_ID}...")
-    
+
     collections = fetch_collections(USER_ID)
-    
+
     if not collections:
         print("No collections found or error occurred.")
         return
-    
+
     print(f"Found {len(collections)} collection(s)")
-    
+
     # Generate markdown
     markdown_content = generate_markdown(collections, USER_ID)
-    
+
     # Save to file
     save_readme(markdown_content, "content/printables-liked.md")
-    
+
     # Print summary
     total_models = sum(c.get('modelsCount', 0) for c in collections)
     print(f"\nSummary:")
