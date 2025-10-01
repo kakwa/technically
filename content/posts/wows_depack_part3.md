@@ -1,5 +1,5 @@
 +++
-title = 'Reversing WoWs Resource Format - Part 3: Dissecting The Index'
+title = 'Reversing WoWs Resource Format - Part 3/5: Dissecting The Index'
 date = 2025-08-25T12:02:00+02:00
 draft = false
 summary = 'Reversing WoWs Resource Format - Part 3: reversing the metadata/index file format'

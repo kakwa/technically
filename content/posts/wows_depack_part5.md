@@ -1,8 +1,8 @@
 +++
-title = 'Reversing WoWs Resource Format - Part 5: Tidying-Up The Project'
+title = 'Reversing WoWs Resource Format - Part 5/5: Tidying-Up The Project'
 date = 2025-08-27T00:04:00+02:00
 draft = false
-summary = 'Reversing WoWs Resource Format - Part 5: Some closing notes'
+summary = 'Reversing WoWs Resource Format, some closing notes'
 +++
 
 - Part 1 — [Searching The Data](/posts/wows_depack_part1/)
