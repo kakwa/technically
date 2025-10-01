@@ -65,7 +65,8 @@ menu = [
     {Name = "Software Projects", External = true, URL = "https://github.com/kakwa?tab=repositories&q=&type=&language=&sort=stargazers", HasChildren = false},
     {Name = "3D Printing Models", External = true, URL = "https://www.printables.com/@kakwa_3337391/models", HasChildren = false},
     {Name = "Photos", External = true, URL = "https://lens.kakwalab.ovh/", HasChildren = false},
-    {Name = "Projects I like", External = true, URL = "/projects-i-like/"},
+    {Name = "Projects Starred - Github", External = true, URL = "/github-starred/"},
+    {Name = "Models Liked - Printables", External = true, URL = "/printables-liked/"},
 ]
 
 # Social links (used by theme)

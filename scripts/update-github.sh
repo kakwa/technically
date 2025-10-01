@@ -8,7 +8,7 @@ set -e
 # Configuration
 STARS_URL="https://raw.githubusercontent.com/kakwa/stars/refs/heads/master/README.md"
 CONTENT_DIR="content"
-PROJECTS_FILE="$CONTENT_DIR/projects-i-like.md"
+PROJECTS_FILE="$CONTENT_DIR/github-starred.md"
 
 # Create content directory if it doesn't exist
 mkdir -p "$CONTENT_DIR"
@@ -21,7 +21,7 @@ curl -s "$STARS_URL" -o "$PROJECTS_FILE"
 echo "Adding Hugo front matter..."
 cat > "$PROJECTS_FILE.tmp" << 'EOF'
 +++
-title = "Projects I Like"
+title = "Projects I Starred"
 date = 2025-01-01T00:00:00+02:00
 draft = false
 summary = "A curated list of interesting projects I've starred on GitHub"

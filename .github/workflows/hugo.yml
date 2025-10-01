@@ -25,10 +25,13 @@ jobs:
           hugo-version: '0.128.0'
           extended: true
 
-      - name: Update starred  projects
+      - name: get starred gh projects
         run: |
-          chmod +x scripts/update-projects.sh
-          ./scripts/update-projects.sh
+          ./scripts/update-github.sh
+
+      - name: get liked printables projects
+        run: |
+          ./scripts/update-printables.py
 
       - name: Build site
         run: hugo --minify
