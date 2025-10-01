@@ -2,9 +2,9 @@
 {{ $brand := default .Site.Title $.Site.Params.brand }}
 {{ $scratch.Set "title" $brand }}
 
-{{ $scratch.Set "publisherIcon" .Site.Params.favicon }}
+{{ $scratch.Set "publisherIcon" (.Site.Params.favicon | absURL) }}
 {{ if .Site.Params.publisherIcon }}
-    {{ $scratch.Set "publisherIcon" .Site.Params.publisher_icon }}
+    {{ $scratch.Set "publisherIcon" (.Site.Params.publisher_icon | absURL) }}
 {{ end }}
 
 {{ if eq .Kind "home" }}
