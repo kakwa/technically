@@ -7,6 +7,7 @@ Fetches user collections from Printables.com and generates a README.md file
 import requests
 import json
 from typing import Dict, List, Any
+from datetime import datetime
 
 # API Configuration
 API_URL = "https://api.printables.com/graphql/"
@@ -158,6 +159,7 @@ summary = "A curated list of interesting models I've liked on Printables"
 
         md_lines.append("\n---\n")
         
+    md_lines.append(f"\n*last refresh: {datetime.now().isoformat(timespec='seconds')}*\n")
     return "\n".join(md_lines)
 
 
