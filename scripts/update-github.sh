@@ -21,7 +21,7 @@ curl -s "$STARS_URL" -o "$PROJECTS_FILE"
 echo "Adding Hugo front matter..."
 cat > "$PROJECTS_FILE.tmp" << 'EOF'
 +++
-title = "Projects I Starred"
+title = "Projects I Starred ⭐ - Github.com"
 date = 2025-01-01T00:00:00+02:00
 draft = false
 summary = "A curated list of interesting projects I've starred on GitHub"
