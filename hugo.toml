@@ -60,13 +60,14 @@ front_page_content = ["posts"]
 
 # Sidebar/menu
 menu = [
+    {Name = "Content", URL = ""},
     {Name = "Blog Posts", URL = "/posts/"},
-    {Name = "Other Links", External = true, URL = ""},
+    {Name = "Projects Starred - Github", URL = "/github-starred/"},
+    {Name = "Models Liked - Printables", URL = "/printables-liked/"},
+    {Name = "External Links", External = true, URL = ""},
     {Name = "Software Projects", External = true, URL = "https://github.com/kakwa?tab=repositories&q=&type=&language=&sort=stargazers", HasChildren = false},
     {Name = "3D Printing Models", External = true, URL = "https://www.printables.com/@kakwa_3337391/models", HasChildren = false},
     {Name = "Photos", External = true, URL = "https://lens.kakwalab.ovh/", HasChildren = false},
-    {Name = "Projects Starred - Github", External = true, URL = "/github-starred/"},
-    {Name = "Models Liked - Printables", External = true, URL = "/printables-liked/"},
 ]
 
 # Social links (used by theme)

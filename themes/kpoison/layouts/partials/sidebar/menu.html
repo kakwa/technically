@@ -11,12 +11,36 @@
                 <li class="bullet">
                     <a href="{{ $menu_item.URL }}" target="_blank" rel="noopener noreferrer">{{ $menu_item.Name }}</a>
                 </li>
+            {{ else if ne (len $menu_item.URL) 0 }}
+                <!-- Handle internal links that don't match sections/taxonomies -->
+                {{ $foundMatch := false }}
+                {{ range $sections }}
+                    {{ $trimmedURL := (lower (strings.TrimSuffix "/" (strings.TrimPrefix "/" $menu_item.URL))) }}
+                    {{ if eq (lower .Title) (replace $trimmedURL "-" " ") }}
+                        {{ $foundMatch = true }}
+                    {{ end }}
+                {{ end }}
+                {{ range $name, $taxonomy := $taxonomies }}
+                    {{ if eq (lower $name) (lower $menu_item.Name) }}
+                        {{ $foundMatch = true }}
+                    {{ end }}
+                    {{ range $term, $page := $taxonomy }}
+                        {{ if eq (lower $term) (lower $menu_item.Name) }}
+                            {{ $foundMatch = true }}
+                        {{ end }}
+                    {{ end }}
+                {{ end }}
+                {{ if eq $foundMatch false }}
+                    <li class="bullet">
+                        <a href="{{ $menu_item.URL }}">{{ $menu_item.Name }}</a>
+                    </li>
+                {{ end }}
             {{ end }}
 
             {{ range $sections }}
                 {{ $trimmedURL := (lower (strings.TrimSuffix "/" (strings.TrimPrefix "/" $menu_item.URL))) }}
                 {{ if eq (lower .Title) (replace $trimmedURL "-" " ") }}
-                    <li class="heading">
+                    <li class="bullet">
                         <a href="{{ $menu_item.URL }}">{{ $menu_item.Name }}</a>
                     </li>
                     {{ if $menu_item.HasChildren }}
