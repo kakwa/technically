@@ -28,6 +28,8 @@ Sure, it will not run a Kubernetes cluster, but these old machines generally sti
 
 Enter the Sun V100, the 2001 entry‑level server from Sun Microsystems.
 
+{{< figure src="/images/sun/sun-v100-original.jpg" alt="Sun V100 Front" caption="Sun V100 1U Server" >}}
+
 It boasts impressive specs such as:
 - UltraSPARC‑IIe CPU @ 548 MHz
 - No GPU whatsoever (not great for AI, I guess :p)
