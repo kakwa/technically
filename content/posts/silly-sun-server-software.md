@@ -405,8 +405,7 @@ make
 ./ofw-install-server -h
 ```
 
-Start the server with the TFTP & RARP module enabled:
-
+If required, setup your nic
 ```shell
 # NIC & IP to use for the boot server
 export BOOT_SERVER_NIC="enp0s25"
@@ -414,7 +413,23 @@ export BOOT_SERVER_IP="172.24.42.150"
 
 # Configure the NIC if necessary
 sudo ip addr add "${BOOT_SERVER_IP}/24" dev "${BOOT_SERVER_NIC}"
+```
 
+Also, optionally, make the deploy server a router:
+```shell
+export WAN_NIC="wlp3s0"
+
+echo 1 > /proc/sys/net/ipv4/ip_forward
+iptables -F
+iptables -t nat -F
+iptables -A FORWARD -i ${BOOT_SERVER_NIC} -s ${BOOT_SERVER_IP}/24 -j ACCEPT
+iptables -A FORWARD -i ${WAN_NIC} -d ${BOOT_SERVER_IP}/24 -j ACCEPT
+iptables -t nat -A POSTROUTING -o ${WAN_NIC} -j MASQUERADE
+iptables -t nat -A POSTROUTING -o ${WAN_NIC} -j MASQUERADE
+```
+
+Start the server with the TFTP & RARP module enabled:
+```shell
 # Retrieve something to boot:
 wget https://technically.kakwalab.ovh/files/ofwboot.kakwa.test
 
@@ -485,13 +500,13 @@ wget https://cdn.netbsd.org/pub/NetBSD/NetBSD-${NETBSD_VERSION}/sparc64/installa
 # Recover OpenBSD install RamDisk
 wget "https://ftp.openbsd.org/pub/OpenBSD/${OPENBSD_VERSION}/sparc64/bsd.rd"
 # Recover an autoinstall file
-wget https://raw.githubusercontent.com/kakwa/silly-sun-server/refs/heads/main/misc/openbsd-autoinstall.conf
+wget https://raw.githubusercontent.com/kakwa/silly-sun-server/f881b5427f1b103411285ac169dbb102ad37f874/misc/openbsd-install.conf
 ```
 
 Start the install server:
 
 ```shell
-sudo ./ofw-install-server -rarp -tftp -tftp-file ./ofwboot.net -bootp -nfs -nfs-file ./bsd.rd -http -http-file ./openbsd-autoinstall.conf
+sudo ./ofw-install-server -rarp -tftp -tftp-file ./ofwboot.net -bootp -nfs -nfs-file ./bsd.rd -http -http-file ./openbsd-install.conf
 ```
 
 ## NetBSD Install
