@@ -19,7 +19,7 @@ In such cases, nut embedding is a good alternative, her how it works:
 * During the print, when the pause is reached, manually insert the nut into the pocket.
 * Resume the print and let the printer cover the nut.
 
-# How to Do It
+# How To Do It
 
 ## Part Design - A Sacrifice To Bridge The Void
 
