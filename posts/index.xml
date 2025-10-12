@@ -8,7 +8,7 @@
 &lt;li>During the print, when the pause is reached, manually insert the nut into the pocket.&lt;/li>
 &lt;li>Resume the print and let the printer cover the nut.&lt;/li>
 &lt;/ul>
-&lt;h1 id="how-to-do-it">How to Do It&lt;/h1>
+&lt;h1 id="how-to-do-it">How To Do It&lt;/h1>
 &lt;h2 id="part-design---a-sacrifice-to-bridge-the-void">Part Design - A Sacrifice To Bridge The Void&lt;/h2>
 &lt;p>Designing the pocket is straightforward: measure your nut and create a pocket with appropriate clearance on each side (+0.5mm on the nut dimensions should do it).&lt;/p>
 &lt;p>In addition, I recommend adding one thin (~0.2mm) &amp;ldquo;sacrificial layer&amp;rdquo; directly into the model.&lt;/p>
