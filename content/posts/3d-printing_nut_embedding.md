@@ -2,6 +2,7 @@
 title = 'Nut Embedding: The Threading Solution for People Too Cheap to Buy Inserts'
 date = 2025-10-07T02:27:43+02:00
 draft = false
+summary = 'Tips on how to model and print parts with nut embedding instead of threaded inserts.'
 +++
 
 # Introduction
