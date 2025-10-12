@@ -1,56 +1,57 @@
 +++
-title = 'Nut Embedding in 3D prints'
+title = 'Nut Embedding: The Threading Solution for People Too Cheap to Buy Inserts'
 date = 2025-10-07T02:27:43+02:00
-draft = true
+draft = false
 +++
 
-# Nut Embedding: the threading solution for people too cheap to buy inserts
+# Introduction
 
-Just a quick one this time.
 
-While the usual way to add threads to a 3D printing part is to use threaded inserts, another option is nut embedding.
+While the usual way to add threads to a 3D printing part is to use threaded inserts, another often overlooked option is nut embedding.
 
-Threading inserts are often the best options, but for onezies/twozies it can be annoying to buy and wait a whole bag to arrive. Specially when the average tickerer most likely already has perfectly serviceable nuts of the correct size.
+Inserts usually are the best option, but for onezies/twozies it can be annoying to have to buy and wait a whole bag of those to arrive, specially considering the average tickerer most likely already has the perfectly sized nut in his collection.
 
-In such cases, nut embedding is the solution, and it works like this:
+In such cases, nut embedding is a good alternative, her how it works:
 
-* leave a pocket in the model for the Nut (+ some tolerances).
-* in the slicer, introduce a pause at the top of the pocket layer.
-* during the print, when the pause is reached, insert the nut into the pocket manually.
-* continue the print, and let the printer cover the nut.
+* Leave a pocket in the model for the nut (with appropriate tolerances).
+* In the slicer, add a pause at the top of the pocket layer.
+* During the print, when the pause is reached, manually insert the nut into the pocket.
+* Resume the print and let the printer cover the nut.
 
-# How to do it
+# How to Do It
 
-## Part Design
+## Part Design - A Sacrifice To Bridge The Void
 
-Designing it is quite easy, just measure your nut, add a pocket for it with ~0.5mm tolerances.
+Designing the pocket is straightforward: measure your nut and create a pocket with appropriate clearance on each side (+0.5mm on the nut dimensions should do it).
 
-In addition, I recommend adding one thin (~0.2mm) "sacrificial layer" in the model directly.
+In addition, I recommend adding one thin (~0.2mm) "sacrificial layer" directly into the model.
 
-This sacrificial layer is here to ease bridging over the nut once the latter as been inserted, this layer will be punch through when screwing the bolt for the first time.
+This sacrificial layer is here to ease bridging over the nut once the latter as been inserted. This layer will be punched through when screwing in the bolt for the first time.
 
-{{< figure src="/images/nut-embedding/model-pocket-sacrificical-layer.png" alt="3d model for nut insert" caption="3D model with pocket + sacrificial layer" >}}
+{{< figure src="/images/nut-embedding/model-pocket-sacrificical-layer.png" alt="3D model for nut insert" caption="3D model with pocket and sacrificial layer" >}}
 
-Some slicers filling in voids and cavities by default, no doubt there is an option somewhere, but an easy hack to avoid that is to insert a really tiny (~1µm) hole in the sacrificial layer.
+Some slicers fill-in closed cavities by default. No doubt there is an option somewhere to disable it, but instead of searching for it, an easy hack is to insert a really tiny (~1µm) hole in the sacrificial layer.
 
-{{< figure src="/images/nut-embedding/model-hole-hack.png" alt="tiny hole hack in sacrificial layer" caption="Put a tiny like 1µm hole to avoid slicer filling" >}}
+{{< figure src="/images/nut-embedding/model-hole-hack.png" alt="Tiny hole hack in sacrificial layer" caption="Add a tiny 1µm hole to prevent the slicer from filling the void" >}}
 
-## Slicing and Printing
+## Slicing, Printing and Seasoning
 
-Once your model is done, import it in your slicer, slice it, and add a `PAUSE` at the top of the nut pocket/start of sacrificial layer.
+### Slicer
 
-The way to do it varies from slicer to slicer, but here is how to do it in pruseSlicer:
+Once your model is ready, import it into your slicer, slice it, and add a `PAUSE` at the top of the nut pocket (the start of the sacrificial layer).
+
+The process varies between slicers, but here's how to do it in PrusaSlicer:
 
 * Click `Slice now`.
-* Using the vertical slider, move up to the sacrificial layer.
-* Right Click on the `+` icon + `Add Pause`
-* Export G-code
+* Using the vertical slider, navigate to the sacrificial layer.
+* Right-click on the `+` icon and select `Add Pause`.
+* Export the G-code.
 
-{{< figure src="/images/nut-embedding/slicer-sacrificial-layer.png" alt="slicer (prusa), add pause" caption="Adding a Pause" >}}
+{{< figure src="/images/nut-embedding/slicer-sacrificial-layer.png" alt="PrusaSlicer showing pause insertion" caption="Adding a pause in PrusaSlicer" >}}
 
-Note: the `PAUSE` is at the start of the selected layer. Don't be confused by the default horizontal curser, i.e. to the end of the layer.
+**Note 1:** The `PAUSE` occurs at the start of the selected layer. Don't be confused by the default horizontal cursor position, which is set at the end of the layer.
 
-Note: make sure your tool head move out of the way, either through your printer PAUSE macro, or using a gcode like:
+**Note 2:** Make sure your toolhead moves out of the way, either through your printer's PAUSE macro or by using G-code like:
 
 ```lisp
 M25                     ; pause SD print
@@ -62,35 +63,35 @@ G90                     ; return to absolute positioning
 M24                     ; resume SD print
 ```
 
-or, more simply, if you printer supports it:
+Or, more simply, if your printer supports it:
 
 ```lisp
-M600 X25 Y25 Z25        ; "color change" without retractation.
+M600 X25 Y25 Z25        ; "color change" without retraction.
 ```
 
-Once you have your gcode, start the print, and wait for the `PAUSE`.
+### Printing
 
-Once there, insert the nut (just be cautious to not detach the part from the plate... don't ask me how I know...).
+Once you have your G-code, start the print and wait.
 
-{{< figure src="/images/nut-embedding/print-pause.jpg" alt="pause + insert nut" caption="" >}}
+When the `PAUSE` occurs, insert the nut carefully (be cautious not to detach the part from the build plate... don't ask me how I know...).
 
-Then click resume, the printer should then add the sacrifical layer, and bridge over the nut.
+{{< figure src="/images/nut-embedding/print-pause.jpg" alt="Print paused with nut inserted" caption="Insert the nut during the pause" >}}
 
-{{< figure src="/images/nut-embedding/print-sacrificial.jpg" alt="printing sacrifical layer" caption="" >}}
+Then resume the print. The printer will add the sacrificial layer and bridge over the nut.
 
-Let it complete.
+{{< figure src="/images/nut-embedding/print-sacrificial.jpg" alt="Printing sacrificial layer over nut" caption="Sacrificial layer being printed over the nut" >}}
 
-If everything goes well, you should end up with a nice part, and an invisible threading/nut.
+Let the print complete. If everything goes well, you'll end up with a clean part and an invisible embedded nut.
 
-{{< figure src="/images/nut-embedding/print-end.jpg" alt="printed part" caption="" >}}
+{{< figure src="/images/nut-embedding/print-end.jpg" alt="Completed 3D printed part with embedded nut" caption="Finished part with embedded nut" >}}
 
 # Conclusion
 
-Embbeding nuts in prints is a nice trick. It's definitely useful in a pinch. It can also be marginally [more resistant](https://www.cnckitchen.com/blog/helicoils-threaded-insets-and-embedded-nuts-in-3d-prints-strength-amp-strength-assessment).
+Embedding nuts in prints is a useful technique that's definitely handy in a pinch. It can even be marginally [more resistant](https://www.cnckitchen.com/blog/helicoils-threaded-insets-and-embedded-nuts-in-3d-prints-strength-amp-strength-assessment) than inserts in some situation.
 
-Plus, this technic is not limited to nuts, it can be leveraged in other situation, for example to add mass to a part, insert magnets, or to add rebar/reinforcement.
+Plus, this technique isn't limited to nuts. It can be leveraged in many other situations, such as adding mass to a part, inserting magnets, or adding rebar for reinforcement.
 
-Hoped you found this technic interresting, and happy printing!
+Hope you found this technique interesting, and happy printing.
 
 # Links
 
