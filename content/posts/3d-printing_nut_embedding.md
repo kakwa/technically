@@ -1,5 +1,5 @@
 +++
-title = 'Nut Embedding: The Threading Solution for People Too Cheap to Buy Inserts'
+title = 'Nut Embedding: Threading for People Too Cheap to Buy Inserts'
 date = 2025-10-07T02:27:43+02:00
 draft = false
 summary = 'Tips on how to model and print parts with nut embedding instead of threaded inserts.'
@@ -34,6 +34,10 @@ This sacrificial layer is here to ease bridging over the nut once the latter as 
 Some slicers fill-in closed cavities by default. No doubt there is an option somewhere to disable it, but instead of searching for it, an easy hack is to insert a really tiny (~1µm) hole in the sacrificial layer.
 
 {{< figure src="/images/nut-embedding/model-hole-hack.png" alt="Tiny hole hack in sacrificial layer" caption="Add a tiny 1µm hole to prevent the slicer from filling the void" >}}
+
+Here how it looks in 3D:
+
+{{< stl-viewer url="/images/nut-embedding/model.stl" height="500px" caption="3D knob model with embedding pocket" >}}
 
 ## Slicing, Printing and Seasoning
 
@@ -96,6 +100,7 @@ Hope you found this technique interesting, and happy printing.
 
 # Links
 
+* [Model's link (FreeCAD)](https://github.com/kakwa/misc-3d-models/tree/main/knob-generic-4mm-nut)
 * [Marlin GCode Documentation](https://marlinfw.org/docs/gcode/M600.html)
 * [CNC Kitchen's insert testing article/video](https://www.cnckitchen.com/blog/helicoils-threaded-insets-and-embedded-nuts-in-3d-prints-strength-amp-strength-assessment)
 * [3D Printing Nerd's magnet embedding video](https://www.youtube.com/watch?v=oF1SdIR-Kow)
