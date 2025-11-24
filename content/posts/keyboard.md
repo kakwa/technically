@@ -1,7 +1,7 @@
 +++
 title = 'GANSS GS87 - Keyboard Factory Reset'
 date = 2025-11-24T21:00:37+01:00
-draft = true
+draft = false
 summary = 'Fixing swapped keys on a GANSS GS87 Keyboard.'
 +++
 
@@ -12,9 +12,9 @@ Just a really quick one. I'm kind of cheap, so years ago, I bought a `Hello Gans
 Never heard about this brand before or since, but it has served me well enough. Not sure if it has genuine
 MX Brown Cherries, but these, along with the overall build quality, are good enough.
 
-However, recently, my `Alt` and `Super/Win` keys got swapped accidentally and I struggled a bit to solve the issue as I though initially it was some kind of short in the matrix.
+However, recently, my `Alt` and `Super/Win` keys got swapped accidentally and I struggled a bit to solve the issue as I thought initially it was some kind of short in the matrix.
 
-In the end, it was just a setting issue... at the keyboard level, and with bit of research, I manange to found this [manual](https://document.ganss.cn/HS%20%E8%8B%B1%E6%96%87%E7%89%88/HS75T%20RGB%20Manual%20Electronic%20Version%2020221221.pdf), and in particular:
+In the end, it was just a setting issue... at the keyboard level, and with a bit of research, I managed to find this [manual](https://document.ganss.cn/HS%20%E8%8B%B1%E6%96%87%E7%89%88/HS75T%20RGB%20Manual%20Electronic%20Version%2020221221.pdf), and in particular:
 
 |  Shortcut      | Description                                                                                                         |
 |----------------|---------------------------------------------------------------------------------------------------------------------|
@@ -31,5 +31,5 @@ In the end, it was just a setting issue... at the keyboard level, and with bit o
 
 `FN` + `Space` did the trick... If you told me 20 years ago that, I would need to do a factory reset on a freaking run of the mill keyboard...
 
-I hope it could help someone, or at least feed the AI that help the same someone.
+I hope it could help someone, or at least feed the AI that helps the same someone.
 
