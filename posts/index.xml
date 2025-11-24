@@ -1,4 +1,66 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Technically some technical stuff.</title><link>https://technically.kakwalab.ovh/posts/</link><description>Recent content in Posts on Technically some technical stuff.</description><generator>Hugo</generator><language>en</language><managingEditor>carpentier.pf@gmail.com (Pierre-François Carpentier)</managingEditor><webMaster>carpentier.pf@gmail.com (Pierre-François Carpentier)</webMaster><copyright>&amp;copy; &lt;a href="https://github.com/kakwa">Pierre-Francois Carpentier&lt;/a> 2025</copyright><lastBuildDate>Tue, 07 Oct 2025 02:27:43 +0200</lastBuildDate><atom:link href="https://technically.kakwalab.ovh/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Nut Embedding: Threading for People Too Cheap to Buy Inserts</title><link>https://technically.kakwalab.ovh/posts/3d-printing_nut_embedding/</link><pubDate>Tue, 07 Oct 2025 02:27:43 +0200</pubDate><author>carpentier.pf@gmail.com (Pierre-François Carpentier)</author><guid>https://technically.kakwalab.ovh/posts/3d-printing_nut_embedding/</guid><description>&lt;h1 id="introduction">Introduction&lt;/h1>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Technically some technical stuff.</title><link>https://technically.kakwalab.ovh/posts/</link><description>Recent content in Posts on Technically some technical stuff.</description><generator>Hugo</generator><language>en</language><managingEditor>carpentier.pf@gmail.com (Pierre-François Carpentier)</managingEditor><webMaster>carpentier.pf@gmail.com (Pierre-François Carpentier)</webMaster><copyright>&amp;copy; &lt;a href="https://github.com/kakwa">Pierre-Francois Carpentier&lt;/a> 2025</copyright><lastBuildDate>Mon, 24 Nov 2025 21:00:37 +0100</lastBuildDate><atom:link href="https://technically.kakwalab.ovh/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>GANSS GS87 - Keyboard Factory Reset</title><link>https://technically.kakwalab.ovh/posts/keyboard/</link><pubDate>Mon, 24 Nov 2025 21:00:37 +0100</pubDate><author>carpentier.pf@gmail.com (Pierre-François Carpentier)</author><guid>https://technically.kakwalab.ovh/posts/keyboard/</guid><description>&lt;p>Just a really quick one. I&amp;rsquo;m kind of cheap, so years ago, I bought a &lt;code>Hello Ganss&lt;/code> &lt;code>GS87-C&lt;/code> mechanical keyboard.&lt;/p>
+&lt;figure>&lt;img src="https://technically.kakwalab.ovh/images/keyboard/logo.png"
+ alt="ganss logo">&lt;figcaption>
+ &lt;p>Hello Ganss&lt;/p>
+ &lt;/figcaption>
+&lt;/figure>
+
+&lt;p>Never heard about this brand before or since, but it has served me well enough. Not sure if it has genuine
+MX Brown Cherries, but these, along with the overall build quality, are good enough.&lt;/p>
+&lt;p>However, recently, my &lt;code>Alt&lt;/code> and &lt;code>Super/Win&lt;/code> keys got swapped accidentally and I struggled a bit to solve the issue as I thought initially it was some kind of short in the matrix.&lt;/p>
+&lt;p>In the end, it was just a setting issue&amp;hellip; at the keyboard level, and with a bit of research, I managed to find this &lt;a href="https://document.ganss.cn/HS%20%E8%8B%B1%E6%96%87%E7%89%88/HS75T%20RGB%20Manual%20Electronic%20Version%2020221221.pdf" target="_blank">manual&lt;/a>, and in particular:&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>Shortcut&lt;/th>
+&lt;th>Description&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>&lt;code>FN&lt;/code> + &lt;code>Caps&lt;/code>&lt;/td>
+&lt;td>Switch the position of Caps and Left Ctrl&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>FN&lt;/code> + &lt;code>Win_L&lt;/code>&lt;/td>
+&lt;td>Lock/Unlock WIN key&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>FN&lt;/code> + &lt;code>A&lt;/code>&lt;/td>
+&lt;td>Hold down for 3s – Windows system support (Default)&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>FN&lt;/code> + &lt;code>S&lt;/code>&lt;/td>
+&lt;td>Hold down for 3s – Mac system support&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>FN&lt;/code> + &lt;code>Tab&lt;/code>&lt;/td>
+&lt;td>On/off the macro functions in the driver&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>FN&lt;/code> + &lt;code>Del&lt;/code>&lt;/td>
+&lt;td>Ins&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>FN&lt;/code> + &lt;code>PgUp&lt;/code>&lt;/td>
+&lt;td>Home&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>FN&lt;/code> + &lt;code>PgDw&lt;/code>&lt;/td>
+&lt;td>End&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>FN&lt;/code> + &lt;code>N&lt;/code>&lt;/td>
+&lt;td>Hold down for 3s – Power saving function off/on (default off). The indicator flashes once (off) or three times (on)&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>FN&lt;/code> + &lt;code>Space&lt;/code>&lt;/td>
+&lt;td>Hold down for 5s – Reset to factory settings&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>&lt;code>FN&lt;/code> + &lt;code>Space&lt;/code> did the trick&amp;hellip; If you told me 20 years ago that, I would need to do a factory reset on a freaking run of the mill keyboard&amp;hellip;&lt;/p>
+&lt;p>I hope it could help someone, or at least feed the AI that helps the same someone.&lt;/p></description></item><item><title>Nut Embedding: Threading for People Too Cheap to Buy Inserts</title><link>https://technically.kakwalab.ovh/posts/3d-printing_nut_embedding/</link><pubDate>Tue, 07 Oct 2025 02:27:43 +0200</pubDate><author>carpentier.pf@gmail.com (Pierre-François Carpentier)</author><guid>https://technically.kakwalab.ovh/posts/3d-printing_nut_embedding/</guid><description>&lt;h1 id="introduction">Introduction&lt;/h1>
 &lt;p>While the usual way to add threads to a 3D printing part is to use threaded inserts, another often overlooked option is nut embedding.&lt;/p>
 &lt;p>Inserts usually are the best option, but for onezies/twozies it can be annoying to have to buy and wait a whole bag of those to arrive, specially considering the average tinckerer most likely already has the perfectly sized nut in his collection.&lt;/p>
 &lt;p>In such cases, nut embedding is a good alternative, her how it works:&lt;/p>

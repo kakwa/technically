@@ -1,4 +1,66 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Technically some technical stuff.</title><link>https://technically.kakwalab.ovh/</link><description>Recent content on Technically some technical stuff.</description><generator>Hugo</generator><language>en</language><managingEditor>carpentier.pf@gmail.com (Pierre-François Carpentier)</managingEditor><webMaster>carpentier.pf@gmail.com (Pierre-François Carpentier)</webMaster><copyright>&amp;copy; &lt;a href="https://github.com/kakwa">Pierre-Francois Carpentier&lt;/a> 2025</copyright><lastBuildDate>Tue, 07 Oct 2025 02:27:43 +0200</lastBuildDate><atom:link href="https://technically.kakwalab.ovh/index.xml" rel="self" type="application/rss+xml"/><item><title>Nut Embedding: Threading for People Too Cheap to Buy Inserts</title><link>https://technically.kakwalab.ovh/posts/3d-printing_nut_embedding/</link><pubDate>Tue, 07 Oct 2025 02:27:43 +0200</pubDate><author>carpentier.pf@gmail.com (Pierre-François Carpentier)</author><guid>https://technically.kakwalab.ovh/posts/3d-printing_nut_embedding/</guid><description>&lt;h1 id="introduction">Introduction&lt;/h1>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Technically some technical stuff.</title><link>https://technically.kakwalab.ovh/</link><description>Recent content on Technically some technical stuff.</description><generator>Hugo</generator><language>en</language><managingEditor>carpentier.pf@gmail.com (Pierre-François Carpentier)</managingEditor><webMaster>carpentier.pf@gmail.com (Pierre-François Carpentier)</webMaster><copyright>&amp;copy; &lt;a href="https://github.com/kakwa">Pierre-Francois Carpentier&lt;/a> 2025</copyright><lastBuildDate>Mon, 24 Nov 2025 21:00:37 +0100</lastBuildDate><atom:link href="https://technically.kakwalab.ovh/index.xml" rel="self" type="application/rss+xml"/><item><title>GANSS GS87 - Keyboard Factory Reset</title><link>https://technically.kakwalab.ovh/posts/keyboard/</link><pubDate>Mon, 24 Nov 2025 21:00:37 +0100</pubDate><author>carpentier.pf@gmail.com (Pierre-François Carpentier)</author><guid>https://technically.kakwalab.ovh/posts/keyboard/</guid><description>&lt;p>Just a really quick one. I&amp;rsquo;m kind of cheap, so years ago, I bought a &lt;code>Hello Ganss&lt;/code> &lt;code>GS87-C&lt;/code> mechanical keyboard.&lt;/p>
+&lt;figure>&lt;img src="https://technically.kakwalab.ovh/images/keyboard/logo.png"
+ alt="ganss logo">&lt;figcaption>
+ &lt;p>Hello Ganss&lt;/p>
+ &lt;/figcaption>
+&lt;/figure>
+
+&lt;p>Never heard about this brand before or since, but it has served me well enough. Not sure if it has genuine
+MX Brown Cherries, but these, along with the overall build quality, are good enough.&lt;/p>
+&lt;p>However, recently, my &lt;code>Alt&lt;/code> and &lt;code>Super/Win&lt;/code> keys got swapped accidentally and I struggled a bit to solve the issue as I thought initially it was some kind of short in the matrix.&lt;/p>
+&lt;p>In the end, it was just a setting issue&amp;hellip; at the keyboard level, and with a bit of research, I managed to find this &lt;a href="https://document.ganss.cn/HS%20%E8%8B%B1%E6%96%87%E7%89%88/HS75T%20RGB%20Manual%20Electronic%20Version%2020221221.pdf" target="_blank">manual&lt;/a>, and in particular:&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>Shortcut&lt;/th>
+&lt;th>Description&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>&lt;code>FN&lt;/code> + &lt;code>Caps&lt;/code>&lt;/td>
+&lt;td>Switch the position of Caps and Left Ctrl&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>FN&lt;/code> + &lt;code>Win_L&lt;/code>&lt;/td>
+&lt;td>Lock/Unlock WIN key&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>FN&lt;/code> + &lt;code>A&lt;/code>&lt;/td>
+&lt;td>Hold down for 3s – Windows system support (Default)&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>FN&lt;/code> + &lt;code>S&lt;/code>&lt;/td>
+&lt;td>Hold down for 3s – Mac system support&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>FN&lt;/code> + &lt;code>Tab&lt;/code>&lt;/td>
+&lt;td>On/off the macro functions in the driver&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>FN&lt;/code> + &lt;code>Del&lt;/code>&lt;/td>
+&lt;td>Ins&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>FN&lt;/code> + &lt;code>PgUp&lt;/code>&lt;/td>
+&lt;td>Home&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>FN&lt;/code> + &lt;code>PgDw&lt;/code>&lt;/td>
+&lt;td>End&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>FN&lt;/code> + &lt;code>N&lt;/code>&lt;/td>
+&lt;td>Hold down for 3s – Power saving function off/on (default off). The indicator flashes once (off) or three times (on)&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;code>FN&lt;/code> + &lt;code>Space&lt;/code>&lt;/td>
+&lt;td>Hold down for 5s – Reset to factory settings&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>&lt;code>FN&lt;/code> + &lt;code>Space&lt;/code> did the trick&amp;hellip; If you told me 20 years ago that, I would need to do a factory reset on a freaking run of the mill keyboard&amp;hellip;&lt;/p>
+&lt;p>I hope it could help someone, or at least feed the AI that helps the same someone.&lt;/p></description></item><item><title>Nut Embedding: Threading for People Too Cheap to Buy Inserts</title><link>https://technically.kakwalab.ovh/posts/3d-printing_nut_embedding/</link><pubDate>Tue, 07 Oct 2025 02:27:43 +0200</pubDate><author>carpentier.pf@gmail.com (Pierre-François Carpentier)</author><guid>https://technically.kakwalab.ovh/posts/3d-printing_nut_embedding/</guid><description>&lt;h1 id="introduction">Introduction&lt;/h1>
 &lt;p>While the usual way to add threads to a 3D printing part is to use threaded inserts, another often overlooked option is nut embedding.&lt;/p>
 &lt;p>Inserts usually are the best option, but for onezies/twozies it can be annoying to have to buy and wait a whole bag of those to arrive, specially considering the average tinckerer most likely already has the perfectly sized nut in his collection.&lt;/p>
 &lt;p>In such cases, nut embedding is a good alternative, her how it works:&lt;/p>
@@ -3127,87 +3189,7 @@ The next pattern starts at 000023d0 and ends at 000023df, which again lines up r
 &lt;li>&lt;code>.pkg&lt;/code> files are custom archives containing (mostly) DEFLATE-compressed blobs separated by 64-bit IDs&lt;/li>
 &lt;li>File names and paths are probably stored separately&lt;/li>
 &lt;/ul>
-&lt;p>Getting the file metadata will be explored in &lt;a href="https://technically.kakwalab.ovh/posts/wows_depack_part2/">the next part&lt;/a> of this series.&lt;/p></description></item><item><title>3D Models I Liked 💛 - Printables.com</title><link>https://technically.kakwalab.ovh/printables-liked/</link><pubDate>Wed, 01 Jan 2025 00:00:00 +0200</pubDate><author>carpentier.pf@gmail.com (Pierre-François Carpentier)</author><guid>https://technically.kakwalab.ovh/printables-liked/</guid><description>&lt;hr>
-&lt;h1 id="3d-printing---ender3">3D Printing - Ender3&lt;/h1>
-&lt;p>collection page: &lt;a href="https://www.printables.com/@kakwa_3337391/collections/2696811" target="_blank">🔗&lt;/a>&lt;/p>
-&lt;ul>
-&lt;li>&lt;a href="https://www.printables.com/model/1437902" target="_blank">Mellow Fly - Gemini V3 mount brackets for Ender 3 Pro&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://www.printables.com/model/210992" target="_blank">Ender 3 Extruder Lever&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://www.printables.com/model/973403" target="_blank">4040 Cable Clip (Motedis)&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://www.printables.com/model/145439" target="_blank">Ender 3 Pro Y axis belt tensioner (lower profile, no collision)&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://www.printables.com/model/1417451" target="_blank">Logitech QuickCam Case&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://www.printables.com/model/46125" target="_blank">Back (Extruder) Cable Clip (Ender 3)&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://www.printables.com/model/1126623" target="_blank">PSU relocation Ender 3 Pro - Left Side with Removable Lid&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://www.printables.com/model/44686" target="_blank">Power Supply (PSU) fan silencer (Ender 3 &amp;amp; 3 PRO)&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://www.printables.com/model/309148" target="_blank">Ender 3 V2 X axis belt tensioner replacement&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;hr>
-&lt;h1 id="3d-printing---misc">3D Printing - Misc&lt;/h1>
-&lt;p>collection page: &lt;a href="https://www.printables.com/@kakwa_3337391/collections/2696862" target="_blank">🔗&lt;/a>&lt;/p>
-&lt;ul>
-&lt;li>&lt;a href="https://www.printables.com/model/1314513" target="_blank">Low Rider MMU - for any Klipper printer&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;hr>
-&lt;h1 id="3d-printing---voron0">3D Printing - Voron0&lt;/h1>
-&lt;p>collection page: &lt;a href="https://www.printables.com/@kakwa_3337391/collections/2696833" target="_blank">🔗&lt;/a>&lt;/p>
-&lt;ul>
-&lt;li>&lt;a href="https://www.printables.com/model/451261" target="_blank">Voron 0.2 r1 Sherpa Mini &amp;amp; Micro StealthBurner&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://www.printables.com/model/1386216" target="_blank">Voron 0.2 - Build Plate Stop&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;hr>
-&lt;h1 id="home---kitchen">Home - Kitchen&lt;/h1>
-&lt;p>collection page: &lt;a href="https://www.printables.com/@kakwa_3337391/collections/2696855" target="_blank">🔗&lt;/a>&lt;/p>
-&lt;ul>
-&lt;li>&lt;a href="https://www.printables.com/model/650285" target="_blank">Modular Dish Stand / Rack / Organizer&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://www.printables.com/model/1422429" target="_blank">WMF Mini Rice Cooker Replacement Knob&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;hr>
-&lt;h1 id="home---toys">Home - Toys&lt;/h1>
-&lt;p>collection page: &lt;a href="https://www.printables.com/@kakwa_3337391/collections/2696859" target="_blank">🔗&lt;/a>&lt;/p>
-&lt;ul>
-&lt;li>&lt;a href="https://www.printables.com/model/161938" target="_blank">Joycon Controller with Trigger buttons. Easy print&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://www.printables.com/model/456319" target="_blank">LEGO Compatible parts [v1] (120+ parts)&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;hr>
-&lt;h1 id="maker---tools">Maker - Tools&lt;/h1>
-&lt;p>collection page: &lt;a href="https://www.printables.com/@kakwa_3337391/collections/2696839" target="_blank">🔗&lt;/a>&lt;/p>
-&lt;ul>
-&lt;li>&lt;a href="https://www.printables.com/model/1432435" target="_blank">&amp;ldquo;This Machine Has No Brain&amp;rdquo; sign&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://www.printables.com/model/122460" target="_blank">Inbus / Allen Key Holder&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://www.printables.com/model/1214894" target="_blank">Stackable Desk Organizer&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;hr>
-&lt;h1 id="maker---useful-parts">Maker - Useful Parts&lt;/h1>
-&lt;p>collection page: &lt;a href="https://www.printables.com/@kakwa_3337391/collections/2696861" target="_blank">🔗&lt;/a>&lt;/p>
-&lt;ul>
-&lt;li>&lt;a href="https://www.printables.com/model/973403" target="_blank">4040 Cable Clip (Motedis)&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://www.printables.com/model/1376139" target="_blank">M3 Brackets&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;hr>
-&lt;h1 id="misc---random">Misc - Random&lt;/h1>
-&lt;p>collection page: &lt;a href="https://www.printables.com/@kakwa_3337391/collections/2696840" target="_blank">🔗&lt;/a>&lt;/p>
-&lt;ul>
-&lt;li>&lt;a href="https://www.printables.com/model/604793" target="_blank">A Trio of Halloween Ghost Cats&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://www.printables.com/model/1323316" target="_blank">Faber Castell Slide Rule Cursor&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://www.printables.com/model/1344603" target="_blank">Sun Microsystems Logo&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://www.printables.com/model/351759" target="_blank">Book Page Holder&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://www.printables.com/model/1346514" target="_blank">Otto (Franz Diffusion Cell Autosampler) Printable Parts&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;hr>
-&lt;h1 id="outdoor---bike">Outdoor - Bike&lt;/h1>
-&lt;p>collection page: &lt;a href="https://www.printables.com/@kakwa_3337391/collections/2696837" target="_blank">🔗&lt;/a>&lt;/p>
-&lt;ul>
-&lt;li>&lt;a href="https://www.printables.com/model/203205" target="_blank">Threaded Bicycle Crank Arm Cap&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://www.printables.com/model/779126" target="_blank">Kryptonite U-Lock Anti-Rattle Washer&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://www.printables.com/model/1368746" target="_blank">Axle cap for vintage bike pedals&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://www.printables.com/model/514279" target="_blank">Kryptonite bottle cage lock&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://www.printables.com/model/50907" target="_blank">Bike Lock Mount (Kryptonite)&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://www.printables.com/model/983449" target="_blank">Kryptonite lock mount (metric)&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://www.printables.com/model/1390929" target="_blank">Kryptonite Bottle Cage Holder + Cosmetic Bracket&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://www.printables.com/model/1393252" target="_blank">Bicycle Chain Installation Tool / Fahrradketten Montagehilfe&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;hr>
-&lt;p>&lt;em>last refresh: 2025-10-13T08:50:23&lt;/em>&lt;/p></description></item><item><title>Projects I Starred ⭐ - Github.com</title><link>https://technically.kakwalab.ovh/github-starred/</link><pubDate>Wed, 01 Jan 2025 00:00:00 +0200</pubDate><author>carpentier.pf@gmail.com (Pierre-François Carpentier)</author><guid>https://technically.kakwalab.ovh/github-starred/</guid><description>&lt;!-- raw HTML omitted -->
+&lt;p>Getting the file metadata will be explored in &lt;a href="https://technically.kakwalab.ovh/posts/wows_depack_part2/">the next part&lt;/a> of this series.&lt;/p></description></item><item><title>Projects I Starred ⭐ - Github.com</title><link>https://technically.kakwalab.ovh/github-starred/</link><pubDate>Wed, 01 Jan 2025 00:00:00 +0200</pubDate><author>carpentier.pf@gmail.com (Pierre-François Carpentier)</author><guid>https://technically.kakwalab.ovh/github-starred/</guid><description>&lt;!-- raw HTML omitted -->
 &lt;h1 id="awesome-stars-awesomehttpsawesomerebadgesvghttpsgithubcomsindresorhusawesome">Awesome Stars &lt;a href="https://github.com/sindresorhus/awesome" target="_blank">&lt;img src="https://awesome.re/badge.svg" alt="Awesome">&lt;/a>&lt;/h1>
 &lt;blockquote>
 &lt;p>A curated list of my GitHub stars! Generated by &lt;a href="https://github.com/maguowei/starred" target="_blank">starred&lt;/a>.&lt;/p>
@@ -3258,6 +3240,7 @@ The next pattern starts at 000023d0 and ends at 000023df, which again lines up r
 &lt;li>&lt;a href="https://github.com/kevinakasam/KlackEnder-Probe" target="_blank">kevinakasam/KlackEnder-Probe&lt;/a> - Klicky / Quickdraw Probe for the Ender 3&lt;/li>
 &lt;li>&lt;a href="https://github.com/Adam-CAD/CADAM" target="_blank">Adam-CAD/CADAM&lt;/a> - CADAM is the open source text-to-CAD web application&lt;/li>
 &lt;li>&lt;a href="https://github.com/Annex-Engineering/Sherpa_Micro-Extruder" target="_blank">Annex-Engineering/Sherpa_Micro-Extruder&lt;/a> - a more compact version of sherpa mini&lt;/li>
+&lt;li>&lt;a href="https://github.com/florianfesti/boxes" target="_blank">florianfesti/boxes&lt;/a> - Boxes.py - laser cutting boxes and more&lt;/li>
 &lt;/ul>
 &lt;h2 id="ai">AI&lt;/h2>
 &lt;ul>
@@ -3271,6 +3254,8 @@ The next pattern starts at 000023d0 and ends at 000023df, which again lines up r
 &lt;li>&lt;a href="https://github.com/deezer/spleeter" target="_blank">deezer/spleeter&lt;/a> - Deezer source separation library including pretrained models.&lt;/li>
 &lt;li>&lt;a href="https://github.com/tensorflow/tensorflow" target="_blank">tensorflow/tensorflow&lt;/a> - An Open Source Machine Learning Framework for Everyone&lt;/li>
 &lt;li>&lt;a href="https://github.com/trymirai/uzu" target="_blank">trymirai/uzu&lt;/a> - A high-performance inference engine for AI models&lt;/li>
+&lt;li>&lt;a href="https://github.com/microsoft/amplifier" target="_blank">microsoft/amplifier&lt;/a> -&lt;/li>
+&lt;li>&lt;a href="https://github.com/666ghj/BettaFish" target="_blank">666ghj/BettaFish&lt;/a> - 微舆：人人可用的多Agent舆情分析助手，打破信息茧房，还原舆情原貌，预测未来走向，辅助决策！从0实现，不依赖任何框架。&lt;/li>
 &lt;/ul>
 &lt;h2 id="awesome-lists">Awesome Lists&lt;/h2>
 &lt;ul>
@@ -3336,6 +3321,7 @@ The next pattern starts at 000023d0 and ends at 000023df, which again lines up r
 &lt;li>&lt;a href="https://github.com/kakwa/ldfl" target="_blank">kakwa/ldfl&lt;/a> - ldfl: a File Lying Library, LD_PRELOAD library remapping files to other location or in memory embedding.&lt;/li>
 &lt;li>&lt;a href="https://github.com/WerWolv/ImHex" target="_blank">WerWolv/ImHex&lt;/a> - 🔍 A Hex Editor for Reverse Engineers, Programmers and people who value their retinas when working at 3 AM.&lt;/li>
 &lt;li>&lt;a href="https://github.com/alufers/mitmproxy2swagger" target="_blank">alufers/mitmproxy2swagger&lt;/a> - Automagically reverse-engineer REST APIs via capturing traffic&lt;/li>
+&lt;li>&lt;a href="https://github.com/medusalix/FreeMDU" target="_blank">medusalix/FreeMDU&lt;/a> - Open hardware and software tools for communicating with Miele appliances via their optical diagnostic interface&lt;/li>
 &lt;/ul>
 &lt;h2 id="hardware">Hardware&lt;/h2>
 &lt;ul>
@@ -3393,7 +3379,7 @@ The next pattern starts at 000023d0 and ends at 000023df, which again lines up r
 &lt;li>&lt;a href="https://github.com/rethinkdb/rethinkdb" target="_blank">rethinkdb/rethinkdb&lt;/a> - The open-source database for the realtime web.&lt;/li>
 &lt;li>&lt;a href="https://github.com/vespa-engine/vespa" target="_blank">vespa-engine/vespa&lt;/a> - AI + Data, online. &lt;a href="https://vespa.ai" target="_blank">https://vespa.ai&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://github.com/AlexTatiyants/pev" target="_blank">AlexTatiyants/pev&lt;/a> - Postgres Explain Visualizer&lt;/li>
-&lt;li>&lt;a href="https://github.com/hypermodeinc/dgraph" target="_blank">hypermodeinc/dgraph&lt;/a> - high-performance graph database for real-time use cases&lt;/li>
+&lt;li>&lt;a href="https://github.com/dgraph-io/dgraph" target="_blank">dgraph-io/dgraph&lt;/a> - high-performance graph database for real-time use cases&lt;/li>
 &lt;li>&lt;a href="https://github.com/timescale/timescaledb" target="_blank">timescale/timescaledb&lt;/a> - A time-series database for high-performance real-time analytics packaged as a Postgres extension&lt;/li>
 &lt;li>&lt;a href="https://github.com/cockroachdb/cockroach" target="_blank">cockroachdb/cockroach&lt;/a> - CockroachDB — the cloud native, distributed SQL database designed for high availability, effortless scale, and control over data placement.&lt;/li>
 &lt;li>&lt;a href="https://github.com/simon-engledew/gocmdpev" target="_blank">simon-engledew/gocmdpev&lt;/a> - A command-line GO Postgres query visualizer, heavily inspired by pev (&lt;a href="https://github.com/AlexTatiyants/pev" target="_blank">https://github.com/AlexTatiyants/pev&lt;/a>)&lt;/li>
@@ -3411,6 +3397,7 @@ The next pattern starts at 000023d0 and ends at 000023df, which again lines up r
 &lt;li>&lt;a href="https://github.com/lowlighter/metrics" target="_blank">lowlighter/metrics&lt;/a> - 📊 An infographics generator with 30+ plugins and 300+ options to display stats about your GitHub account and render them as SVG, Markdown, PDF or JSON!&lt;/li>
 &lt;li>&lt;a href="https://github.com/minio/minio" target="_blank">minio/minio&lt;/a> - MinIO is a high-performance, S3 compatible object store, open sourced under GNU AGPLv3 license.&lt;/li>
 &lt;li>&lt;a href="https://github.com/aws/pgactive" target="_blank">aws/pgactive&lt;/a> -&lt;/li>
+&lt;li>&lt;a href="https://github.com/wizenheimer/blaze" target="_blank">wizenheimer/blaze&lt;/a> - Full Text Search Engine - built for Hackers not Hyperscalers&lt;/li>
 &lt;/ul>
 &lt;h2 id="infra---email">Infra - Email&lt;/h2>
 &lt;ul>
@@ -3460,7 +3447,7 @@ The next pattern starts at 000023d0 and ends at 000023df, which again lines up r
 &lt;li>&lt;a href="https://github.com/Syllo/nvtop" target="_blank">Syllo/nvtop&lt;/a> - GPU &amp;amp; Accelerator process monitoring for AMD, Apple, Huawei, Intel, NVIDIA and Qualcomm&lt;/li>
 &lt;li>&lt;a href="https://github.com/fleetdm/fleet" target="_blank">fleetdm/fleet&lt;/a> - Open device management&lt;/li>
 &lt;li>&lt;a href="https://github.com/jaegertracing/jaeger" target="_blank">jaegertracing/jaeger&lt;/a> - CNCF Jaeger, a Distributed Tracing Platform&lt;/li>
-&lt;li>&lt;a href="https://github.com/hyperdxio/hyperdx" target="_blank">hyperdxio/hyperdx&lt;/a> - Resolve production issues, fast. An open source observability platform unifying session replays, logs, metrics, traces and errors powered by Clickhouse and OpenTelemetry.&lt;/li>
+&lt;li>&lt;a href="https://github.com/hyperdxio/hyperdx" target="_blank">hyperdxio/hyperdx&lt;/a> - Resolve production issues, fast. An open source observability platform unifying session replays, logs, metrics, traces and errors powered by ClickHouse and OpenTelemetry.&lt;/li>
 &lt;li>&lt;a href="https://github.com/google/osv.dev" target="_blank">google/osv.dev&lt;/a> - Open source vulnerability DB and triage service.&lt;/li>
 &lt;li>&lt;a href="https://github.com/endoflife-date/endoflife.date" target="_blank">endoflife-date/endoflife.date&lt;/a> - Informative site with EoL dates of everything&lt;/li>
 &lt;li>&lt;a href="https://github.com/apache/superset" target="_blank">apache/superset&lt;/a> - Apache Superset is a Data Visualization and Data Exploration Platform&lt;/li>
@@ -3565,6 +3552,8 @@ The next pattern starts at 000023d0 and ends at 000023df, which again lines up r
 &lt;li>&lt;a href="https://github.com/linagora/jmap-client-ts" target="_blank">linagora/jmap-client-ts&lt;/a> - JMAP 1.0 client library in TypeScript&lt;/li>
 &lt;li>&lt;a href="https://github.com/lucaong/minisearch" target="_blank">lucaong/minisearch&lt;/a> - Tiny and powerful JavaScript full-text search engine for browser and Node&lt;/li>
 &lt;li>&lt;a href="https://github.com/olivernn/lunr.js" target="_blank">olivernn/lunr.js&lt;/a> - A bit like Solr, but much smaller and not as bright&lt;/li>
+&lt;li>&lt;a href="https://github.com/jmapio/jmap-js" target="_blank">jmapio/jmap-js&lt;/a> - A full JavaScript implementation of the JMAP data model&lt;/li>
+&lt;li>&lt;a href="https://github.com/xyflow/xyflow" target="_blank">xyflow/xyflow&lt;/a> - React Flow | Svelte Flow - Powerful open source libraries for building node-based UIs with React (&lt;a href="https://reactflow.dev" target="_blank">https://reactflow.dev&lt;/a>) or Svelte (&lt;a href="https://svelteflow.dev" target="_blank">https://svelteflow.dev&lt;/a>). Ready out-of-the-box and infinitely customi&lt;/li>
 &lt;/ul>
 &lt;h2 id="library---misc">Library - Misc&lt;/h2>
 &lt;ul>
@@ -3577,7 +3566,7 @@ The next pattern starts at 000023d0 and ends at 000023df, which again lines up r
 &lt;li>&lt;a href="https://github.com/spulec/freezegun" target="_blank">spulec/freezegun&lt;/a> - Let your Python tests travel through time&lt;/li>
 &lt;li>&lt;a href="https://github.com/python-smpplib/python-smpplib" target="_blank">python-smpplib/python-smpplib&lt;/a> - SMPP library for Python&lt;/li>
 &lt;li>&lt;a href="https://github.com/fastapi/fastapi" target="_blank">fastapi/fastapi&lt;/a> - FastAPI framework, high performance, easy to learn, fast to code, ready for production&lt;/li>
-&lt;li>&lt;a href="https://github.com/nedbat/coveragepy" target="_blank">nedbat/coveragepy&lt;/a> - The code coverage tool for Python&lt;/li>
+&lt;li>&lt;a href="https://github.com/coveragepy/coveragepy" target="_blank">coveragepy/coveragepy&lt;/a> - The code coverage tool for Python&lt;/li>
 &lt;li>&lt;a href="https://github.com/cherrypy/cherrypy" target="_blank">cherrypy/cherrypy&lt;/a> - CherryPy is a pythonic, object-oriented HTTP framework. &lt;a href="https://cherrypy.dev" target="_blank">https://cherrypy.dev&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://github.com/joke2k/faker" target="_blank">joke2k/faker&lt;/a> - Faker is a Python package that generates fake data for you.&lt;/li>
 &lt;li>&lt;a href="https://github.com/caronc/apprise" target="_blank">caronc/apprise&lt;/a> - Apprise - Push Notifications that work with just about every platform!&lt;/li>
@@ -3590,6 +3579,7 @@ The next pattern starts at 000023d0 and ends at 000023df, which again lines up r
 &lt;li>&lt;a href="https://github.com/kakwa/pygraph_redis" target="_blank">kakwa/pygraph_redis&lt;/a> - Simple python library to manipulate directed graphs in redis&lt;/li>
 &lt;li>&lt;a href="https://github.com/kakwa/pylogic" target="_blank">kakwa/pylogic&lt;/a> - Python Module for Logical Validation (forked from Rob Truxler library)&lt;/li>
 &lt;li>&lt;a href="https://github.com/meltano/meltano" target="_blank">meltano/meltano&lt;/a> - Meltano: the declarative code-first data integration engine that powers your wildest data and ML-powered product ideas. Say goodbye to writing, maintaining, and scaling your own API integrations.&lt;/li>
+&lt;li>&lt;a href="https://github.com/scour-project/scour" target="_blank">scour-project/scour&lt;/a> - Scour - An SVG Optimizer / Cleaner&lt;/li>
 &lt;/ul>
 &lt;h2 id="library---rust">Library - Rust&lt;/h2>
 &lt;ul>
@@ -3597,6 +3587,7 @@ The next pattern starts at 000023d0 and ends at 000023df, which again lines up r
 &lt;li>&lt;a href="https://github.com/hickory-dns/hickory-dns" target="_blank">hickory-dns/hickory-dns&lt;/a> - A Rust based DNS client, server, and resolver&lt;/li>
 &lt;li>&lt;a href="https://github.com/elodin-sys/elodin" target="_blank">elodin-sys/elodin&lt;/a> - Elodin simulation and flight software monorepo.&lt;/li>
 &lt;li>&lt;a href="https://github.com/FyroxEngine/Fyrox" target="_blank">FyroxEngine/Fyrox&lt;/a> - 3D and 2D game engine written in Rust&lt;/li>
+&lt;li>&lt;a href="https://github.com/iced-rs/iced" target="_blank">iced-rs/iced&lt;/a> - A cross-platform GUI library for Rust, inspired by Elm&lt;/li>
 &lt;/ul>
 &lt;h2 id="libray---golang">Libray - Golang&lt;/h2>
 &lt;ul>
@@ -3634,6 +3625,7 @@ The next pattern starts at 000023d0 and ends at 000023df, which again lines up r
 &lt;li>&lt;a href="https://github.com/pressly/goose" target="_blank">pressly/goose&lt;/a> - A database migration tool. Supports SQL migrations and Go functions.&lt;/li>
 &lt;li>&lt;a href="https://github.com/jkaninda/okapi" target="_blank">jkaninda/okapi&lt;/a> - OKAPI - Lightweight Minimalist Go Web Framework with OpenAPI 3.0, Swagger UI and robust middleware&lt;/li>
 &lt;li>&lt;a href="https://github.com/golang-standards/project-layout" target="_blank">golang-standards/project-layout&lt;/a> - Standard Go Project Layout&lt;/li>
+&lt;li>&lt;a href="https://github.com/emersion/go-smtp" target="_blank">emersion/go-smtp&lt;/a> - 📤 An SMTP library for Go clients and servers&lt;/li>
 &lt;/ul>
 &lt;h2 id="misc">Misc&lt;/h2>
 &lt;ul>
@@ -3660,13 +3652,14 @@ The next pattern starts at 000023d0 and ends at 000023df, which again lines up r
 &lt;li>&lt;a href="https://github.com/goplus/xgo" target="_blank">goplus/xgo&lt;/a> - XGo is the first AI-native programming language that integrates software engineering into a unified whole. Our vision is to enable everyone to become a builder of the world.&lt;/li>
 &lt;li>&lt;a href="https://github.com/gcla/termshark" target="_blank">gcla/termshark&lt;/a> - A terminal UI for tshark, inspired by Wireshark&lt;/li>
 &lt;li>&lt;a href="https://github.com/lukeorth/poison" target="_blank">lukeorth/poison&lt;/a> - Professional Hugo theme for dev bloggers. Based on Mdo&amp;rsquo;s classic Hyde theme.&lt;/li>
-&lt;li>&lt;a href="https://github.com/typst/typst" target="_blank">typst/typst&lt;/a> - A new markup-based typesetting system that is powerful and easy to learn.&lt;/li>
+&lt;li>&lt;a href="https://github.com/typst/typst" target="_blank">typst/typst&lt;/a> - A markup-based typesetting system that is powerful and easy to learn.&lt;/li>
 &lt;li>&lt;a href="https://github.com/0x2E/fusion" target="_blank">0x2E/fusion&lt;/a> - A lightweight, self-hosted friendly RSS reader&lt;/li>
 &lt;li>&lt;a href="https://github.com/miniflux/v2" target="_blank">miniflux/v2&lt;/a> - Minimalist and opinionated feed reader&lt;/li>
 &lt;li>&lt;a href="https://github.com/apple/ml-simplefold" target="_blank">apple/ml-simplefold&lt;/a> -&lt;/li>
 &lt;li>&lt;a href="https://github.com/sitandr/typst-examples-book" target="_blank">sitandr/typst-examples-book&lt;/a> - Book of educational examples for Typst&lt;/li>
 &lt;li>&lt;a href="https://github.com/lonkaars/typst-metalogo" target="_blank">lonkaars/typst-metalogo&lt;/a> - Typeset LaTeX compiler logos in typst&lt;/li>
 &lt;li>&lt;a href="https://github.com/DeveloperPaul123/modern-cv" target="_blank">DeveloperPaul123/modern-cv&lt;/a> - A modern resume template written in Typst, inspired by Awesome-CV&lt;/li>
+&lt;li>&lt;a href="https://github.com/get-icon/geticon" target="_blank">get-icon/geticon&lt;/a> - Web / IT project stack / tool / technique icon / logo collection &amp;amp; markdown / HTML generator :electron:🚀&lt;/li>
 &lt;/ul>
 &lt;h2 id="software-for-127001">Software for 127.0.0.1&lt;/h2>
 &lt;ul>
@@ -3687,6 +3680,7 @@ The next pattern starts at 000023d0 and ends at 000023df, which again lines up r
 &lt;li>&lt;a href="https://github.com/CyberTimon/RapidRAW" target="_blank">CyberTimon/RapidRAW&lt;/a> - A beautiful, non-destructive, and GPU-accelerated RAW image editor built with performance in mind.&lt;/li>
 &lt;li>&lt;a href="https://github.com/FreshRSS/FreshRSS" target="_blank">FreshRSS/FreshRSS&lt;/a> - A free, self-hostable news aggregator…&lt;/li>
 &lt;li>&lt;a href="https://github.com/pythops/impala" target="_blank">pythops/impala&lt;/a> - 🛜 TUI for managing wifi on Linux&lt;/li>
+&lt;li>&lt;a href="https://github.com/squidowl/halloy" target="_blank">squidowl/halloy&lt;/a> - IRC application written in Rust&lt;/li>
 &lt;/ul>
 &lt;h2 id="tools---dev">Tools - Dev&lt;/h2>
 &lt;ul>
