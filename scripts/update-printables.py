@@ -17,10 +17,10 @@ USER_ID = "3337391"  # Change this to your user ID
 USER_NICK = "kakwa"
 
 HEADERS = {
-    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:143.0) Gecko/20100101 Firefox/143.0',
+    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:143.0) Gecko/20100101 Firefox/145.0',
     'Accept': 'application/graphql-response+json, application/graphql+json, application/json',
     'Accept-Language': 'en',
-    'graphql-client-version': 'v2.2.2',
+    'graphql-client-version': 'v2.2.3',
     'content-type': 'application/json',
     'Origin': 'https://www.printables.com',
 }
