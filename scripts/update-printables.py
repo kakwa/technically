@@ -146,7 +146,7 @@ def generate_markdown(collections: List[Dict[str, Any]], user_id: str) -> str:
     md_lines.append(
 """
 +++
-title = "3D Models I Liked 💛 - Printables.com"
+title = "3D Models I Liked ❤️ - Printables.com"
 date = 2025-01-01T00:00:00+02:00
 draft = false
 summary = "A curated list of interesting models I've liked on Printables"
