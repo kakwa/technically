@@ -1,4 +1,46 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Technically some technical stuff.</title><link>https://technically.kakwalab.ovh/</link><description>Recent content on Technically some technical stuff.</description><generator>Hugo</generator><language>en</language><managingEditor>carpentier.pf@gmail.com (Pierre-François Carpentier)</managingEditor><webMaster>carpentier.pf@gmail.com (Pierre-François Carpentier)</webMaster><copyright>&amp;copy; &lt;a href="https://github.com/kakwa">Pierre-Francois Carpentier&lt;/a> 2025</copyright><lastBuildDate>Mon, 24 Nov 2025 21:00:37 +0100</lastBuildDate><atom:link href="https://technically.kakwalab.ovh/index.xml" rel="self" type="application/rss+xml"/><item><title>GANSS GS87 - Keyboard Factory Reset</title><link>https://technically.kakwalab.ovh/posts/keyboard/</link><pubDate>Mon, 24 Nov 2025 21:00:37 +0100</pubDate><author>carpentier.pf@gmail.com (Pierre-François Carpentier)</author><guid>https://technically.kakwalab.ovh/posts/keyboard/</guid><description>&lt;p>Just a really quick one. I&amp;rsquo;m kind of cheap, so years ago, I bought a &lt;code>Hello Ganss&lt;/code> &lt;code>GS87-C&lt;/code> mechanical keyboard.&lt;/p>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Technically some technical stuff.</title><link>https://technically.kakwalab.ovh/</link><description>Recent content on Technically some technical stuff.</description><generator>Hugo</generator><language>en</language><managingEditor>carpentier.pf@gmail.com (Pierre-François Carpentier)</managingEditor><webMaster>carpentier.pf@gmail.com (Pierre-François Carpentier)</webMaster><copyright>&amp;copy; &lt;a href="https://github.com/kakwa">Pierre-Francois Carpentier&lt;/a> 2025</copyright><lastBuildDate>Fri, 02 Jan 2026 18:29:53 +0100</lastBuildDate><atom:link href="https://technically.kakwalab.ovh/index.xml" rel="self" type="application/rss+xml"/><item><title>PCIe x16 to x1 GPU Adapter - Feels wrong, but does work</title><link>https://technically.kakwalab.ovh/posts/gpu-pciex1/</link><pubDate>Fri, 02 Jan 2026 18:29:53 +0100</pubDate><author>carpentier.pf@gmail.com (Pierre-François Carpentier)</author><guid>https://technically.kakwalab.ovh/posts/gpu-pciex1/</guid><description>&lt;h1 id="why-would-you-do-that">Why Would You Do That?&lt;/h1>
+&lt;p>I have an old PC tower lying around that I use as a lab/KVM hypervisor from time to time. The thing is completely headless like a server should&amp;hellip; but maybe a bit too headless actually.&lt;/p>
+&lt;p>The motherboard doesn&amp;rsquo;t have any video port, and the two PCIEx16 ports are used by some old OCZ Velodrives storage cards, so there is no way to plug a screen.&lt;/p>
+&lt;p>To a degree, it&amp;rsquo;s possible to make do with the serial port, but it gets old really fast when trying to troubleshoot pre-grub boot issues or reinstalling the OS.&lt;/p>
+&lt;h1 id="the-setup">The Setup&lt;/h1>
+&lt;p>I vaguely remember seeing some mining rigs using PCIe adapters (and even dremeling the cards themselves), so I tried my luck with one of &lt;a href="https://www.amazon.com/cablecc-Extender-Converter-Extension-Graphics/dp/B0BYNH176D?crid=HG6EBTKK3OS7&amp;amp;dib=eyJ2IjoiMSJ9.EwnOUmfceQIKLekBlQwb7DhmqXkUDZoML0Z-INretXkaww0q6qO7xoX9isxXmQZlCoiKp00o3tYh5-Ip3B0qrKfeQ17aI6t0FqgW8Mh8Abc-3ssOW86xO-AzkEhdJgOQBHJTQ--8qid0rbXw-tvL0Ywf6DP8vGB7Q0QEasrv8NjEdFxiucDhMTTGlbE9Y_QtO-aT0xZ7PALB5etOItTPkf2nrrza_JhcIKN1aXLuCMQ.9yqEpdMJmknQ-CnYzQRt5RRSBE3iFHN-yWP7FzbfE2g&amp;amp;dib_tag=se&amp;amp;keywords=PCI-E%2BExpress%2B1%2Bx%2Bto%2B16%2Bx&amp;amp;qid=1768948246&amp;amp;sprefix=pci-e%2Bexpress%2B1%2Bx%2Bto%2B16%2Bx%2Caps%2C147&amp;amp;sr=8-2&amp;amp;th=1" target="_blank">these from Amazon&lt;/a>.&lt;/p>
+&lt;p>Next to the card I had lying around (an old Nvidia GT 710), it looks like that:&lt;/p>
+&lt;figure>&lt;img src="https://technically.kakwalab.ovh/images/pciex1/parts.jpg"
+ alt="New bracket design">&lt;figcaption>
+ &lt;p>The card &amp;amp; the adapter&lt;/p>
+ &lt;/figcaption>
+&lt;/figure>
+
+&lt;p>With the added height the stock bracket no longer fitted, so I designed a new one.&lt;/p>
+&lt;p>I &lt;a href="https://www.printables.com/model/599970-pc-extension-card-slot-brackets-in-30-variation-fo/" target="_blank">started from this great collection&lt;/a> (from an absolute chad also using FreeCAD).&lt;/p>
+&lt;p>From there, the design was fairly straightforward, using a photo as refence for drawing the offsetted cutouts.&lt;/p>
+&lt;figure>&lt;img src="https://technically.kakwalab.ovh/images/pciex1/new_bracket.jpg"
+ alt="New bracket design">&lt;figcaption>
+ &lt;p>new bracket&lt;/p>
+ &lt;/figcaption>
+&lt;/figure>
+
+&lt;p>With the new bracket, things looked like that.&lt;/p>
+&lt;figure>&lt;img src="https://technically.kakwalab.ovh/images/pciex1/pciex1_slot.jpg"
+ alt="PCIe x1 slot">&lt;figcaption>
+ &lt;p>PCIEx1 GPU, Shiny!&lt;/p>
+ &lt;/figcaption>
+&lt;/figure>
+
+&lt;p>And here how it looks with all the cards back in the case:&lt;/p>
+&lt;figure>&lt;img src="https://technically.kakwalab.ovh/images/pciex1/alotofcards.jpg"
+ alt="Multiple GPU cards">&lt;figcaption>
+ &lt;p>Yep, that&amp;rsquo;s full&lt;/p>
+ &lt;/figcaption>
+&lt;/figure>
+
+&lt;h1 id="some-closing-thoughts">Some Closing Thoughts&lt;/h1>
+&lt;p>It feels like it should not work, but it does!&lt;/p>
+&lt;p>That being said, be aware of the slot power limits. I&amp;rsquo;m not sure why (since additional PCIe lines don&amp;rsquo;t add power pins), but &lt;a href="https://en.wikipedia.org/wiki/PCI_Express#Power" target="_blank">PCIe x1 slots&lt;/a> can draw significantly less power than PCIe x16 slots.
+Consequently, I would only do it with the lowest power possible GPUs, like fanless &amp;amp; cheap Nvidia GT 710 or an AMD R5.&lt;/p>
+&lt;p>The cards also need to be low profile for this assembly to fit in the case.&lt;/p>
+&lt;p>With these caveats in place, this hack does work, however wrong it feels, and is definitely more convenient than having to open the case and juggle cards around whenever this machine is misbehaving.&lt;/p>
+&lt;p>In the unlikely case you are in the same boat (no video port, or some for AI setup maybe?), it&amp;rsquo;s definitely an option worth trying as long as you are not hoping to play Crysis on the poor thing.&lt;/p></description></item><item><title>GANSS GS87 - Keyboard Factory Reset</title><link>https://technically.kakwalab.ovh/posts/keyboard/</link><pubDate>Mon, 24 Nov 2025 21:00:37 +0100</pubDate><author>carpentier.pf@gmail.com (Pierre-François Carpentier)</author><guid>https://technically.kakwalab.ovh/posts/keyboard/</guid><description>&lt;p>Just a really quick one. I&amp;rsquo;m kind of cheap, so years ago, I bought a &lt;code>Hello Ganss&lt;/code> &lt;code>GS87-C&lt;/code> mechanical keyboard.&lt;/p>
 &lt;figure>&lt;img src="https://technically.kakwalab.ovh/images/keyboard/logo.png"
  alt="ganss logo">&lt;figcaption>
  &lt;p>Hello Ganss&lt;/p>
