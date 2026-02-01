@@ -66,5 +66,5 @@ This playbook configures:
 * Base tools I like (zsh, btop, nmap, etc)
 * Avahi for local mDNS resolution (`kvm.local`)
 * LVM setup for the various drives in the machine, in 3 tiers: slow (spinning rust), medium (base SSD), fast (OCZ VeloDrive).
-* [LibVirtD](https://libvirt.org/docs.html), with these 3 pools
+* [LibVirtD](https://libvirt.org/docs.html), with storage 3 pools, 1 private network, 1 bridge NIC.
 * Some Serial Console just in case
