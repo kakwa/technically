@@ -80,6 +80,8 @@ I ended up choosing **Talos Linux**. It looked like the most common option, and 
 
 ## Kubernetes Nodes Creation
 
+TODO rework to include the TF code example
+
 The Nodes were deployed using OpenTofu/Terraform. The [following code](https://github.com/kakwa/home.tf/tree/main/terraform) leverages the [KMV/libvirt](https://registry.terraform.io/providers/dmacvicar/libvirt/latest/docs) and the [Talos](https://registry.terraform.io/providers/siderolabs/talos/latest/docs/resources/image_factory_schematic) providers.
 
 Talos has an [Image Factory](https://factory.talos.dev/) enabling to create custom images with version, architecture, addons and other options. The TF Provider is used to [configure, create and download](https://github.com/kakwa/home.tf/blob/main/terraform/images-talos.tf) said image for our deployment.
