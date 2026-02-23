@@ -75,11 +75,32 @@ For the base OS running the Kubernetes nodes, there are several options worth co
 
 **Fedora CoreOS** is Red Hat's successor to the original CoreOS, maintaining the container-focused philosophy with auto-updates and ignition provisioning.
 
-I ended up choosing **Talos Linux**. It looked like the most common option, and it's also not linked (yet) to the usual corporate vampires.
+I ended up choosing **Talos Linux**. It looked like the most common option, and it's not linked (yet) to the usual corporate vampires.
 
-## Base Archiecture
+## k8s Base Architecture
 
-TODO: add a diagram with the most basic K8s "production" setup possible (control plane & its components, workers, Gateway API).
+Control Plane Components:
+
+* [etcd](https://etcd.io/) (third party): Consistent and highly-available key value store for all API server data & states.
+* [kube-apiserver](https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver/): The core component server that exposes the Kubernetes HTTP API.
+* [kube-scheduler](https://kubernetes.io/docs/reference/command-line-tools-reference/kube-scheduler/): Looks for Pods not yet bound to a node, and assigns each Pod (~container execution) to a suitable node.
+* [kube-controller-manager](https://kubernetes.io/docs/reference/command-line-tools-reference/kube-controller-manager/): manage the individual controllers loops(replication, namespace, endpoint, etc).
+
+Worker Components:
+
+* [kubelet](https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet/): Ensures that Pods are running, including their containers.
+* container runtime (third party): Software responsible for running containers, in our case [containerd](https://containerd.io/), but other are possible
+
+Load Balancer:
+
+* [Gateway API](https://kubernetes.io/docs/concepts/services-networking/gateway/) (third party): OSI Level 4 and 7 Load Balancer to connect our Pods to the outside, here, we will use Traefik, but [other implementations are available](https://gateway-api.sigs.k8s.io/implementations/#gateway-controller-implementation-status). It replaces the old [Ingress Controllers](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/).
+
+TODO: add more optional components & container registry.
+
+TODO: add a diagram with the most basic K8s "production" setup possible (controle plane & its components, workers, Gateway API).
+
+TODO: add notes about how everything integrates together (auth, communication, etc).
+TODO: talos additional components.
 
 ## Talos Nodes Creation
 
