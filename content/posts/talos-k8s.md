@@ -95,12 +95,38 @@ Load Balancer:
 
 * [Gateway API](https://kubernetes.io/docs/concepts/services-networking/gateway/) (third party): OSI Layer 4 and 7 load balancer to connect our Pods to the outside, here, we will use Traefik, but [other implementations are available](https://gateway-api.sigs.k8s.io/implementations/#gateway-controller-implementation-status). It replaces the old [Ingress Controllers](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/).
 
-TODO: add more optional components & container registry.
+```
+                                                                   |
+                          Worker/Apps Runtime                      |               Control Plane
+                                                                   |
+                   ┌────────────────────────────┐                  |
+                   │         Internet           │                  |
+                   └────────────┬───────────────┘                  |
+                                │                                  |
+                   ┌────────────▼───────────────┐                  |    ┌─────────────────────────────────────────┐
+                   │    Gateway API (Traefik)   │                  |    │         Control Plane Nodes             │
+                   │----------------------------│                  |    │-----------------------------------------│
+                   │ - HTTP / TCP Routing       │                  |    │ kube-apiserver                          │
+                   │ - TLS Termination          │                  |    │ - Kubernetes HTTP API                   │
+                   └────────────┬───────────────┘                  |    │ - AuthN / AuthZ / Admission             │
+            ┌───────────────────┼──────────────────────┐           |    │                                         │
+ ┌──────────▼──────┐   ┌────────▼────────┐   ┌─────────▼──────┐    |    │ kube-scheduler                          │
+ │  Worker Node 1  │   │  Worker Node 2  │   │  Worker Node N │    |    │                                         │
+ │ kubelet         │   │ kubelet         │   │ kubelet        │    |    │ kube-controller-manager                 │
+ │ containerd      │   │ containerd      │   │ containerd     │    |    │ - Namespace controller                  │
+ │ ----------------│   │ --------------- │   │ ---------------│    |    │ - Replication controller                │
+ │ Pods            │   │ Pods            │   │ Pods           │    |    │                                         │
+ │ - App containers│   │ - App containers│   │- App containers│    |    │ etcd (cluste state storage)             │
+ │ - Sidecars      │   │                 │   │                │    |    │                                         │
+ └──────────┬──────┘   └────────┬────────┘   └─────────┬──────┘    |    └──────────────────┬──────────────────────┘
+            └───────────────────┴──────────────────────┴─Kubernetes API (mTLS)─────────────┘
+                                                                   |
+                                                                   |
+```
 
-TODO: add a diagram with the most basic K8s "production" setup possible (control plane & its components, workers, Gateway API).
+The cluster components talks to each other using http & gRPC and usually authenticate eachother using mutual TLS certificates.
 
-TODO: add notes about how everything integrates together (auth, communication, etc).
-TODO: talos additional components.
+In addition, Talos adds its own [components (apid, machined, etc)](https://docs.siderolabs.com/talos/v1.6/learn-more/components) to configure the cluster and manage their idiosyncrasies (custom init, etc).
 
 ## Talos Nodes Creation
 
