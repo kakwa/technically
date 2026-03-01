@@ -555,4 +555,49 @@ resource "libvirt_domain" "workers" {
 }
 ```
 
+# At Last, K8S & Talos Setup
 
+## Cluster Configuration Deployment
+
+TODO env file (in terraform)
+
+TODO note it could be done in terraform directly, but chose script to better show this step.
+
+TODO configuration init
+
+TODO configuration bootsrapping
+
+TODO VIP for kubectl
+
+## Traefik Deployment
+
+TODO
+
+TODO VIP for k8s(?)
+
+## Our First App!
+
+TODO
+
+# Additional Bits
+
+## ArgoCD
+
+TODO
+
+## Management UI
+
+TODO
+
+
+## Persistant iSCSI Volumes
+
+TODO
+
+## Log Centralization
+
+TODO
+
+## Prometheus
+
+TODO
