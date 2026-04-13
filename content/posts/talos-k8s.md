@@ -15,21 +15,22 @@ managed by dedicated core/infrastructure teams.
 
 On one hand, it's great, because these core services require a lot
 of babysitting and eat a lot of the bandwidth which would be better
-used elsewhere, like implementing higher level services closer to the
+used elsewhere, namely implementing higher level services closer to the
 business & client needs.
 
-On the other, it can leave gaps in your CV, especially if, like me, you have scruples about gratuitously over-engineering things at your employer's expense just to play with new and "not really relevant for the task" tech.
+On the other, it can leave gaps in your CV, especially if, like me, you have scruples
+about gratuitously over-engineering things at your employer's expense just to learn new
+(irrelevant to the project) tools/framework on the job.
 
-One such gap I currently have is deploying & managing Kubernetes Clusters.
+One such gap I currently have is deploying and managing Kubernetes Clusters.
 
 To be honest, I kind of avoided diving into K8s. Maybe it's an unfounded bias on my part,
-but having quickly looked into it, and barely touched some Helm templates at work,
-Kubernetes always felt a bit overcomplicated, clunky and not very pleasant to manage.
+but Kubernetes always felt a bit overcomplicated, clunky and not very pleasant to manage.
 
-But, well, I need to fill this gap in my CV, and I'm not willing to do it on my employer's time.
-Fortunately, through the magic of Open Source, the Internet and a 12 years old PC
-with 32GB of RAM (actually quite valuable these days :p), I should be able to fill in this gap by
-deploying the most over-engineered solution for self-hosting at home.
+But, well, it's what the cool kids are doing, so I need to fill this gap in my CV.
+
+Through the magic of Open Source, the Internet and a 12 years old PC
+with 32GB of RAM (actually quite valuable these days :p), I should be able to manage.
 
 ## What I Want Out Of This
 
@@ -49,7 +50,7 @@ Like chocolate, k8s comes in various flavors. I contemplated deploying it on a t
 
 But in the end, I ended taking the easier path of picking a specialized distribution.
 
-I considered the following:
+I considered the following ones:
 
 **Talos Linux** is an immutable, API-driven operating system built specifically and exclusively for Kubernetes. It has no SSH access, no shell, and everything is configured through declarative configs and the `talosctl` CLI.
 
@@ -78,39 +79,37 @@ Load Balancer:
 * [Gateway API](https://kubernetes.io/docs/concepts/services-networking/gateway/) (third party): OSI Layer 4 and 7 load balancer to connect our Pods to the outside, here, we will use Traefik, but [other implementations are available](https://gateway-api.sigs.k8s.io/implementations/#gateway-controller-implementation-status). It replaces the old [Ingress Controllers](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/).
 
 ```
-                                                                   |
-                          Worker/Apps Runtime                      |               Control Plane
-                                                                   |
-                   ┌────────────────────────────┐                  |
-                   │         Internet           │                  |
-                   └────────────┬───────────────┘                  |
-                                │                                  |
-                   ┌────────────▼───────────────┐                  |    ┌─────────────────────────────────────────┐
-                   │    Gateway API (Traefik)   │                  |    │         Control Plane Nodes             │
-                   │----------------------------│                  |    │-----------------------------------------│
-                   │ - HTTP / TCP Routing       │                  |    │ kube-apiserver                          │
-                   │ - TLS Termination          │                  |    │ - Kubernetes HTTP API                   │
-                   └────────────┬───────────────┘                  |    │ - AuthN / AuthZ / Admission             │
-            ┌───────────────────┼──────────────────────┐           |    │                                         │
- ┌──────────▼──────┐   ┌────────▼────────┐   ┌─────────▼──────┐    |    │ kube-scheduler                          │
- │  Worker Node 1  │   │  Worker Node 2  │   │  Worker Node N │    |    │                                         │
- │ kubelet         │   │ kubelet         │   │ kubelet        │    |    │ kube-controller-manager                 │
- │ containerd      │   │ containerd      │   │ containerd     │    |    │ - Namespace controller                  │
- │ ----------------│   │ --------------- │   │ ---------------│    |    │ - Replication controller                │
- │ Pods            │   │ Pods            │   │ Pods           │    |    │                                         │
- │ - App containers│   │ - App containers│   │- App containers│    |    │ etcd (cluste state storage)             │
- │ - Sidecars      │   │                 │   │                │    |    │                                         │
- └──────────┬──────┘   └────────┬────────┘   └─────────┬──────┘    |    └──────────────────┬──────────────────────┘
-            └───────────────────┴──────────────────────┴─Kubernetes API (mTLS)─────────────┘
-                                                                   |
-                                                                   |
+                          Worker/Apps Runtime                        |            Control Plane
+                                                                     |
+                   ┌────────────────────────────┐                    |
+                   │         Internet           │                    |
+                   └────────────┬───────────────┘                    |
+                                │                                    |
+                   ┌────────────▼───────────────┐                    |    ┌──────────────────────────────┐
+                   │    Gateway API (Traefik)   │                    |    │      Control Plane Nodes     │
+                   │----------------------------│                    |    │------------------------------│
+                   │ - HTTP / TCP Routing       │                    |    │ kube-apiserver               │
+                   │ - TLS Termination          │                    |    │ - Kubernetes HTTP API        │
+                   └────────────┬───────────────┘                    |    │ - AuthN / AuthZ / Admission  │
+            ┌───────────────────┼───────────────────────┐            |    │                              │
+ ┌──────────▼──────┐   ┌────────▼────────┐   ┌──────────▼───────┐    |    │ kube-scheduler               │
+ │  Worker Node 1  │   │  Worker Node 2  │   │   Worker Node N  │    |    │                              │
+ │ kubelet         │   │ kubelet         │   │  kubelet         │    |    │ kube-controller-manager      │
+ │ containerd      │   │ containerd      │   │  containerd      │    |    │ - Namespace controller       │
+ │ ----------------│   │ --------------- │   │  --------------- │    |    │ - Replication controller     │
+ │ Pods            │   │ Pods            │   │  Pods            │    |    │                              │
+ │ - App containers│   │ - App containers│   │ - App containers │    |    │ etcd (cluster state storage) │
+ │ - Sidecars      │   │                 │   │                  │    |    │                              │
+ └──────────┬──────┘   └────────┬────────┘   └──────────┬───────┘    |    └──────────────────┬───────────┘
+            └───────────────────┴───────────────────────┴─Kubernetes API (mTLS)──────────────┘
+                                                                     |
 ```
 
-The cluster components talks to each other using http & gRPC and usually authenticate eachother using mutual TLS certificates.
+The cluster components talks to each other using http & gRPC and usually authenticate each other using mutual TLS certificates.
 
 In addition, Talos adds its own [components (apid, machined, etc)](https://docs.siderolabs.com/talos/v1.6/learn-more/components) to configure the cluster and manage their idiosyncrasies (custom init, etc).
 
-# A Few Not-k8s Stuff
+# A Few None-k8s Stuff
 
 ## KVM Host Setup
 
@@ -333,7 +332,7 @@ resource "talos_image_factory_schematic" "this" {
 
 # Build the image URL from the schematic
 locals {
-  talos_version   = "v1.12.3"
+  talos_version   = "v1.12.6"
   talos_image_url = "https://factory.talos.dev/image/${talos_image_factory_schematic.this.id}/${local.talos_version}/nocloud-amd64.qcow2"
 }
 
@@ -559,15 +558,108 @@ resource "libvirt_domain" "workers" {
 
 ## Cluster Configuration Deployment
 
-TODO env file (in terraform)
+After the VMs are up, we need to drive Talos from a machine that can reach them. The [home.tf](https://github.com/kakwa/technically.kakwalab.ovh/tree/main/home.tf) setup uses a small script plus an environment file so the steps are explicit; the same could be done from Terraform (e.g. `null_resource` + `local-exec`), but a script makes the sequence easier to follow and re-run by hand.
 
-TODO note it could be done in terraform directly, but chose script to better show this step.
+### Environment file (`talos-env.sh`) from Terraform
 
-TODO configuration init
+Terraform generates `talos-env.sh` from the `env.tpl` template so the script knows control plane IPs, worker IPs, and the control-plane VIP. The IPs come from libvirt domain interface addresses (or a `virsh domifaddr` fallback when VMs are not running during `terraform apply`). The template looks like:
 
-TODO configuration bootsrapping
+```hcl
+# env.tpl (Terraform template)
+# Generated from Terraform. Talos node IPs from virsh domifaddr when VMs are running.
 
-TODO VIP for kubectl
+export CONTROL_PLANE_IP=(${join(" ", [for ip in control_plane_ips : "${"\""}${ip}${"\""}"])})
+export WORKER_IP=(${join(" ", [for ip in worker_ips : "${"\""}${ip}${"\""}"])})
+export CONTROL_PLANE_VIP="${control_plane_vip}"
+```
+
+The `local_file.env` resource in `inventory.tf` renders this with `control_plane_ips`, `worker_ips`, and `control_plane_vip` (from `var.control_plane_vip`), and writes `terraform/talos-env.sh`. The init script sources it.
+
+### Configuration init
+
+From the directory where `talos-env.sh` and the script live, source the env and generate the Talos/Kubernetes config with a temporary endpoint (first control plane node):
+
+```bash
+source ./talos-env.sh
+CLUSTER_NAME="kawkalab-talos-cluster"
+BOOTSTRAP_CP="${CONTROL_PLANE_IP[0]}"
+TEMP_ENDPOINT="https://${BOOTSTRAP_CP}:6443"
+
+talosctl gen config "${CLUSTER_NAME}" "${TEMP_ENDPOINT}"
+```
+
+This creates `controlplane.yaml`, `worker.yaml`, and `talosconfig`. The script skips this if those files already exist.
+
+### Configuration bootstrapping
+
+Apply the generated config to all nodes (control planes first, then workers), then bootstrap the cluster once:
+
+```bash
+# Apply control planes
+for ip in "${CONTROL_PLANE_IP[@]}"; do
+  talosctl apply-config --insecure --nodes "${ip}" --file controlplane.yaml
+done
+
+# Apply workers
+for ip in "${WORKER_IP[@]}"; do
+  talosctl apply-config --insecure --nodes "${ip}" --file worker.yaml
+done
+
+# Wait for nodes to come back up
+sleep 120
+
+# Bootstrap (only once, on the first control plane)
+talosctl bootstrap --endpoints "${BOOTSTRAP_CP}" --nodes "${BOOTSTRAP_CP}"
+```
+
+The script uses the node lists from `talos-env.sh` so it does not rely on Talos discovery. After bootstrap, it waits for cluster health (with a timeout) and then fetches the kubeconfig:
+
+```bash
+talosctl health --endpoints "${BOOTSTRAP_CP}" --nodes "${BOOTSTRAP_CP}" \
+  --control-plane-nodes "$(IFS=,; echo "${CONTROL_PLANE_IP[*]}")" \
+  --worker-nodes "$(IFS=,; echo "${WORKER_IP[*]}")" \
+  --wait-timeout 5m
+
+talosctl kubeconfig . --endpoints "${BOOTSTRAP_CP}" --nodes "${BOOTSTRAP_CP}"
+```
+
+### VIP for kubectl
+
+To talk to the API through a single, stable address, the script enables a virtual IP on the control plane nodes and points the cluster endpoint at it. First it patches the machine config to add the VIP on the main interface:
+
+```bash
+for ip in "${CONTROL_PLANE_IP[@]}"; do
+  talosctl patch mc --endpoints "${ip}" --nodes "${ip}" --patch "
+machine:
+  network:
+    interfaces:
+      - interface: eth0
+        dhcp: true
+        vip:
+          ip: ${CONTROL_PLANE_VIP}
+"
+done
+```
+
+After a short wait for VIP election, it updates the cluster endpoint to use the VIP and regenerates the kubeconfig:
+
+```bash
+for ip in "${CONTROL_PLANE_IP[@]}"; do
+  talosctl patch mc --endpoints "${ip}" --nodes "${ip}" --patch "
+cluster:
+  controlPlane:
+    endpoint: https://${CONTROL_PLANE_VIP}:6443
+"
+done
+
+talosctl kubeconfig . --endpoints "${BOOTSTRAP_CP}" --nodes "${BOOTSTRAP_CP}"
+```
+
+Then use the VIP for kubectl: `export KUBECONFIG=$(pwd)/kubeconfig` and `kubectl get nodes`. The control plane VIP is the same one used in DNS (e.g. RFC 2136) for the Talos/Kubernetes API hostname.
+
+## DNS Manager
+
+TODO
 
 ## Traefik Deployment
 
