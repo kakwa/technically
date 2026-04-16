@@ -1,31 +1,31 @@
 +++
 title = 'Cloud @Home'
-date = 2026-02-01T16:55:15+01:00
+date = 2026-01-30T16:55:15+01:00
 draft = true
-summary = "Few Tidbits About Managing VMs With Tofu/Terraform"
+summary = "Tidbits About Managing KVM Hypervisor With Tofu/Terraform"
 +++
 
 # Introduction
 
-These days, @Work, we don't really have to care about server racking, cabling, powering, and the many other \*ings.
+These days, @Work, we don't really have to care about server racking, cabling, powering, and the many other \*ings required when dealing with hardware. Logistic companies like Amazon/AWS have managed to hide it all behind a convinient API, and frankly, do it better.
 
-Logistic companies like Amazon/AWS have managed to hide all that behind a convinient API. 
-
-That's only valid in a professional context however. @Home, unless you are really motivated, and well-off financially (see [these](https://www.reddit.com/r/aws/comments/lbqcos/my_forgotten_account_has_a_20000_bill_how_screwed/) [billing](https://www.reddit.com/r/googlecloud/comments/1kimlc8/ddos_98k_firebase_bill_guy_the_billing_support/) [horror](https://www.reddit.com/r/nextjs/comments/1o1zs2u/unexpected_1100_vercel_bill_im_just_an_employee_i/) [stories](https://www.youtube.com/watch?v=ihnGot4nUS4)), putting your credit card into an AWS, GCP or Azure subscription, is not great.
-
-The "old rig in the closet" or "10 inch rack of refurb Lenovo mini-PCs" are often more sensible options.
+That's only valid in a professional context however. @Home, unless you are /r/wallstreetbets inclined financially, putting your credit card into Vercel, AWS or GCP is a bit risky for your bank account (see [these](https://www.reddit.com/r/aws/comments/lbqcos/my_forgotten_account_has_a_20000_bill_how_screwed/) [billing](https://www.reddit.com/r/googlecloud/comments/1kimlc8/ddos_98k_firebase_bill_guy_the_billing_support/) [horror](https://www.reddit.com/r/nextjs/comments/1o1zs2u/unexpected_1100_vercel_bill_im_just_an_employee_i/) [stories](https://www.youtube.com/watch?v=ihnGot4nUS4)). Homelabing with an old rig in the closet or a fancy 10" rack of refurb mini-PCs is often a more sensible option.
 
 {{< figure src="/images/cloud-at-home/meme.jpg" alt="meme cloud at home" caption="Cloud @Home" >}}
 
-But not having a Cloud API hidding people racking servers makes things a bit more hands-on, manual and less convinient... or so it seems...
+But it seems to come at a cost: things are no longer hidden behind convinient Cloud APIs... 
 
-We can actually re-use most of these tools reasonably easily at home and this article will focus on one of them (or its fork): **Terraform/Tofu**.
+... or so it seems...
 
-Wouldn't it be nice to be able to manage our `libvirt`/`kvm` VMs and networks in `HLC` like we would on an AWS account?
+In reality, we can actually re-use at home most of the same tools availabnle for the Cloud.
 
-Well, thanks to dmacvivar's [libvirt provider](https://registry.terraform.io/providers/dmacvicar/libvirt/latest/docs), we can, and this article with show how.
+This post will present one of them: **Terraform/Tofu** and show how it can manage a simple `LibVirtd`/`KVM` hypervisor.
 
 # Creating Stuff
+
+Wouldn't it be nice to be able to manage our `libvirt`/`kvm` hypervisor in `HLC` like we would on an AWS account?
+
+Well, thanks to dmacvivar's [libvirt provider](https://registry.terraform.io/providers/dmacvicar/libvirt/latest/docs), we can, and here is how.
 
 ## Network
 
@@ -33,7 +33,11 @@ TODO
 
 ## Base Image
 
-We could install the VM using an `.iso` or with `pxe`, but the more convenient option is to directly download the official Debian cloud image, a bit like if we were using an AMI on AWS:
+We could install the VM using a modified `.iso` or with `pxe` netboot setup, like we would with bare metal machines.
+
+But, since we are already past the bare metal, a more convenient option is to directly download and use official images from [Debian](https://cloud.debian.org/images/cloud/), [Rocky](https://download.rockylinux.org/pub/rocky/10/images/x86_64/) or your preferred distribution.
+
+By just pointing atthe URL, the `libvirt` `Tofu` module can download and register these base image in our hypervisor:
 
 ```hcl
 locals {
@@ -56,21 +60,23 @@ resource "libvirt_volume" "debian_base" {
 
 ## Cloud Init
 
-From there, we can bootstrap the VM (maybe for [Ansible](https://docs.ansible.com/) or [Salt](https://docs.saltproject.io/en/latest/contents.html)), using [`cloud-init`](https://docs.cloud-init.io/en/latest/index.html) to:
+These cloud images usually ship with [`cloud-init`](https://docs.cloud-init.io/en/latest/index.html), which we can leverage to bootstrap the VMs.
 
-* create a bootstrapping account `admin` with sudoers and an ssh key
-* configure the network interfaces (including static IP)
-* install and enable `qemu-guest-agent` (necessary to report back the static IP to the tf provider via `libvirtd`)
+At this stage, it's advisable to do as little as possible, but we will typically configure:
+
+* some network settings
+* a [Salt](https://docs.saltproject.io/en/latest/contents.html)/[Puppet](https://help.puppet.com/core/current/Content/PuppetCore/puppet_index.htm)/[Chef](https://docs.chef.io/) agent or some SSH credentials for [Ansible](https://docs.ansible.com/) for further configuration.
+* usually, a default account for troubleshooting
+
+The `cloud-init` payload can also be managed directly by the Tofu `libvirt` provider.
 
 
-The `cloud-init` payload can be managed directly by the Tofu `libvirt` provider.
-
-The provider, at `apply`, will create a small (< 1MB) `.iso` volume which can be attached to the VM, and consumed by the base image:
+With `tofu apply`, this will create a small (< 1MB) `.iso` volume which can be attached to the VM, and consumed at first boot:
 
 ```hcl
-# Cloud-init configuration for the utility VM
-resource "libvirt_cloudinit_disk" "utility_seed" {
-  name = "utility-cloudinit"
+# Cloud-init configuration for the YOUR_VM VM
+resource "libvirt_cloudinit_disk" "YOUR_VM_seed" {
+  name = "YOUR_VM-cloudinit"
 
   user_data = <<-EOF
     #cloud-config
@@ -105,8 +111,8 @@ resource "libvirt_cloudinit_disk" "utility_seed" {
   EOF
 
   meta_data = <<-EOF
-    instance-id: utility
-    local-hostname: utility
+    instance-id: YOUR_VM
+    local-hostname: YOUR_VM
   EOF
 
   network_config = <<-EOF
@@ -125,16 +131,18 @@ resource "libvirt_cloudinit_disk" "utility_seed" {
 }
 
 # create cloud-init to ISO volume
-resource "libvirt_volume" "utility_seed_volume" {
-  name = "utility-cloudinit.iso"
+resource "libvirt_volume" "YOUR_VM_seed_volume" {
+  name = "YOUR_VM-cloudinit.iso"
   pool = "slow-pool"
   create = {
     content = {
-      url = "file://${libvirt_cloudinit_disk.utility_seed.path}"
+      url = "file://${libvirt_cloudinit_disk.YOUR_VM_seed.path}"
     }
   }
 }
 ```
+
+Note: we also install and enable `qemu-guest-agent` here. Installing it is necessary to have the VM report back its IP(s) to the Tofu `libvirt` provider, otherwise, the provider will error in timeout.
 
 ## VM Creation
 
@@ -143,8 +151,8 @@ Once we have the base OS image and sone cloud-init configuration, we can create 
 Let's start with the main disk:
 
 ```hcl
-resource "libvirt_volume" "utility_disk" {
-  name     = "utility-disk.qcow2"
+resource "libvirt_volume" "YOUR_VM_disk" {
+  name     = "YOUR_VM-disk.qcow2"
   pool     = "mid-pool"
   capacity = 53687091200 # 50GB
   backing_store = {
@@ -160,8 +168,8 @@ resource "libvirt_volume" "utility_disk" {
 And from there, we can create the VM:
 
 ```hcl
-resource "libvirt_domain" "utility" {
-  name      = "utility"
+resource "libvirt_domain" "YOUR_VM" {
+  name      = "YOUR_VM"
   memory    = 1048576  # 1GB (1024 * 1024)
   vcpu      = 2
   running   = true
@@ -182,8 +190,8 @@ resource "libvirt_domain" "utility" {
       {
         source = {
           volume = {
-            pool   = libvirt_volume.utility_disk.pool
-            volume = libvirt_volume.utility_disk.name
+            pool   = libvirt_volume.YOUR_VM_disk.pool
+            volume = libvirt_volume.YOUR_VM_disk.name
           }
         }
         target = { dev = "vda", bus = "virtio" }
@@ -194,7 +202,7 @@ resource "libvirt_domain" "utility" {
         source = {
           volume = {
             pool   = "slow-pool"
-            volume = "utility-cloudinit.iso"
+            volume = "YOUR_VM-cloudinit.iso"
           }
         }
         target = { dev = "sda", bus = "sata" }
@@ -231,10 +239,12 @@ TODO
 
 # Closing Thoughs
 
-Honestly, after struggling a bit (my fault, I was using an old buggy version, make sure you are on v0.9), I was surprised how well I manage to get it working. Being able to nuke entire stacks and re-create them at will, with just a `tofu destroy;tofy apply` is extremely convinient.
+Honestly, after struggling a bit (my fault, I was using an old buggy version, make sure you are at least on `v0.9`), I was surprised how well I manage to get it working.
 
-Plus the setup is extremely simple: just a base headless Debian with `libvirtd` installed.
+Being able to nuke entire stacks and re-create them at will, with just a `tofu destroy;tofy apply` is extremely convinient and satisfying.
 
-Sure I could have installed Proxmox, use the [Proxmox Tofu Provider](https://registry.terraform.io/providers/Terraform-for-Proxmox/proxmox/latest/docs) provider, and have something more ressembling AWS or GPC. But, in truth, this simple setup is already more than enough to cosplay as a Cloud Engineer working at bigtech, and it surely helped me a lot when deploying my own [k8s cluster](TODO/link).
+Plus, the setup is extremely simple: just a base headless Debian with `libvirtd` installed.
 
-Kudos to [Duncan Mac-Vicar P.](https://www.mac-vicar.eu/) for hi
+Sure, I could have installed Proxmox, use the [Proxmox Tofu Provider](https://registry.terraform.io/providers/Terraform-for-Proxmox/proxmox/latest/docs) provider, and have something more ressembling AWS or GPC. But, in truth, this simple setup is already more than enough to cosplay as a bigtech Cloud Engineer, and it surely helped me a lot when deploying my @home [k8s cluster](TODO/link).
+
+Kudos to [Duncan Mac-Vicar P.](https://www.mac-vicar.eu/) for sharing this provider.
