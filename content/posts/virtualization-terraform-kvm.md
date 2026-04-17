@@ -27,17 +27,50 @@ Wouldn't it be nice to be able to manage our `libvirt`/`kvm` hypervisor in `HLC`
 
 Well, thanks to dmacvivar's [libvirt provider](https://registry.terraform.io/providers/dmacvicar/libvirt/latest/docs), we can, and here is how.
 
-## Network
+## Networks
 
-TODO
+First we need some LAN segments to put our VMs in. And also, usually, it could be nice to gaave these VMs access to our home network.
 
-## Base Image
+The `libvirt` provider can manage these networks with its `libvirt_network` resources. 
+
+Here, we simply declare a private network:
+
+```hcl
+variable "network_name" { type = string default = "homelab-nat" }
+variable "network_cidr" { type = string default = "192.168.150.0/24" }
+variable "bridge_name" { type = string default = "br0" }
+
+resource "libvirt_network" "MY_NETWORK" {
+  name      = var.network_name
+  autostart = true
+  forward   = { mode = "nat" }
+  bridge = {
+    name  = "virbr1"
+    stp   = "on"
+    delay = "0"
+  }
+  ips = [{
+    address  = cidrhost(var.network_cidr, 1)
+    netmask  = cidrnetmask(var.network_cidr)
+    dhcp = {
+      ranges = [{
+        start = cidrhost(var.network_cidr, 50)
+        end   = cidrhost(var.network_cidr, 254)
+      }]
+    }
+  }]
+}
+```
+
+We will also leverage a `br0` NIC bridge (created outside of this tutorial) to give some of our VM LAN access to our home network. 
+
+## Base VM Image
 
 We could install the VM using a modified `.iso` or with `pxe` netboot setup, like we would with bare metal machines.
 
 But, since we are already past the bare metal, a more convenient option is to directly download and use official images from [Debian](https://cloud.debian.org/images/cloud/), [Rocky](https://download.rockylinux.org/pub/rocky/10/images/x86_64/) or your preferred distribution.
 
-By just pointing atthe URL, the `libvirt` `Tofu` module can download and register these base image in our hypervisor:
+By just pointing atthe URL, the `libvirt` `Tofu` module can download and register these base image in our hypervisor's libvirt:
 
 ```hcl
 locals {
@@ -153,10 +186,10 @@ Let's start with the main disk:
 ```hcl
 resource "libvirt_volume" "YOUR_VM_disk" {
   name     = "YOUR_VM-disk.qcow2"
-  pool     = "mid-pool"
+  pool     = "disk-pool" # CHANGE to your pool
   capacity = 53687091200 # 50GB
   backing_store = {
-    path   = libvirt_volume.debian_base.path
+    path   = libvirt_volume.debian_base.path # Base VM Image we downloaded earlier.
     format = { type = "qcow2" }
   }
   target = {
@@ -202,27 +235,29 @@ resource "libvirt_domain" "YOUR_VM" {
         source = {
           volume = {
             pool   = "slow-pool"
-            volume = "YOUR_VM-cloudinit.iso"
+            volume = "YOUR_VM-cloudinit.iso" # Use the cloud-init iso/image we defined earlier
           }
         }
         target = { dev = "sda", bus = "sata" }
       }
     ]
-    # Two network interfaces: bridge + talos network
+    # Two network interfaces: bridge + MY_NETWORK
     interfaces = [
       {
         type  = "bridge"
         model = { type = "virtio" }
         source = { bridge = { bridge = "br0" } }
+        wait_for_ip = { timeout = 300, source = "any" }
       },
       {
         type  = "network"
         model = { type = "virtio" }
         source = {
           network = {
-            network = libvirt_network.talos_network.name
+            network = libvirt_network.MY_NETWORK.name
           }
         }
+        wait_for_ip = { timeout = 300, source = "any" }
       }
     ]
   }
@@ -231,11 +266,108 @@ resource "libvirt_domain" "YOUR_VM" {
 
 ## DNS Records
 
-TODO
+Lastly, as it's nicer to deal with proper hostname rather than IP addresses, let's configure a Tofu DNS provider.
+
+First, you need to configure have a DNS server allowing **RFC 2136** dynamic updates to a zone.
+
+I will not detail the DNS server configuration here, but with `Bind`/`Named`, it could be done like that:
+
+.1 First, generate a key:
+```bash
+$ dnssec-keygen -a HMAC-SHA512 -b 512 -n HOST example.com.
+# it creates two files:
+$ ls K*
+Kexample.com.+165+27879.key  Kexample.com.+165+27879.private
+
+# content
+$ cat K*.private
+[...]
+Key: dGVzdC1leGFtcGxlLXRzaWctc2VjcmV0
+[...]
+```
+
+.2 Second, allow the zone to be updated by said key: 
+```json
+key example.com. {
+    algorithm       hmac-sha512;
+    secret "odGVzdC1leGFtcGxlLXRzaWctc2VjcmV0";
+};
+
+zone "example.com" {
+    type master;
+    file "/var/lib/bind/db.example.com";
+    allow-update { key "example.com."; };
+
+    // In case you have an 'allow-transfer { "none"; };' in options
+    //allow-transfer { <dnscherry ip>; };
+};
+```
+
+You can once again use Tofu, and its [`dns`](https://registry.terraform.io/providers/hashicorp/dns/latest/docs) provider to manage the DNS zone.
+
+```hcl
+variable "dns_zone" { type = string default = "hexample.com." }
+
+provider "dns" {
+  update {
+    server        = "192.168.1.25" # host that accepts RFC 2136 updates (BIND master, router, …)
+    port          = 53
+    key_name      = "terraform-homelab"
+    key_algorithm = "hmac-sha256"
+    key_secret    = "dGVzdC1leGFtcGxlLXRzaWctc2VjcmV0" # base64 TSIG secret from your nameserver config
+  }
+}
+
+locals {
+  # Short hostnames under var.dns_zone (trailing dot on the zone is normal for this provider).
+  # Pick the interface index that matches the address you care about (here: first NIC = LAN bridge).
+  my_hosts = {
+    "your-vm" = libvirt_domain.YOUR_VM.devices.interfaces[0].ip[0].address
+  }
+}
+
+resource "dns_a_record_set" "lan" {
+  for_each  = local.my_hosts
+  zone      = var.dns_zone
+  name      = each.key
+  addresses = [each.value]
+  ttl       = 300
+}
+
+resource "dns_cname_record" "alias" {
+  zone  = var.dns_zone
+  name  = "registry"
+  cname = "utility.${var.dns_zone}"
+  ttl   = 300
+}
+```
 
 ## Generating Ansible Inventory
 
-TODO
+The last bit I like to do to link Terraform and Ansible (my go to infra CMS) is to have Terraform generate an inventory file.
+
+It's nothing fancy, just a basic template leveraging the output of the other resources:
+
+```hcl
+locals {
+  your_vm_ip = libvirt_domain.YOUR_VM.devices.interfaces[0].ip[0].address
+}
+
+resource "local_file" "inventory" {
+  content = templatefile("${path.module}/inventory.ini.tpl", {
+    your_vm_ip        = local.your_vm_ip
+    debian_admin_user = var.debian_admin_user
+  })
+  filename          = "../ansible/inventory/inventory.ini"
+  file_permission   = "0644"
+}
+```
+
+```ini
+# inventory.ini.tpl
+[debian_vms]
+your-vm ansible_host=${your_vm_ip} ansible_user=${debian_admin_user}
+```
 
 # Closing Thoughs
 
