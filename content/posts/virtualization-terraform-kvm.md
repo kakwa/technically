@@ -7,40 +7,38 @@ summary = "Tidbits About Managing KVM Hypervisor With Tofu/Terraform"
 
 # Introduction
 
-These days, @Work, we don't really have to care about server racking, cabling, powering, and the many other \*ings required when dealing with hardware.
+These days, at work, we don't really have to care about server racking, cabling, powering, and the many other \*ings required when dealing with hardware.
 
-Logistic companies like Amazon/AWS have managed to hide it all behind a convenient API, and frankly, they do it better than we could.
+Logistic companies like Amazon/AWS have managed to hide it all behind convenient APIs, and frankly, they do it better than we could.
 
-That's only valid in a professional context however. @Home, unless you are /r/wallstreetbets inclined financially, putting your credit card into Vercel, AWS or GCP is a bit risky for your bank account (see [these](https://www.reddit.com/r/aws/comments/lbqcos/my_forgotten_account_has_a_20000_bill_how_screwed/) [billing](https://www.reddit.com/r/googlecloud/comments/1kimlc8/ddos_98k_firebase_bill_guy_the_billing_support/) [horror](https://www.reddit.com/r/nextjs/comments/1o1zs2u/unexpected_1100_vercel_bill_im_just_an_employee_i/) [stories](https://www.youtube.com/watch?v=ihnGot4nUS4)).
+That's only valid in a professional context however. At home, unless you are `/r/wallstreetbets` inclined financially, putting your credit card into Vercel, AWS or GCP is a bit risky for your bank account (see [these](https://www.reddit.com/r/aws/comments/lbqcos/my_forgotten_account_has_a_20000_bill_how_screwed/) [billing](https://www.reddit.com/r/googlecloud/comments/1kimlc8/ddos_98k_firebase_bill_guy_the_billing_support/) [horror](https://www.reddit.com/r/nextjs/comments/1o1zs2u/unexpected_1100_vercel_bill_im_just_an_employee_i/) [stories](https://www.youtube.com/watch?v=ihnGot4nUS4)).
 
-Homelabing with an old rig in the closet or a fancy 10" rack of refurb mini-PCs is often a more sensible option.
+Homelabing with an old rig in the closet or a fancy 10" rack of refurb mini-PCs often are more sensible options.
 
 {{< figure src="/images/cloud-at-home/meme.jpg" alt="meme cloud at home" caption="Cloud @Home" >}}
 
-But it seems to come at a cost: things are no longer hidden behind convenient Cloud APIs...
+But at first glance, it comes at a cost: manual setup is in and things are no longer abstracted away...
 
 ... or so it seems...
 
-In reality, we can actually re-use at home most of the same tools available for the Cloud.
+In reality, we can actually re-use at home most of the same tools available for the Cloud(™).
 
-This post will present one of them: **Terraform/Tofu** and show how it can manage a simple `LibVirtd`/`KVM` hypervisor.
+This post will present one of them: **Terraform/Tofu** and show how it can manage a basic `Libvirtd`/`KVM` hypervisor.
 
-# Creating Stuff
+# Locally Sourced Tofu
 
-Making a hypervisor out of a Debian install is extremely easy: just run `apt install libvirt-daemon`.
+Making a hypervisor out of a Debian install is extremely easy: install Debian, and run `apt install libvirt-daemon`.
 
-But past that, wouldn't it be nice to be able to manage our `libvirt`/`kvm` hypervisor in `HCL` like we would on an AWS account?
+But past that, wouldn't it be nice to be able to manage our `libvirtd`/`kvm` hypervisor with `Tofu`/`HCL` like we would on AWS?
 
 Well, thanks to dmacvivar's [libvirt provider](https://search.opentofu.org/provider/dmacvicar/libvirt/latest/docs), we can, and here is how.
 
 > **Notes:**
->  * Don't hesitate to play with this code. You can download the full [main.tf](/files/kvm-terraform/main.tf), and with a few tweaks, you should be able to apply it. 
->  * To apply this configuration, run `tofu init` (once) and `tofu apply` as root.
+>  * Don't hesitate to play with this code. You can download the [full main.tf](/files/kvm-terraform/main.tf), and with a few tweaks, you should be able to apply it on your own hypervisor.
+>  * To apply this configuration, run `tofu init` (once) and `tofu apply` as root in the same dir as `main.tf`.
 >  * OpenTofu can be installed from the [official website](https://opentofu.org/docs/intro/install/).
 
-
-
-## Provider Setup
+## Libvirt Provider Setup
 
 First, declare the `libvirt` provider and point it at the local hypervisor:
 
@@ -59,22 +57,22 @@ provider "libvirt" {
 }
 ```
 
-`qemu:///system` connects to the local hypervisor. You can also point it at a remote host over SSH with `qemu+ssh://<USER>@<HOST>/system`.
-But be aware that it could make image management fiddly (local FS vs remote FS).
+> **Notes**: `qemu:///system` connects to the local hypervisor.
+> You can also point it at a remote host over SSH with `qemu+ssh://<USER>@<HOST>/system`.
+> But be aware that it could make image management fiddly (local FS vs remote FS).
 
 ## Networks
 
-First we need some LAN segments to put our VMs in. And also, usually, it could be nice to give these VMs access to our home network.
+We probably need some LAN segments to put our VMs in, at least a private network and also, usually, a bridge to our home network.
 
-The `libvirt` provider can manage these networks with its `libvirt_network` resources. 
+The `libvirt` provider can manage these networks through its `libvirt_network` resources. 
 
-Here, we simply declare a private network:
+Here is private NATed network declaration:
 
 ```hcl
 locals {
   network_name = "homelab-nat"
   network_cidr = "192.168.150.0/24"
-  bridge_name  = "br0"
 }
 
 resource "libvirt_network" "MY_NETWORK" {
@@ -99,7 +97,7 @@ resource "libvirt_network" "MY_NETWORK" {
 }
 ```
 
-Outside of Tofu & libvirt we will also create `br0` NIC bridge to give some of our VMs direct access to our home network.
+Outside of Tofu & libvirt we will also need to create a `br0` NIC bridge for direct access to our home network.
 
 To create it temporarily:
 
@@ -108,7 +106,7 @@ ip link add name br0 type bridge
 ip link set br0 up
 ```
 
-To make it persistent on Debian, edit `/etc/network/interfaces`:
+To make it persistent on Debian, edit `/etc/network/interfaces` and add something like:
 
 ```
 auto br0
@@ -122,9 +120,9 @@ Replace `eth0` with your actual physical NIC.
 
 ## Storage Pools
 
-Before creating any volumes, we need storage pools to hold them. A pool is just a directory (or LVM VG, NFS share, …) that `libvirt` manages.
+Before creating any disks/volumes, we need storage pools first. A pool is just a directory that `libvirt` manages.
 
-Here we declare three pools that the rest of the configuration will reference:
+At its simplest, a declaration looks like that:
 
 ```hcl
 resource "libvirt_pool" "MY_DISK_POOL" {
@@ -135,8 +133,6 @@ resource "libvirt_pool" "MY_DISK_POOL" {
   }
 }
 ```
-
-`type = "dir"` is the simplest option: `libvirt` will create the directory if it doesn't exist and track volumes inside it. You can use `"logical"` for LVM-backed pools or `"netfs"` for NFS if you want something more elaborate.
 
 ## Base VM Image
 
@@ -165,20 +161,21 @@ resource "libvirt_volume" "debian_base" {
 }
 ```
 
+And from there, with the `backing_store` directive, this image can be used as the foundation for multiple VMs.
+
 ## Cloud Init
 
-These cloud images usually ship with [`cloud-init`](https://docs.cloud-init.io/en/latest/index.html), which we can leverage to bootstrap the VMs.
+Cloud images usually ship with [cloud-init](https://docs.cloud-init.io/en/latest/index.html), which we can leverage to bootstrap the VMs.
 
-At this stage, it's advisable to do as little as possible, but we will typically configure:
+At this stage, it's advisable to do as little as possible, but we will typically want to configure:
 
 * some network settings
-* a [Salt](https://docs.saltproject.io/en/latest/contents.html)/[Puppet](https://help.puppet.com/core/current/Content/PuppetCore/puppet_index.htm)/[Chef](https://docs.chef.io/) agent or some SSH credentials for [Ansible](https://docs.ansible.com/) for further configuration.
+* a [Salt](https://docs.saltproject.io/en/latest/contents.html)/[Puppet](https://help.puppet.com/core/current/Content/PuppetCore/puppet_index.htm)/[Chef](https://docs.chef.io/) agent or some SSH credentials for [Ansible](https://docs.ansible.com/)
 * usually, a default account for troubleshooting
 
-The `cloud-init` payload can also be managed directly by the Tofu `libvirt` provider.
+One of the nice feature of this `tofu`/`libvirt` provider is its ability to create `cloud-init` payloads/volumes.
 
-
-With `tofu apply`, this will create a small (< 1MB) `.iso` volume which can be attached to the VM, and consumed at first boot:
+With `tofu apply`, this will create a small (< 1MB) `.iso` volume which can be attached to the VM cdrom, and consumed at first boot:
 
 ```hcl
 # Cloud-init configuration for the YOUR_VM VM
@@ -249,11 +246,12 @@ resource "libvirt_volume" "YOUR_VM_seed_volume" {
 }
 ```
 
-Note: we also install and enable `qemu-guest-agent` here. Installing it is necessary to have the VM report back its IP(s) to the Tofu `libvirt` provider, otherwise, the provider will error in timeout.
+> **Notes**: we also install and enable `qemu-guest-agent` here.
+> Installing it helps a lot with IP management in the `libvirt` provider.
 
 ## VM Creation
 
-Once we have the base OS image and some cloud-init configuration, we can create the VM itself.
+Once we have the networks, the pools, the base OS image and some cloud-init configuration, we can at last create the VM itself.
 
 Let's start with the main disk:
 
@@ -262,6 +260,8 @@ resource "libvirt_volume" "YOUR_VM_disk" {
   name     = "YOUR_VM-disk.qcow2"
   pool     = libvirt_pool.MY_DISK_POOL.name
   capacity = 53687091200 # 50GB
+
+  # Reuse the cloud image we got previously
   backing_store = {
     path   = libvirt_volume.debian_base.path # Base VM Image we downloaded earlier.
     format = { type = "qcow2" }
@@ -272,7 +272,7 @@ resource "libvirt_volume" "YOUR_VM_disk" {
 }
 ```
 
-And from there, we can create the VM:
+And from there, we can actually create the VM:
 
 ```hcl
 resource "libvirt_domain" "YOUR_VM" {
@@ -312,6 +312,7 @@ resource "libvirt_domain" "YOUR_VM" {
       {
         source = {
           volume = {
+            # our disk
             pool   = libvirt_volume.YOUR_VM_disk.pool
             volume = libvirt_volume.YOUR_VM_disk.name
           }
@@ -331,7 +332,7 @@ resource "libvirt_domain" "YOUR_VM" {
       }
     ]
 
-    # Two network interfaces: bridge + MY_NETWORK
+    # Two network interfaces: bridge br0 + MY_NETWORK
     interfaces = [
       {
         type  = "bridge"
@@ -351,7 +352,8 @@ resource "libvirt_domain" "YOUR_VM" {
       }
     ]
 
-    # Channel for qemu-guest-agent communication mostly to report back the VM's IPs
+    # Channel for qemu-guest-agent communication between VM and hypervisor
+    # mostly to report back the VM's IPs
     channels = [
       {
         target = { virt_io = { name = "org.qemu.guest_agent.0" } }
@@ -399,7 +401,7 @@ Lastly, as it's nicer to deal with proper hostname rather than IP addresses, let
 
 First, you need to configure have a DNS server allowing **RFC 2136** dynamic updates to a zone.
 
-I will not detail the DNS server configuration here, but with `Bind`/`Named`, it could be done like that:
+I will not detail this configuration much here, but with `Bind`/`Named`, it could be done like that:
 
 First, generate a key:
 ```bash
@@ -480,9 +482,11 @@ resource "dns_cname_record" "alias" {
 
 ## Generating Ansible Inventory
 
-The last bit I like to do is to have Tofu generate an Ansible inventory file. This enables me to bridge the `.tf`/infrastructure creation bits and the server configuration bits more naturally.
+The last bit I like to do is to have Tofu generate an Ansible inventory file.
 
-And in terms of implementation, it's nothing fancy, just a basic template leveraging the output of the other resources:
+This enables me to bridge the `.tf`/infrastructure creation step and the server configuration step more naturally.
+
+In terms of implementation, it's nothing fancy, just a basic template leveraging the output of the other resources:
 
 ```hcl
 locals {
@@ -501,16 +505,18 @@ resource "local_file" "inventory" {
 
 # Closing Thoughts
 
-Honestly, after struggling a bit (my fault, I was using an old buggy version, make sure you are at least on `v0.9`), I was surprised how well I managed to get it working.
+Honestly, after struggling a bit (mostly my fault, I was using an old and buggy version for a while, make sure you are at least on `v0.9`),
+even if it's a little finicky at times, I was surprised how well I managed to get it working.
 
-Being able to nuke entire stacks and re-create them at will, with just a `tofu destroy;tofu apply` is extremely convenient and satisfying.
+Being able to nuke entire stacks and re-create them at will, with just a `tofu destroy;tofu apply` is extremely convenient and strangely satisfying.
 
-Plus, the setup is extremely simple: just a base headless Debian with `libvirtd` installed.
+Plus, the base hypervisor is extremely simple: just a base headless Debian with `libvirtd` installed.
 
-Sure, I could have installed Proxmox, use one of the [Proxmox Tofu Providers](https://search.opentofu.org/provider/bpg/proxmox/latest), and have something more like AWS or GCP.
-But, in truth, this simple setup is already more than enough to cosplay as a bigtech Cloud Engineer, and it surely helped me a lot when deploying my @home [k8s cluster](/posts/talos-k8s).
+Sure, I could have installed Proxmox, use one of the [Proxmox Tofu Providers](https://search.opentofu.org/provider/bpg/proxmox/latest), and a more AWS or GCP like experience.
+But, in truth, this simple setup is already more than enough to cosplay as your typical "latte drinking bigtech/GAFAM SRE/DevSecOps/CloudEng".
 
+It surely helped me a lot when deploying my @home [k8s cluster](/posts/talos-k8s).
 
 Once again, don't hesitate to download the full [main.tf](/files/kvm-terraform/main.tf), and play with it.
 
-Kudos to [Duncan Mac-Vicar P.](https://www.mac-vicar.eu/) for sharing this provider.
+Kudos to [Duncan Mac-Vicar P.](https://www.mac-vicar.eu/) for implementing and sharing this provider.
