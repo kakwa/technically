@@ -1,0 +1,346 @@
+<!doctype html><html xmlns=http://www.w3.org/1999/xhtml xml:lang=en lang=en><head><script defer language=javascript type=text/javascript src=/js/bundle.min.8f93f92296a878c32e6b4c2b8a5412b8a32e43651fef6cfc0c506fd40a5db718.js></script><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><link rel=icon href=https://technically.kakwalab.ovh/favicon-32x32.png><title itemprop=name>Kakwa's Blog - Hyperscaler Cloud @Home</title>
+<meta property="og:title" content="Kakwa's Blog - Hyperscaler Cloud @Home"><meta name=twitter:title content="Kakwa's Blog - Hyperscaler Cloud @Home"><meta itemprop=name content="Kakwa's Blog - Hyperscaler Cloud @Home"><meta name=application-name content="Kakwa's Blog - Hyperscaler Cloud @Home"><meta property="og:site_name" content="Technically some technical stuff."><meta name=description content="Just another geek who likes to build stuff and write about it"><meta itemprop=description content="Just another geek who likes to build stuff and write about it"><meta property="og:description" content="Just another geek who likes to build stuff and write about it"><meta name=twitter:description content="Just another geek who likes to build stuff and write about it"><base href=https://technically.kakwalab.ovh/posts/virtualization-terraform-kvm/><link rel=canonical href=https://technically.kakwalab.ovh/posts/virtualization-terraform-kvm/ itemprop=url><meta name=url content="https://technically.kakwalab.ovh/posts/virtualization-terraform-kvm/"><meta name=twitter:url content="https://technically.kakwalab.ovh/posts/virtualization-terraform-kvm/"><meta property="og:url" content="https://technically.kakwalab.ovh/posts/virtualization-terraform-kvm/"><meta property="og:updated_time" content="2026-04-17T12:55:15+01:00"><link rel=sitemap type=application/xml title=Sitemap href=https://technically.kakwalab.ovh/sitemap.xml><meta name=robots content="index,follow"><meta name=googlebot content="index,follow"><meta property="fb:admins" content><meta name=apple-mobile-web-app-title content="Technically some technical stuff."><meta name=apple-mobile-web-app-capable content="yes"><meta name=apple-mobile-web-app-status-bar-style content="black"><meta name=generator content="Hugo 0.128.0"><link type=text/css rel=stylesheet href=/css/bundle.min.2bc48ddba8b6d6ac645f662d3e6948665709fbe12c044debcd684515d720d2d5.css><style>body{--sidebar-bg-color:#202020;--sidebar-img-border-color:#515151;--sidebar-p-color:#909090;--sidebar-h1-color:#EDE7DB;--sidebar-a-color:#EDE7DB;--sidebar-socials-color:#EDE7DB;--text-color:#303030;--bkg-color:#F5F2E8;--post-title-color:#303030;--list-color:#5A5A5A;--link-color:#268BD2;--date-color:#515151;--table-border-color:#E3E0D8;--table-stripe-color:#F0ECE3;--code-color:#303030;--code-background-color:#E0E0E0;--code-block-color:#F5F2E8;--code-block-background-color:#272822;--moon-sun-color:#EDE7DB;--moon-sun-background-color:#515151}body.dark-theme{--text-color:#EDE7DB;--bkg-color:#1A1A1A;--post-title-color:#EDE7DB;--list-color:#9D9D9D;--link-color:#268BD2;--date-color:#9A9A9A;--table-border-color:#515151;--table-stripe-color:#1E1E1E;--code-color:#EDE7DB;--code-background-color:#515151;--code-block-color:#EDE7DB;--code-block-background-color:#272822}body{background-color:var(--bkg-color)}</style></head><body class=dark-theme><div class=wrapper><aside class=sidebar><div class="container sidebar-sticky"><div class=light-dark align=right><button class=btn-light-dark title="Toggle light/dark mode"><svg class="moon" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 16 16"><path fill="currentcolor" d="M6 .278a.768.768.0 01.08.858 7.208 7.208.0 00-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527.0 1.04-.055 1.533-.16a.787.787.0 01.81.316.733.733.0 01-.031.893A8.349 8.349.0 018.344 16C3.734 16 0 12.286.0 7.71.0 4.266 2.114 1.312 5.124.06A.752.752.0 016 .278z"/></svg><svg class="sun" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 16 16"><path fill="currentcolor" d="M8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.5.5.0 01.5.5v2a.5.5.0 01-1 0v-2A.5.5.0 018 0zm0 13a.5.5.0 01.5.5v2a.5.5.0 01-1 0v-2A.5.5.0 018 13zm8-5a.5.5.0 01-.5.5h-2a.5.5.0 010-1h2a.5.5.0 01.5.5zM3 8a.5.5.0 01-.5.5h-2a.5.5.0 010-1h2A.5.5.0 013 8zm10.657-5.657a.5.5.0 010 .707l-1.414 1.415a.5.5.0 11-.707-.708l1.414-1.414a.5.5.0 01.707.0zm-9.193 9.193a.5.5.0 010 .707L3.05 13.657a.5.5.0 01-.707-.707l1.414-1.414a.5.5.0 01.707.0zm9.193 2.121a.5.5.0 01-.707.0l-1.414-1.414a.5.5.0 01.707-.707l1.414 1.414a.5.5.0 010 .707zM4.464 4.465a.5.5.0 01-.707.0L2.343 3.05a.5.5.0 11.707-.707l1.414 1.414a.5.5.0 010 .708z"/></svg></button></div><div class=sidebar-about><h1 class=brand><a href=https://technically.kakwalab.ovh/><img src=/author.png alt="brand image">
+</a><a href=https://technically.kakwalab.ovh/><h1>Kakwa's Blog</h1></a></h1><p class=lead>Just another geek who likes to build stuff and write about it</p></div><nav><ul class=sidebar-nav><li class=heading>Content</li><li class=bullet><a href=/posts/>Blog Posts</a></li><li class=bullet><a href=/github-starred/>Projects Starred - Github</a></li><li class=bullet><a href=/printables-liked/>Models Liked - Printables</a></li><li class=heading>External Links</li><li class=bullet><a href="https://github.com/kakwa?tab=repositories&amp;q=&amp;type=&amp;language=&amp;sort=stargazers" target=_blank rel="noopener noreferrer">Software Projects</a></li><li class=bullet><a href=https://www.printables.com/@kakwa_3337391/models target=_blank rel="noopener noreferrer">3D Printing Models</a></li><li class=bullet><a href=https://lens.kakwalab.ovh/ target=_blank rel="noopener noreferrer">Photos</a></li></ul></nav><a target=_blank class=social title=GitHub href=https://github.com/kakwa><svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="-2 -2 24 24"><path fill="currentcolor" d="M18.88 1.099C18.147.366 17.265.0 16.233.0H3.746C2.714.0 1.832.366 1.099 1.099.366 1.832.0 2.714.0 3.746v12.487c0 1.032.366 1.914 1.099 2.647.733.733 1.615 1.099 2.647 1.099H6.66c.19.0.333-.007.429-.02a.504.504.0 00.286-.169c.095-.1.143-.245.143-.435l-.007-.885c-.004-.564-.006-1.01-.006-1.34l-.3.052c-.19.035-.43.05-.721.046a5.555 5.555.0 01-.904-.091 2.026 2.026.0 01-.872-.39 1.651 1.651.0 01-.572-.8l-.13-.3a3.25 3.25.0 00-.41-.663c-.186-.243-.375-.407-.566-.494l-.09-.065a.956.956.0 01-.17-.156.723.723.0 01-.117-.182c-.026-.061-.004-.111.065-.15.07-.04.195-.059.378-.059l.26.04c.173.034.388.138.643.311a2.1 2.1.0 01.631.677c.2.355.44.626.722.813.282.186.566.28.852.28.286.0.533-.022.742-.065a2.59 2.59.0 00.585-.196c.078-.58.29-1.028.637-1.34a8.907 8.907.0 01-1.333-.234 5.314 5.314.0 01-1.223-.507 3.5 3.5.0 01-1.047-.872c-.277-.347-.505-.802-.683-1.365-.177-.564-.266-1.215-.266-1.952.0-1.049.342-1.942 1.027-2.68-.32-.788-.29-1.673.091-2.652.252-.079.625-.02 1.119.175.494.195.856.362 1.086.5.23.14.414.257.553.352a9.233 9.233.0 012.497-.338c.859.0 1.691.113 2.498.338l.494-.312a6.997 6.997.0 011.197-.572c.46-.174.81-.221 1.054-.143.39.98.424 1.864.103 2.653.685.737 1.028 1.63 1.028 2.68.0.737-.089 1.39-.267 1.957-.177.568-.407 1.023-.689 1.366a3.65 3.65.0 01-1.053.865c-.42.234-.828.403-1.223.507a8.9 8.9.0 01-1.333.235c.45.39.676 1.005.676 1.846v3.11c0 .147.021.266.065.357a.36.36.0 00.208.189c.096.034.18.056.254.064.074.01.18.013.318.013h2.914c1.032.0 1.914-.366 2.647-1.099.732-.732 1.099-1.615 1.099-2.647V3.746c0-1.032-.367-1.914-1.1-2.647z"/></svg>
+</a><a target=_blank class=social title=LinkedIn href=https://www.linkedin.com/in/pfcarpentier><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1.2em" viewBox="0 0 448 512"><path fill="currentcolor" d="M416 32H31.9C14.3 32 0 46.5.0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6.0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3.0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2.0 38.5 17.3 38.5 38.5.0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6.0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2.0 79.7 44.3 79.7 101.9V416z"/></svg>
+</a><a target=_blank class=social rel=me title=Mastodon href=https://mastodon.social/@kakwa_><svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="currentcolor" d="M20.94 14c-.28 1.41-2.44 2.96-4.97 3.26-1.31.15-2.6.3-3.97.24-2.25-.11-4-.54-4-.54v.62c.32 2.22 2.22 2.35 4.03 2.42 1.82.05 3.44-.46 3.44-.46l.08 1.65s-1.28.68-3.55.81c-1.25.07-2.81-.03-4.62-.5-3.92-1.05-4.6-5.24-4.7-9.5l-.01-3.43c0-4.34 2.83-5.61 2.83-5.61C6.95 2.3 9.41 2 11.97 2h.06c2.56.0 5.02.3 6.47.96.0.0 2.83 1.27 2.83 5.61.0.0.04 3.21-.39 5.43M18 8.91c0-1.08-.3-1.91-.85-2.56-.56-.63-1.3-.96-2.23-.96-1.06.0-1.87.41-2.42 1.23l-.5.88-.5-.88c-.56-.82-1.36-1.23-2.43-1.23-.92.0-1.66.33-2.23.96C6.29 7 6 7.83 6 8.91v5.26h2.1V9.06c0-1.06.45-1.62 1.36-1.62 1 0 1.5.65 1.5 1.93v2.79h2.07V9.37c0-1.28.5-1.93 1.51-1.93.9.0 1.35.56 1.35 1.62v5.11H18V8.91z"/></svg>
+</a><a target=_blank class=social title="RSS Feed" href=/posts/index.xml><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1.2em" viewBox="0 0 1280 1280"><g transform="translate(0.000000,1280.000000) scale(0.100000,-0.100000)" fill="currentcolor"><path d="M2295 11929c-284-12-642-45-707-65-17-5-18-63-18-1039 0-569 4-1036 8-1039 5-3 74 6 153 19 510 86 1168 95 1789 25 1348-153 2602-677 3670-1531 385-308 820-744 1126-1129 842-1060 1362-2313 1514-3650 70-621 61-1279-25-1789-13-79-22-148-19-153 3-4 471-8 1039-8h1035l5 23c51 225 85 942 67 1419-23 605-77 1044-198 1617-294 14e2-927 2734-1823 3846-1043 1295-2364 2259-3909 2854-1158 447-2451 656-3707 6e2z"/><path d="M2255 7845c-269-25-620-81-667-106-17-9-18-55-18-899 0-706 3-890 13-890 6 0 66 18 132 41 130 44 288 79 467 105 154 21 577 30 749 15 1207-107 2267-823 2814-1902 166-327 268-637 330-1001 38-227 48-384 42-662-8-348-44-590-126-831-23-66-41-126-41-132 0-10 184-13 890-13 844 0 890 1 899 18 27 50 88 452 110 725 14 162 14 624 1 782-59 703-233 1323-545 1945-481 956-1313 1788-2270 2268-620 310-1239 483-1940 542-165 14-669 10-840-5z"/><path d="M2519 3815c-391-66-725-336-868-703-79-201-96-462-45-677 83-344 338-641 666-774 116-47 205-69 330-80 412-39 811 153 1040 5e2 193 292 240 648 128 981-135 403-492 699-914 757-1e2 14-241 12-337-4z"/></g></svg>
+</a><a target=_blank class=social title=Email href=mailto:carpentier.pf@gmail.com><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1.2em" viewBox="0 0 485.211 485.211"><path fill="currentcolor" d="M301.393 241.631 464.866 424.56H20.332l163.474-182.928 58.801 51.443 58.786-51.444zM462.174 60.651H23.027l219.579 192.142L462.174 60.651zM324.225 221.67l160.986 180.151V80.792L324.225 221.67zM0 80.792v321.029L160.972 221.64.0 80.792z"/></svg></a><p class=footnote>powered by <a target=_blank href=https://gohugo.io>Hugo</a> | themed with <a target=_blank href=https://github.com/lukeorth/poison>poison</a><br>&copy; 2026 Pierre-François Carpentier. All rights reserved.</p></div></aside><main class="content container"><div class=post><div class=info><h1 class=post-title><a href=https://technically.kakwalab.ovh/posts/virtualization-terraform-kvm/>Hyperscaler Cloud @Home</a></h1><div class=headline><div><time datetime=2026-04-17T12:55:15+0100 class=post-date>April 17, 2026
+</time><span>- </span><span class=reading-time><span>10 mins read</span></span></div></div></div><h1 id=introduction>Introduction</h1><p>These days, @Work, we don&rsquo;t really have to care about server racking, cabling, powering, and the many other *ings required when dealing with hardware.</p><p>Logistic companies like Amazon/AWS have managed to hide it all behind a convenient API, and frankly, they do it better than we could.</p><p>That&rsquo;s only valid in a professional context however. @Home, unless you are /r/wallstreetbets inclined financially, putting your credit card into Vercel, AWS or GCP is a bit risky for your bank account (see <a href=https://www.reddit.com/r/aws/comments/lbqcos/my_forgotten_account_has_a_20000_bill_how_screwed/ target=_blank>these</a> <a href=https://www.reddit.com/r/googlecloud/comments/1kimlc8/ddos_98k_firebase_bill_guy_the_billing_support/ target=_blank>billing</a> <a href=https://www.reddit.com/r/nextjs/comments/1o1zs2u/unexpected_1100_vercel_bill_im_just_an_employee_i/ target=_blank>horror</a> <a href="https://www.youtube.com/watch?v=ihnGot4nUS4" target=_blank>stories</a>).</p><p>Homelabing with an old rig in the closet or a fancy 10" rack of refurb mini-PCs is often a more sensible option.</p><figure><img src=/images/cloud-at-home/meme.jpg alt="meme cloud at home"><figcaption><p>Cloud @Home</p></figcaption></figure><p>But it seems to come at a cost: things are no longer hidden behind convenient Cloud APIs&mldr;</p><p>&mldr; or so it seems&mldr;</p><p>In reality, we can actually re-use at home most of the same tools available for the Cloud.</p><p>This post will present one of them: <strong>Terraform/Tofu</strong> and show how it can manage a simple <code>LibVirtd</code>/<code>KVM</code> hypervisor.</p><h1 id=creating-stuff>Creating Stuff</h1><p>Making a hypervisor out of a Debian install is extremely easy: just run <code>apt install libvirt-daemon</code>.</p><p>But past that, wouldn&rsquo;t it be nice to be able to manage our <code>libvirt</code>/<code>kvm</code> hypervisor in <code>HCL</code> like we would on an AWS account?</p><p>Well, thanks to dmacvivar&rsquo;s <a href=https://search.opentofu.org/provider/dmacvicar/libvirt/latest/docs target=_blank>libvirt provider</a>, we can, and here is how.</p><blockquote><p><strong>Notes:</strong></p><ul><li>Don&rsquo;t hesitate to play with this code. You can download the full <a href=/files/kvm-terraform/main.tf>main.tf</a>, and with a few tweaks, you should be able to apply it.</li><li>To apply this configuration, run <code>tofu init</code> (once) and <code>tofu apply</code> as root.</li><li>OpenTofu can be installed from the <a href=https://opentofu.org/docs/intro/install/ target=_blank>official website</a>.</li></ul></blockquote><h2 id=provider-setup>Provider Setup</h2><p>First, declare the <code>libvirt</code> provider and point it at the local hypervisor:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-hcl data-lang=hcl><span style=display:flex><span><span style=color:#66d9ef>terraform</span> {
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>required_providers</span> {
+</span></span><span style=display:flex><span>    libvirt <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>      source  <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;dmacvicar/libvirt&#34;</span>
+</span></span><span style=display:flex><span>      version <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;~&gt; 0.9.7&#34;</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>  }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>provider</span> <span style=color:#e6db74>&#34;libvirt&#34;</span> {
+</span></span><span style=display:flex><span>  uri <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;qemu:///system&#34;</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p><code>qemu:///system</code> connects to the local hypervisor. You can also point it at a remote host over SSH with <code>qemu+ssh://&lt;USER>@&lt;HOST>/system</code>.
+But be aware that it could make image management fiddly (local FS vs remote FS).</p><h2 id=networks>Networks</h2><p>First we need some LAN segments to put our VMs in. And also, usually, it could be nice to give these VMs access to our home network.</p><p>The <code>libvirt</code> provider can manage these networks with its <code>libvirt_network</code> resources.</p><p>Here, we simply declare a private network:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-hcl data-lang=hcl><span style=display:flex><span><span style=color:#66d9ef>locals</span> {
+</span></span><span style=display:flex><span>  network_name <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;homelab-nat&#34;</span>
+</span></span><span style=display:flex><span>  network_cidr <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;192.168.150.0/24&#34;</span>
+</span></span><span style=display:flex><span>  bridge_name  <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;br0&#34;</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;libvirt_network&#34; &#34;MY_NETWORK&#34;</span> {
+</span></span><span style=display:flex><span>  name      <span style=color:#f92672>=</span> <span style=color:#66d9ef>local</span>.<span style=color:#66d9ef>network_name</span>
+</span></span><span style=display:flex><span>  autostart <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>
+</span></span><span style=display:flex><span>  forward   <span style=color:#f92672>=</span> { mode <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;nat&#34;</span> }
+</span></span><span style=display:flex><span>  bridge <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    name  <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;virbr1&#34;</span>
+</span></span><span style=display:flex><span>    stp   <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;on&#34;</span>
+</span></span><span style=display:flex><span>    delay <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;0&#34;</span>
+</span></span><span style=display:flex><span>  }
+</span></span><span style=display:flex><span>  ips <span style=color:#f92672>=</span> [{
+</span></span><span style=display:flex><span>    address  <span style=color:#f92672>=</span> <span style=color:#66d9ef>cidrhost</span>(<span style=color:#66d9ef>local</span>.<span style=color:#66d9ef>network_cidr</span>, <span style=color:#ae81ff>1</span>)
+</span></span><span style=display:flex><span>    netmask  <span style=color:#f92672>=</span> <span style=color:#66d9ef>cidrnetmask</span>(<span style=color:#66d9ef>local</span>.<span style=color:#66d9ef>network_cidr</span>)
+</span></span><span style=display:flex><span>    dhcp <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>      ranges <span style=color:#f92672>=</span> [{
+</span></span><span style=display:flex><span>        start <span style=color:#f92672>=</span> <span style=color:#66d9ef>cidrhost</span>(<span style=color:#66d9ef>local</span>.<span style=color:#66d9ef>network_cidr</span>, <span style=color:#ae81ff>50</span>)
+</span></span><span style=display:flex><span>        end   <span style=color:#f92672>=</span> <span style=color:#66d9ef>cidrhost</span>(<span style=color:#66d9ef>local</span>.<span style=color:#66d9ef>network_cidr</span>, <span style=color:#ae81ff>254</span>)
+</span></span><span style=display:flex><span>      }]
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>  }]
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Outside of Tofu & libvirt we will also create <code>br0</code> NIC bridge to give some of our VMs direct access to our home network.</p><p>To create it temporarily:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>ip link add name br0 type bridge
+</span></span><span style=display:flex><span>ip link set br0 up
+</span></span></code></pre></div><p>To make it persistent on Debian, edit <code>/etc/network/interfaces</code>:</p><pre tabindex=0><code>auto br0
+iface br0 inet dhcp
+    bridge_ports eth0
+    bridge_stp off
+    bridge_fd 0
+</code></pre><p>Replace <code>eth0</code> with your actual physical NIC.</p><h2 id=storage-pools>Storage Pools</h2><p>Before creating any volumes, we need storage pools to hold them. A pool is just a directory (or LVM VG, NFS share, …) that <code>libvirt</code> manages.</p><p>Here we declare three pools that the rest of the configuration will reference:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-hcl data-lang=hcl><span style=display:flex><span><span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;libvirt_pool&#34; &#34;MY_DISK_POOL&#34;</span> {
+</span></span><span style=display:flex><span>  name <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;MY_DISK_POOL&#34;</span>
+</span></span><span style=display:flex><span>  type <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;dir&#34;</span>
+</span></span><span style=display:flex><span>  target <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    path <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;/var/lib/libvirt/images/MY_DISK_POOL&#34;</span>
+</span></span><span style=display:flex><span>  }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p><code>type = "dir"</code> is the simplest option: <code>libvirt</code> will create the directory if it doesn&rsquo;t exist and track volumes inside it. You can use <code>"logical"</code> for LVM-backed pools or <code>"netfs"</code> for NFS if you want something more elaborate.</p><h2 id=base-vm-image>Base VM Image</h2><p>We could install the VM using a modified <code>.iso</code> or with <code>pxe</code> netboot setup, like we would with bare metal machines.</p><p>But, since we are already past the bare metal, a more convenient option is to directly download and use official images from <a href=https://cloud.debian.org/images/cloud/ target=_blank>Debian</a>, <a href=https://download.rockylinux.org/pub/rocky/10/images/x86_64/ target=_blank>Rocky</a> or your preferred distribution.</p><p>By just pointing at the URL, the <code>libvirt</code> <code>Tofu</code> module can download and register this base image in our hypervisor&rsquo;s libvirt:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-hcl data-lang=hcl><span style=display:flex><span><span style=color:#66d9ef>locals</span> {
+</span></span><span style=display:flex><span>  debian_image_url <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;https://cloud.debian.org/images/cloud/trixie/latest/debian-13-generic-amd64.qcow2&#34;</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;libvirt_volume&#34; &#34;debian_base&#34;</span> {
+</span></span><span style=display:flex><span>  name <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;debian-base.qcow2&#34;</span>
+</span></span><span style=display:flex><span>  pool <span style=color:#f92672>=</span> <span style=color:#66d9ef>libvirt_pool</span>.<span style=color:#66d9ef>MY_DISK_POOL</span>.<span style=color:#66d9ef>name</span>
+</span></span><span style=display:flex><span>  create <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    content <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>      url <span style=color:#f92672>=</span> <span style=color:#66d9ef>local</span>.<span style=color:#66d9ef>debian_image_url</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>  }
+</span></span><span style=display:flex><span>  target <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    format <span style=color:#f92672>=</span> { type <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;qcow2&#34;</span> }
+</span></span><span style=display:flex><span>  }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=cloud-init>Cloud Init</h2><p>These cloud images usually ship with <a href=https://docs.cloud-init.io/en/latest/index.html target=_blank><code>cloud-init</code></a>, which we can leverage to bootstrap the VMs.</p><p>At this stage, it&rsquo;s advisable to do as little as possible, but we will typically configure:</p><ul><li>some network settings</li><li>a <a href=https://docs.saltproject.io/en/latest/contents.html target=_blank>Salt</a>/<a href=https://help.puppet.com/core/current/Content/PuppetCore/puppet_index.htm target=_blank>Puppet</a>/<a href=https://docs.chef.io/ target=_blank>Chef</a> agent or some SSH credentials for <a href=https://docs.ansible.com/ target=_blank>Ansible</a> for further configuration.</li><li>usually, a default account for troubleshooting</li></ul><p>The <code>cloud-init</code> payload can also be managed directly by the Tofu <code>libvirt</code> provider.</p><p>With <code>tofu apply</code>, this will create a small (&lt; 1MB) <code>.iso</code> volume which can be attached to the VM, and consumed at first boot:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-hcl data-lang=hcl><span style=display:flex><span><span style=color:#75715e># Cloud-init configuration for the YOUR_VM VM
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;libvirt_cloudinit_disk&#34; &#34;YOUR_VM_seed&#34;</span> {
+</span></span><span style=display:flex><span>  name <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;YOUR_VM-cloudinit&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  user_data <span style=color:#f92672>=</span> <span style=color:#960050;background-color:#1e0010>&lt;&lt;-</span><span style=color:#66d9ef>EOF</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>    #cloud-config
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>users</span><span style=color:#960050;background-color:#1e0010>:</span>
+</span></span><span style=display:flex><span>      <span style=color:#960050;background-color:#1e0010>-</span> <span style=color:#66d9ef>name</span><span style=color:#960050;background-color:#1e0010>:</span> <span style=color:#66d9ef>admin</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>groups</span><span style=color:#960050;background-color:#1e0010>:</span> [<span style=color:#66d9ef>sudo</span>]
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>shell</span><span style=color:#960050;background-color:#1e0010>:</span> <span style=color:#960050;background-color:#1e0010>/</span><span style=color:#66d9ef>bin</span><span style=color:#960050;background-color:#1e0010>/</span><span style=color:#66d9ef>bash</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>ssh_authorized_keys</span><span style=color:#960050;background-color:#1e0010>:</span>
+</span></span><span style=display:flex><span>          <span style=color:#960050;background-color:#1e0010>-</span> <span style=color:#66d9ef>ssh</span><span style=color:#960050;background-color:#1e0010>-</span><span style=color:#66d9ef>ed25519</span> <span style=color:#66d9ef>AAAAC3</span>... <span style=color:#66d9ef>your</span><span style=color:#960050;background-color:#1e0010>-</span><span style=color:#66d9ef>key</span><span style=color:#960050;background-color:#1e0010>-</span><span style=color:#66d9ef>here</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>write_files</span><span style=color:#960050;background-color:#1e0010>:</span>
+</span></span><span style=display:flex><span>      <span style=color:#960050;background-color:#1e0010>-</span> <span style=color:#66d9ef>path</span><span style=color:#960050;background-color:#1e0010>:</span> <span style=color:#960050;background-color:#1e0010>/</span><span style=color:#66d9ef>etc</span><span style=color:#960050;background-color:#1e0010>/</span><span style=color:#66d9ef>sudoers</span>.<span style=color:#66d9ef>d</span><span style=color:#960050;background-color:#1e0010>/</span><span style=color:#66d9ef>admin</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>permissions</span><span style=color:#960050;background-color:#1e0010>:</span> <span style=color:#960050;background-color:#1e0010>&#39;</span><span style=color:#ae81ff>0440</span><span style=color:#960050;background-color:#1e0010>&#39;</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>content</span><span style=color:#960050;background-color:#1e0010>:</span> <span style=color:#960050;background-color:#1e0010>|</span>
+</span></span><span style=display:flex><span>          %admin ALL<span style=color:#f92672>=</span>(<span style=color:#66d9ef>ALL</span><span style=color:#960050;background-color:#1e0010>:</span><span style=color:#66d9ef>ALL</span>) <span style=color:#66d9ef>NOPASSWD</span><span style=color:#960050;background-color:#1e0010>:</span> <span style=color:#66d9ef>ALL</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>chpasswd</span><span style=color:#960050;background-color:#1e0010>:</span>
+</span></span><span style=display:flex><span>      <span style=color:#66d9ef>list</span><span style=color:#960050;background-color:#1e0010>:</span> <span style=color:#960050;background-color:#1e0010>|</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>root</span><span style=color:#960050;background-color:#1e0010>:</span><span style=color:#66d9ef>password</span>
+</span></span><span style=display:flex><span>      <span style=color:#66d9ef>expire</span><span style=color:#960050;background-color:#1e0010>:</span> <span style=color:#66d9ef>false</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>ssh_pwauth</span><span style=color:#960050;background-color:#1e0010>:</span> <span style=color:#66d9ef>true</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>packages</span><span style=color:#960050;background-color:#1e0010>:</span>
+</span></span><span style=display:flex><span>      <span style=color:#960050;background-color:#1e0010>-</span> <span style=color:#66d9ef>openssh</span><span style=color:#960050;background-color:#1e0010>-</span><span style=color:#66d9ef>server</span>
+</span></span><span style=display:flex><span>      <span style=color:#960050;background-color:#1e0010>-</span> <span style=color:#66d9ef>qemu</span><span style=color:#960050;background-color:#1e0010>-</span><span style=color:#66d9ef>guest</span><span style=color:#960050;background-color:#1e0010>-</span><span style=color:#66d9ef>agent</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>runcmd</span><span style=color:#960050;background-color:#1e0010>:</span>
+</span></span><span style=display:flex><span>      <span style=color:#960050;background-color:#1e0010>-</span> <span style=color:#66d9ef>systemctl</span> <span style=color:#66d9ef>enable</span> <span style=color:#960050;background-color:#1e0010>--</span><span style=color:#66d9ef>now</span> <span style=color:#66d9ef>qemu</span><span style=color:#960050;background-color:#1e0010>-</span><span style=color:#66d9ef>guest</span><span style=color:#960050;background-color:#1e0010>-</span><span style=color:#66d9ef>agent</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>timezone</span><span style=color:#960050;background-color:#1e0010>:</span> <span style=color:#66d9ef>UTC</span>
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>EOF</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  meta_data <span style=color:#f92672>=</span> <span style=color:#960050;background-color:#1e0010>&lt;&lt;-</span><span style=color:#66d9ef>EOF</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>instance</span><span style=color:#960050;background-color:#1e0010>-</span><span style=color:#66d9ef>id</span><span style=color:#960050;background-color:#1e0010>:</span> <span style=color:#66d9ef>YOUR_VM</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>local</span><span style=color:#960050;background-color:#1e0010>-</span><span style=color:#66d9ef>hostname</span><span style=color:#960050;background-color:#1e0010>:</span> <span style=color:#66d9ef>YOUR_VM</span>
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>EOF</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  network_config <span style=color:#f92672>=</span> <span style=color:#960050;background-color:#1e0010>&lt;&lt;-</span><span style=color:#66d9ef>EOF</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>version</span><span style=color:#960050;background-color:#1e0010>:</span> <span style=color:#ae81ff>2</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>ethernets</span><span style=color:#960050;background-color:#1e0010>:</span>
+</span></span><span style=display:flex><span>      <span style=color:#66d9ef>enp1s0</span><span style=color:#960050;background-color:#1e0010>:</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>addresses</span><span style=color:#960050;background-color:#1e0010>:</span>
+</span></span><span style=display:flex><span>          <span style=color:#960050;background-color:#1e0010>-</span> <span style=color:#ae81ff>192</span>.<span style=color:#ae81ff>168</span>.<span style=color:#ae81ff>1</span>.<span style=color:#ae81ff>13</span><span style=color:#960050;background-color:#1e0010>/</span><span style=color:#ae81ff>24</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>gateway4</span><span style=color:#960050;background-color:#1e0010>:</span> <span style=color:#ae81ff>192</span>.<span style=color:#ae81ff>168</span>.<span style=color:#ae81ff>1</span>.<span style=color:#ae81ff>254</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>nameservers</span><span style=color:#960050;background-color:#1e0010>:</span>
+</span></span><span style=display:flex><span>          <span style=color:#66d9ef>addresses</span><span style=color:#960050;background-color:#1e0010>:</span>
+</span></span><span style=display:flex><span>            <span style=color:#960050;background-color:#1e0010>-</span> <span style=color:#ae81ff>192</span>.<span style=color:#ae81ff>168</span>.<span style=color:#ae81ff>1</span>.<span style=color:#ae81ff>25</span>
+</span></span><span style=display:flex><span>      <span style=color:#66d9ef>enp2s0</span><span style=color:#960050;background-color:#1e0010>:</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>dhcp4</span><span style=color:#960050;background-color:#1e0010>:</span> <span style=color:#66d9ef>true</span>
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>EOF</span>
+</span></span><span style=display:flex><span>}<span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e># create cloud-init to ISO volume
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;libvirt_volume&#34; &#34;YOUR_VM_seed_volume&#34;</span> {
+</span></span><span style=display:flex><span>  name <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;YOUR_VM-cloudinit.iso&#34;</span>
+</span></span><span style=display:flex><span>  pool <span style=color:#f92672>=</span> <span style=color:#66d9ef>libvirt_pool</span>.<span style=color:#66d9ef>MY_DISK_POOL</span>.<span style=color:#66d9ef>name</span>
+</span></span><span style=display:flex><span>  create <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    content <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>      url <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;file://${libvirt_cloudinit_disk.YOUR_VM_seed.path}&#34;</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>  }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>Note: we also install and enable <code>qemu-guest-agent</code> here. Installing it is necessary to have the VM report back its IP(s) to the Tofu <code>libvirt</code> provider, otherwise, the provider will error in timeout.</p><h2 id=vm-creation>VM Creation</h2><p>Once we have the base OS image and some cloud-init configuration, we can create the VM itself.</p><p>Let&rsquo;s start with the main disk:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-hcl data-lang=hcl><span style=display:flex><span><span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;libvirt_volume&#34; &#34;YOUR_VM_disk&#34;</span> {
+</span></span><span style=display:flex><span>  name     <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;YOUR_VM-disk.qcow2&#34;</span>
+</span></span><span style=display:flex><span>  pool     <span style=color:#f92672>=</span> <span style=color:#66d9ef>libvirt_pool</span>.<span style=color:#66d9ef>MY_DISK_POOL</span>.<span style=color:#66d9ef>name</span>
+</span></span><span style=display:flex><span>  capacity <span style=color:#f92672>=</span> <span style=color:#ae81ff>53687091200</span><span style=color:#75715e> # 50GB
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>  backing_store <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    path   <span style=color:#f92672>=</span> <span style=color:#66d9ef>libvirt_volume</span>.<span style=color:#66d9ef>debian_base</span>.<span style=color:#66d9ef>path</span><span style=color:#75715e> # Base VM Image we downloaded earlier.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    format <span style=color:#f92672>=</span> { type <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;qcow2&#34;</span> }
+</span></span><span style=display:flex><span>  }
+</span></span><span style=display:flex><span>  target <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    format <span style=color:#f92672>=</span> { type <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;qcow2&#34;</span> }
+</span></span><span style=display:flex><span>  }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>And from there, we can create the VM:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-hcl data-lang=hcl><span style=display:flex><span><span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;libvirt_domain&#34; &#34;YOUR_VM&#34;</span> {
+</span></span><span style=display:flex><span>  name      <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;YOUR_VM&#34;</span>
+</span></span><span style=display:flex><span>  type      <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;kvm&#34;</span>
+</span></span><span style=display:flex><span>  memory    <span style=color:#f92672>=</span> <span style=color:#ae81ff>1048576</span><span style=color:#75715e>  # 1GB (1024 * 1024)
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>  vcpu      <span style=color:#f92672>=</span> <span style=color:#ae81ff>2</span>
+</span></span><span style=display:flex><span>  running   <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>
+</span></span><span style=display:flex><span>  autostart <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  os <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    type         <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;hvm&#34;</span>
+</span></span><span style=display:flex><span>    type_arch    <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;x86_64&#34;</span>
+</span></span><span style=display:flex><span>    type_machine <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;q35&#34;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>    # Weirdly in bios mode, virtio on disks was not working.
+</span></span></span><span style=display:flex><span><span style=color:#75715e>    # The VM was not booting completely.
+</span></span></span><span style=display:flex><span><span style=color:#75715e>    # So EFI it is.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    firmware     <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;efi&#34;</span>
+</span></span><span style=display:flex><span>  }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  cpu <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    mode <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;host-passthrough&#34;</span>
+</span></span><span style=display:flex><span>  }<span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>  # Necessary for EFI
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>  features <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    acpi <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>
+</span></span><span style=display:flex><span>    apic <span style=color:#f92672>=</span> {}
+</span></span><span style=display:flex><span>  }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  devices <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    pci <span style=color:#f92672>=</span> [
+</span></span><span style=display:flex><span>      { type <span style=color:#f92672>=</span> &#34;pci&#34;, model <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;pcie-root&#34;</span> }
+</span></span><span style=display:flex><span>    ]
+</span></span><span style=display:flex><span>    disks <span style=color:#f92672>=</span> [
+</span></span><span style=display:flex><span>      {
+</span></span><span style=display:flex><span>        source <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>          volume <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>            pool   <span style=color:#f92672>=</span> <span style=color:#66d9ef>libvirt_volume</span>.<span style=color:#66d9ef>YOUR_VM_disk</span>.<span style=color:#66d9ef>pool</span>
+</span></span><span style=display:flex><span>            volume <span style=color:#f92672>=</span> <span style=color:#66d9ef>libvirt_volume</span>.<span style=color:#66d9ef>YOUR_VM_disk</span>.<span style=color:#66d9ef>name</span>
+</span></span><span style=display:flex><span>          }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        target <span style=color:#f92672>=</span> { dev <span style=color:#f92672>=</span> &#34;vda&#34;, bus <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;virtio&#34;</span> }
+</span></span><span style=display:flex><span>        driver <span style=color:#f92672>=</span> { type <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;qcow2&#34;</span> }
+</span></span><span style=display:flex><span>      },
+</span></span><span style=display:flex><span>      {
+</span></span><span style=display:flex><span>        device <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;cdrom&#34;</span>
+</span></span><span style=display:flex><span>        source <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>          volume <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>            pool   <span style=color:#f92672>=</span> <span style=color:#66d9ef>libvirt_pool</span>.<span style=color:#66d9ef>MY_DISK_POOL</span>.<span style=color:#66d9ef>name</span>
+</span></span><span style=display:flex><span>            volume <span style=color:#f92672>=</span> <span style=color:#66d9ef>libvirt_volume</span>.<span style=color:#66d9ef>YOUR_VM_seed_volume</span>.<span style=color:#66d9ef>name</span><span style=color:#75715e> # Use the cloud-init iso/image we defined earlier
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>          }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        target <span style=color:#f92672>=</span> { dev <span style=color:#f92672>=</span> &#34;sda&#34;, bus <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;sata&#34;</span> }
+</span></span><span style=display:flex><span>      }
+</span></span><span style=display:flex><span>    ]<span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>    # Two network interfaces: bridge + MY_NETWORK
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    interfaces <span style=color:#f92672>=</span> [
+</span></span><span style=display:flex><span>      {
+</span></span><span style=display:flex><span>        type  <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;bridge&#34;</span>
+</span></span><span style=display:flex><span>        model <span style=color:#f92672>=</span> { type <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;virtio&#34;</span> }
+</span></span><span style=display:flex><span>        source <span style=color:#f92672>=</span> { bridge <span style=color:#f92672>=</span> { bridge <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;br0&#34;</span> } }
+</span></span><span style=display:flex><span>        wait_for_ip <span style=color:#f92672>=</span> { timeout <span style=color:#f92672>=</span> 300, source <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;any&#34;</span> }
+</span></span><span style=display:flex><span>      },
+</span></span><span style=display:flex><span>      {
+</span></span><span style=display:flex><span>        type  <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;network&#34;</span>
+</span></span><span style=display:flex><span>        model <span style=color:#f92672>=</span> { type <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;virtio&#34;</span> }
+</span></span><span style=display:flex><span>        source <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>          network <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>            network <span style=color:#f92672>=</span> <span style=color:#66d9ef>libvirt_network</span>.<span style=color:#66d9ef>MY_NETWORK</span>.<span style=color:#66d9ef>name</span>
+</span></span><span style=display:flex><span>          }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        wait_for_ip <span style=color:#f92672>=</span> { timeout <span style=color:#f92672>=</span> 300, source <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;any&#34;</span> }
+</span></span><span style=display:flex><span>      }
+</span></span><span style=display:flex><span>    ]<span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>    # Channel for qemu-guest-agent communication mostly to report back the VM&#39;s IPs
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    channels <span style=color:#f92672>=</span> [
+</span></span><span style=display:flex><span>      {
+</span></span><span style=display:flex><span>        target <span style=color:#f92672>=</span> { virt_io <span style=color:#f92672>=</span> { name <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;org.qemu.guest_agent.0&#34;</span> } }
+</span></span><span style=display:flex><span>        source <span style=color:#f92672>=</span> { unix <span style=color:#f92672>=</span> { mode <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;bind&#34;</span> } }
+</span></span><span style=display:flex><span>      }
+</span></span><span style=display:flex><span>    ]<span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>    # Useful to get a console without vnc/spice
+</span></span></span><span style=display:flex><span><span style=color:#75715e>    # run &gt; sudo screen `virsh ttyconsole YOUR_VM`
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    consoles <span style=color:#f92672>=</span> [
+</span></span><span style=display:flex><span>      {
+</span></span><span style=display:flex><span>        type   <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;pty&#34;</span>
+</span></span><span style=display:flex><span>        target <span style=color:#f92672>=</span> { type <span style=color:#f92672>=</span> &#34;serial&#34;, port <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;0&#34;</span> }
+</span></span><span style=display:flex><span>      }
+</span></span><span style=display:flex><span>    ]<span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>    # GUI/spice troubleshooting (through virt-manager for example)
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    videos <span style=color:#f92672>=</span> [
+</span></span><span style=display:flex><span>      { model <span style=color:#f92672>=</span> { type <span style=color:#f92672>=</span> &#34;virtio&#34;, heads <span style=color:#f92672>=</span> 1, primary <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;yes&#34;</span> } }
+</span></span><span style=display:flex><span>    ]
+</span></span><span style=display:flex><span>    graphics <span style=color:#f92672>=</span> [
+</span></span><span style=display:flex><span>      {
+</span></span><span style=display:flex><span>        spice <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>          autoport <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;no&#34;</span>
+</span></span><span style=display:flex><span>          port     <span style=color:#f92672>=</span> <span style=color:#ae81ff>5930</span>
+</span></span><span style=display:flex><span>          listen   <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;127.0.0.1&#34;</span>
+</span></span><span style=display:flex><span>          listeners <span style=color:#f92672>=</span> [
+</span></span><span style=display:flex><span>            {
+</span></span><span style=display:flex><span>              type <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;address&#34;</span>
+</span></span><span style=display:flex><span>              address <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>                address <span style=color:#f92672>=</span>  <span style=color:#e6db74>&#34;127.0.0.1&#34;</span>
+</span></span><span style=display:flex><span>              }
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>          ]
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>      }
+</span></span><span style=display:flex><span>    ]
+</span></span><span style=display:flex><span>  }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=dns-records>DNS Records</h2><p>Lastly, as it&rsquo;s nicer to deal with proper hostname rather than IP addresses, let&rsquo;s configure a Tofu DNS provider.</p><p>First, you need to configure have a DNS server allowing <strong>RFC 2136</strong> dynamic updates to a zone.</p><p>I will not detail the DNS server configuration here, but with <code>Bind</code>/<code>Named</code>, it could be done like that:</p><p>First, generate a key:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ dnssec-keygen -a HMAC-SHA512 -b <span style=color:#ae81ff>512</span> -n HOST example.com.
+</span></span><span style=display:flex><span><span style=color:#75715e># it creates two files:</span>
+</span></span><span style=display:flex><span>$ ls K*
+</span></span><span style=display:flex><span>Kexample.com.+165+27879.key  Kexample.com.+165+27879.private
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># content</span>
+</span></span><span style=display:flex><span>$ cat K*.private
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>...<span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span>Key: dGVzdC1leGFtcGxlLXRzaWctc2VjcmV0
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>...<span style=color:#f92672>]</span>
+</span></span></code></pre></div><p>Second, allow the zone to be updated by said key:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-hcl data-lang=hcl><span style=display:flex><span><span style=color:#66d9ef>key</span> <span style=color:#66d9ef>example</span>.<span style=color:#66d9ef>com</span>. {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>algorithm</span>       <span style=color:#66d9ef>hmac</span><span style=color:#960050;background-color:#1e0010>-</span><span style=color:#66d9ef>sha512</span><span style=color:#960050;background-color:#1e0010>;</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>secret</span> <span style=color:#e6db74>&#34;odGVzdC1leGFtcGxlLXRzaWctc2VjcmV0&#34;</span><span style=color:#960050;background-color:#1e0010>;</span>
+</span></span><span style=display:flex><span>}<span style=color:#960050;background-color:#1e0010>;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>zone</span> <span style=color:#e6db74>&#34;example.com&#34;</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>type</span> <span style=color:#66d9ef>master</span><span style=color:#960050;background-color:#1e0010>;</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>file</span> <span style=color:#e6db74>&#34;/var/lib/bind/db.example.com&#34;</span><span style=color:#960050;background-color:#1e0010>;</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>allow</span><span style=color:#960050;background-color:#1e0010>-</span><span style=color:#66d9ef>update</span> { <span style=color:#66d9ef>key</span> <span style=color:#e6db74>&#34;example.com.&#34;</span><span style=color:#960050;background-color:#1e0010>;</span> }<span style=color:#960050;background-color:#1e0010>;</span>
+</span></span><span style=display:flex><span>}<span style=color:#960050;background-color:#1e0010>;</span>
+</span></span></code></pre></div><p>And check that the <code>bind</code> user is able to write the <code>/var/lib/bind/</code> directory and the zone file.</p><p>Once you have your DNS server setup, you can again use Tofu and its <a href=https://search.opentofu.org/provider/hashicorp/dns/latest/docs target=_blank><code>dns</code></a> provider to manage the DNS records:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-hcl data-lang=hcl><span style=display:flex><span><span style=color:#75715e># datasource in the libvirt provider to recover the IP addresses
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>data</span> <span style=color:#e6db74>&#34;libvirt_domain_interface_addresses&#34; &#34;YOUR_VM&#34;</span> {
+</span></span><span style=display:flex><span>  domain <span style=color:#f92672>=</span> <span style=color:#66d9ef>libvirt_domain</span>.<span style=color:#66d9ef>YOUR_VM</span>.<span style=color:#66d9ef>name</span>
+</span></span><span style=display:flex><span>  source <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;agent&#34;</span>
+</span></span><span style=display:flex><span>}<span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e># set some variables,
+</span></span></span><span style=display:flex><span><span style=color:#75715e># also the libvirt_domain_interface_addresses data might need some filtering there
+</span></span></span><span style=display:flex><span><span style=color:#75715e># (ex: pick the correct nic, filter out localhost, etc)
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>locals</span> {
+</span></span><span style=display:flex><span>  dns_zone <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;example.com.&#34;</span>
+</span></span><span style=display:flex><span>  my_hosts <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    &#34;your-vm&#34; <span style=color:#f92672>=</span> <span style=color:#66d9ef>data</span>.<span style=color:#66d9ef>libvirt_domain_interface_addresses</span>.<span style=color:#66d9ef>YOUR_VM</span>.<span style=color:#66d9ef>interfaces</span>[<span style=color:#ae81ff>2</span>].<span style=color:#66d9ef>addrs</span>[<span style=color:#ae81ff>0</span>].<span style=color:#66d9ef>addr</span>
+</span></span><span style=display:flex><span>  }
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>provider</span> <span style=color:#e6db74>&#34;dns&#34;</span> {
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>update</span> {
+</span></span><span style=display:flex><span>    server        <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;192.168.100.100&#34;</span><span style=color:#75715e> # Replace with your DNS server 
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    port          <span style=color:#f92672>=</span> <span style=color:#ae81ff>53</span>
+</span></span><span style=display:flex><span>    key_name      <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;tofu-homelab.&#34;</span><span style=color:#75715e> # Replace with your zone
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    key_algorithm <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;hmac-sha512&#34;</span>
+</span></span><span style=display:flex><span>    key_secret    <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;dGVzdC1leGFtcGxlLXRzaWctc2VjcmV0&#34;</span><span style=color:#75715e> # base64 TSIG secret from your nameserver config
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>  }
+</span></span><span style=display:flex><span>}<span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e># loop over your VMs
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;dns_a_record_set&#34; &#34;lan&#34;</span> {
+</span></span><span style=display:flex><span>  for_each  <span style=color:#f92672>=</span> <span style=color:#66d9ef>local</span>.<span style=color:#66d9ef>my_hosts</span>
+</span></span><span style=display:flex><span>  zone      <span style=color:#f92672>=</span> <span style=color:#66d9ef>local</span>.<span style=color:#66d9ef>dns_zone</span>
+</span></span><span style=display:flex><span>  name      <span style=color:#f92672>=</span> <span style=color:#66d9ef>each</span>.<span style=color:#66d9ef>key</span>
+</span></span><span style=display:flex><span>  addresses <span style=color:#f92672>=</span> [<span style=color:#66d9ef>each</span>.<span style=color:#66d9ef>value</span>]
+</span></span><span style=display:flex><span>  ttl       <span style=color:#f92672>=</span> <span style=color:#ae81ff>300</span>
+</span></span><span style=display:flex><span>}<span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e># CNAME/Alias example
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;dns_cname_record&#34; &#34;alias&#34;</span> {
+</span></span><span style=display:flex><span>  zone  <span style=color:#f92672>=</span> <span style=color:#66d9ef>local</span>.<span style=color:#66d9ef>dns_zone</span>
+</span></span><span style=display:flex><span>  name  <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;alias-myvm&#34;</span>
+</span></span><span style=display:flex><span>  cname <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;myvm.${local.dns_zone}&#34;</span>
+</span></span><span style=display:flex><span>  ttl   <span style=color:#f92672>=</span> <span style=color:#ae81ff>300</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=generating-ansible-inventory>Generating Ansible Inventory</h2><p>The last bit I like to do is to have Tofu generate an Ansible inventory file. This enables me to bridge the <code>.tf</code>/infrastructure creation bits and the server configuration bits more naturally.</p><p>And in terms of implementation, it&rsquo;s nothing fancy, just a basic template leveraging the output of the other resources:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-hcl data-lang=hcl><span style=display:flex><span><span style=color:#66d9ef>locals</span> {
+</span></span><span style=display:flex><span>  your_vm_ip <span style=color:#f92672>=</span> <span style=color:#66d9ef>data</span>.<span style=color:#66d9ef>libvirt_domain_interface_addresses</span>.<span style=color:#66d9ef>YOUR_VM</span>.<span style=color:#66d9ef>interfaces</span>[<span style=color:#ae81ff>2</span>].<span style=color:#66d9ef>addrs</span>[<span style=color:#ae81ff>0</span>].<span style=color:#66d9ef>addr</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;local_file&#34; &#34;inventory&#34;</span> {
+</span></span><span style=display:flex><span>  content <span style=color:#f92672>=</span> <span style=color:#960050;background-color:#1e0010>&lt;&lt;-</span><span style=color:#66d9ef>EOF</span>
+</span></span><span style=display:flex><span>    [<span style=color:#66d9ef>debian_vms</span>]
+</span></span><span style=display:flex><span>    your-vm ansible_host<span style=color:#f92672>=</span>${local.your_vm_ip} ansible_user<span style=color:#f92672>=</span><span style=color:#e6db74>${</span><span style=color:#960050;background-color:#1e0010>local</span>.<span style=color:#960050;background-color:#1e0010>debian_admin_user</span><span style=color:#e6db74>}</span>
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>EOF</span>
+</span></span><span style=display:flex><span>  filename        <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;../ansible/inventory/inventory.txt&#34;</span>
+</span></span><span style=display:flex><span>  file_permission <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;0644&#34;</span>
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h1 id=closing-thoughts>Closing Thoughts</h1><p>Honestly, after struggling a bit (my fault, I was using an old buggy version, make sure you are at least on <code>v0.9</code>), I was surprised how well I managed to get it working.</p><p>Being able to nuke entire stacks and re-create them at will, with just a <code>tofu destroy;tofu apply</code> is extremely convenient and satisfying.</p><p>Plus, the setup is extremely simple: just a base headless Debian with <code>libvirtd</code> installed.</p><p>Sure, I could have installed Proxmox, use one of the <a href=https://search.opentofu.org/provider/bpg/proxmox/latest target=_blank>Proxmox Tofu Providers</a>, and have something more like AWS or GCP.
+But, in truth, this simple setup is already more than enough to cosplay as a bigtech Cloud Engineer, and it surely helped me a lot when deploying my @home <a href=/posts/talos-k8s>k8s cluster</a>.</p><p>Once again, don&rsquo;t hesitate to download the full <a href=/files/kvm-terraform/main.tf>main.tf</a>, and play with it.</p><p>Kudos to <a href=https://www.mac-vicar.eu/ target=_blank>Duncan Mac-Vicar P.</a> for sharing this provider.</p><hr><div class=footer><a class=previous-post href="https://technically.kakwalab.ovh/posts/gpu-pciex1/?ref=footer"><span style=font-weight:700>« Previous</span><br>PCIe x16 to x1 GPU Adapter - Feels wrong, but does...</a></div></div></main><div class=article-toc><div class=toc-wrapper><nav id=TableOfContents><ol><li><a href=#introduction>Introduction</a></li><li><a href=#creating-stuff>Creating Stuff</a><ol><li><a href=#provider-setup>Provider Setup</a></li><li><a href=#networks>Networks</a></li><li><a href=#storage-pools>Storage Pools</a></li><li><a href=#base-vm-image>Base VM Image</a></li><li><a href=#cloud-init>Cloud Init</a></li><li><a href=#vm-creation>VM Creation</a></li><li><a href=#dns-records>DNS Records</a></li><li><a href=#generating-ansible-inventory>Generating Ansible Inventory</a></li></ol></li><li><a href=#closing-thoughts>Closing Thoughts</a></li></ol></nav></div></div></div></body></html>
