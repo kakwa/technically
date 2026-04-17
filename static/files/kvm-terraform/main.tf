@@ -28,12 +28,6 @@ locals {
   dns_zone          = "example.com."
   debian_admin_user = "admin"
   debian_image_url  = "https://cloud.debian.org/images/cloud/trixie/latest/debian-13-generic-amd64.qcow2"
-  #  your_vm_ip        = libvirt_domain.YOUR_VM.network_interface.0.addresses.0
-  your_vm_ip        = "10.10.10.1"
-  my_hosts = {
-    #"your-vm" = libvirt_domain.YOUR_VM.network_interface.0.addresses.0
-    "your-vm" = "10.10.10.1"
-  }
 }
 
 provider "dns" {
@@ -149,11 +143,10 @@ resource "libvirt_cloudinit_disk" "YOUR_VM_seed" {
     ethernets:
       enp1s0:
         addresses:
-          - 192.168.1.13/24
-        gateway4: 192.168.1.254
+          - 10.100.100.100/24
         nameservers:
           addresses:
-            - 192.168.1.25
+            - 8.8.8.8
       enp2s0:
         dhcp4: true
   EOF
@@ -234,7 +227,7 @@ resource "libvirt_domain" "YOUR_VM" {
             volume = libvirt_volume.YOUR_VM_seed_volume.name
           }
         }
-        target = { dev = "sdb", bus = "sata" }
+        target = { dev = "sda", bus = "sata" }
       }
     ]
     # Two network interfaces: bridge + MY_NETWORK
@@ -256,6 +249,13 @@ resource "libvirt_domain" "YOUR_VM" {
         wait_for_ip = { timeout = 300, source = "any" }
       }
     ]
+    channels = [
+      {
+        target = { virt_io = { name = "org.qemu.guest_agent.0" } }
+        source = { unix = { mode = "bind" } }
+      }
+    ]
+
     consoles = [
       {
         type   = "pty"
@@ -282,6 +282,22 @@ resource "libvirt_domain" "YOUR_VM" {
         }
       }
     ]
+  }
+}
+
+# ============================================================
+# IP address retrieval (requires qemu-guest-agent in the VM)
+# ============================================================
+
+data "libvirt_domain_interface_addresses" "YOUR_VM" {
+  domain = libvirt_domain.YOUR_VM.name
+  source = "agent"
+}
+
+locals {
+  your_vm_ip = data.libvirt_domain_interface_addresses.YOUR_VM.interfaces[2].addrs[0].addr
+  my_hosts = {
+    "your-vm" = local.your_vm_ip
   }
 }
 
