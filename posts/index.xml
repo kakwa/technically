@@ -16,7 +16,7 @@
 &lt;h1 id="locally-sourced-tofu">Locally Sourced Tofu&lt;/h1>
 &lt;p>Making a hypervisor out of a Debian install is extremely easy: install Debian, and run &lt;code>apt install libvirt-daemon&lt;/code>.&lt;/p>
 &lt;p>But past that, wouldn&amp;rsquo;t it be nice to be able to manage our &lt;code>libvirtd&lt;/code>/&lt;code>kvm&lt;/code> hypervisor with &lt;code>Tofu&lt;/code>/&lt;code>HCL&lt;/code> like we would on AWS?&lt;/p>
-&lt;p>Well, thanks to dmacvivar&amp;rsquo;s &lt;a href="https://search.opentofu.org/provider/dmacvicar/libvirt/latest/docs" target="_blank">libvirt provider&lt;/a>, we can, and here is how.&lt;/p>
+&lt;p>Well, thanks to dmacvivar&amp;rsquo;s &lt;a href="https://search.opentofu.org/provider/dmacvicar/libvirt/latest" target="_blank">libvirt provider&lt;/a>, we can, and here is how.&lt;/p>
 &lt;blockquote>
 &lt;p>&lt;strong>Notes:&lt;/strong>&lt;/p>
 &lt;ul>
