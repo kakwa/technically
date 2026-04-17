@@ -1,15 +1,19 @@
 +++
 title = 'Cloud @Home'
-date = 2026-04-17T16:55:15+01:00
+date = 2026-04-17T12:55:15+01:00
 draft = true
 summary = "Tidbits About Managing KVM Hypervisor With Tofu/Terraform"
 +++
 
 # Introduction
 
-These days, @Work, we don't really have to care about server racking, cabling, powering, and the many other \*ings required when dealing with hardware. Logistic companies like Amazon/AWS have managed to hide it all behind a convenient API, and frankly, do it better.
+These days, @Work, we don't really have to care about server racking, cabling, powering, and the many other \*ings required when dealing with hardware.
 
-That's only valid in a professional context however. @Home, unless you are /r/wallstreetbets inclined financially, putting your credit card into Vercel, AWS or GCP is a bit risky for your bank account (see [these](https://www.reddit.com/r/aws/comments/lbqcos/my_forgotten_account_has_a_20000_bill_how_screwed/) [billing](https://www.reddit.com/r/googlecloud/comments/1kimlc8/ddos_98k_firebase_bill_guy_the_billing_support/) [horror](https://www.reddit.com/r/nextjs/comments/1o1zs2u/unexpected_1100_vercel_bill_im_just_an_employee_i/) [stories](https://www.youtube.com/watch?v=ihnGot4nUS4)). Homelabing with an old rig in the closet or a fancy 10" rack of refurb mini-PCs is often a more sensible option.
+Logistic companies like Amazon/AWS have managed to hide it all behind a convenient API, and frankly, they do it better than we could.
+
+That's only valid in a professional context however. @Home, unless you are /r/wallstreetbets inclined financially, putting your credit card into Vercel, AWS or GCP is a bit risky for your bank account (see [these](https://www.reddit.com/r/aws/comments/lbqcos/my_forgotten_account_has_a_20000_bill_how_screwed/) [billing](https://www.reddit.com/r/googlecloud/comments/1kimlc8/ddos_98k_firebase_bill_guy_the_billing_support/) [horror](https://www.reddit.com/r/nextjs/comments/1o1zs2u/unexpected_1100_vercel_bill_im_just_an_employee_i/) [stories](https://www.youtube.com/watch?v=ihnGot4nUS4)).
+
+Homelabing with an old rig in the closet or a fancy 10" rack of refurb mini-PCs is often a more sensible option.
 
 {{< figure src="/images/cloud-at-home/meme.jpg" alt="meme cloud at home" caption="Cloud @Home" >}}
 
@@ -27,11 +31,14 @@ Making an hypervisor out of a Debian install is extremely easy: just run `apt in
 
 But past that, wouldn't it be nice to be able to manage our `libvirt`/`kvm` hypervisor in `HCL` like we would on an AWS account?
 
-Well, thanks to dmacvivar's [libvirt provider](https://registry.terraform.io/providers/dmacvicar/libvirt/latest/docs), we can, and here is how.
+Well, thanks to dmacvivar's [libvirt provider](https://search.opentofu.org/provider/dmacvicar/libvirt/latest/docs), we can, and here is how.
 
-TODO: as note  > Don't hesitate to play with this code, you can download the full [main.tf](/files/kvm-terraform/main.tf), and with a few tweaks, you should be able to apply it.
-               > to apply, run `tufo apply` as root. 
-               > tofu can be installed <link>
+> **Notes:**
+>  * Don't hesitate to play with this code. You can download the full [main.tf](/files/kvm-terraform/main.tf), and with a few tweaks, you should be able to apply it. 
+>  * To apply this configuration, run `tofu init` (once) and `tofu apply` as root.
+>  * OpenTofu can be installed from the [official website](https://opentofu.org/docs/intro/install/).
+
+
 
 ## Provider Setup
 
@@ -298,6 +305,9 @@ resource "libvirt_domain" "YOUR_VM" {
   }
 
   devices = {
+    pci = [
+      { type = "pci", model = "pcie-root" }
+    ]
     disks = [
       {
         source = {
@@ -338,6 +348,14 @@ resource "libvirt_domain" "YOUR_VM" {
           }
         }
         wait_for_ip = { timeout = 300, source = "any" }
+      }
+    ]
+
+    # Channel for qemu-guest-agent communication mostly to report back the VM's IPs
+    channels = [
+      {
+        target = { virt_io = { name = "org.qemu.guest_agent.0" } }
+        source = { unix = { mode = "bind" } }
       }
     ]
 
@@ -383,7 +401,7 @@ First, you need to configure have a DNS server allowing **RFC 2136** dynamic upd
 
 I will not detail the DNS server configuration here, but with `Bind`/`Named`, it could be done like that:
 
-.1 First, generate a key:
+First, generate a key:
 ```bash
 $ dnssec-keygen -a HMAC-SHA512 -b 512 -n HOST example.com.
 # it creates two files:
@@ -397,8 +415,8 @@ Key: dGVzdC1leGFtcGxlLXRzaWctc2VjcmV0
 [...]
 ```
 
-.2 Second, allow the zone to be updated by said key: 
-```json
+Second, allow the zone to be updated by said key: 
+```hcl
 key example.com. {
     algorithm       hmac-sha512;
     secret "odGVzdC1leGFtcGxlLXRzaWctc2VjcmV0";
@@ -408,33 +426,41 @@ zone "example.com" {
     type master;
     file "/var/lib/bind/db.example.com";
     allow-update { key "example.com."; };
-
-    // In case you have an 'allow-transfer { "none"; };' in options
-    //allow-transfer { <dnscherry ip>; };
 };
 ```
 
-You can once again use Tofu, and its [`dns`](https://registry.terraform.io/providers/hashicorp/dns/latest/docs) provider to manage the DNS zone.
+And check that the `bind` user is able to write the `/var/lib/bind/` directory and the zone file.
+
+Once you have your DNS server setup, you can again use Tofu and its [`dns`](https://search.opentofu.org/provider/hashicorp/dns/latest/docs) provider to manage the DNS records:
 
 ```hcl
+# datasource in the libvirt provider to recover the IP addresses
+data "libvirt_domain_interface_addresses" "YOUR_VM" {
+  domain = libvirt_domain.YOUR_VM.name
+  source = "agent"
+}
+
+# set some variables,
+# also the libvirt_domain_interface_addresses data might need some filtering there
+# (ex: pick the correct nic, filter out localhost, etc)
 locals {
   dns_zone = "example.com."
-  # Pick the interface index that matches the address you care about (here: first NIC = LAN bridge).
   my_hosts = {
-    "your-vm" = libvirt_domain.YOUR_VM.network_interface[0].addresses[0] # FIXME should be recover another way
+    "your-vm" = data.libvirt_domain_interface_addresses.YOUR_VM.interfaces[2].addrs[0].addr
   }
 }
 
 provider "dns" {
   update {
-    server        = "192.168.100.100" # DNS server that accepts RFC 2136 updates (BIND master, router, …)
+    server        = "192.168.100.100" # Replace with your DNS server 
     port          = 53
-    key_name      = "terraform-homelab."
+    key_name      = "tofu-homelab." $ Replace with your zone
     key_algorithm = "hmac-sha512"
     key_secret    = "dGVzdC1leGFtcGxlLXRzaWctc2VjcmV0" # base64 TSIG secret from your nameserver config
   }
 }
 
+# loop over your VMs
 resource "dns_a_record_set" "lan" {
   for_each  = local.my_hosts
   zone      = local.dns_zone
@@ -443,6 +469,7 @@ resource "dns_a_record_set" "lan" {
   ttl       = 300
 }
 
+# CNAME/Alias example
 resource "dns_cname_record" "alias" {
   zone  = local.dns_zone
   name  = "alias-myvm"
@@ -453,29 +480,23 @@ resource "dns_cname_record" "alias" {
 
 ## Generating Ansible Inventory
 
-The last bit I like to do to link Terraform and Ansible (my go to infra CMS) is to have Terraform generate an inventory file.
+The last bit I like to do is to have Tofu generate an Ansible inventory file. This enables me to bridge the `.tf`/infrastructure creation bits and the server configuration bits more naturally.
 
-It's nothing fancy, just a basic template leveraging the output of the other resources:
+And in terms of implementation, it's nothing fancy, just a basic template leveraging the output of the other resources:
 
 ```hcl
 locals {
-  your_vm_ip = libvirt_domain.YOUR_VM.network_interface[0].addresses[0] # FIXME should be recover another way
+  your_vm_ip = data.libvirt_domain_interface_addresses.YOUR_VM.interfaces[2].addrs[0].addr
 }
 
 resource "local_file" "inventory" {
-  content = templatefile("${path.module}/inventory.ini.tpl", {
-    your_vm_ip        = local.your_vm_ip
-    debian_admin_user = local.debian_admin_user
-  })
-  filename          = "../ansible/inventory/inventory.ini"
-  file_permission   = "0644"
+  content = <<-EOF
+    [debian_vms]
+    your-vm ansible_host=${local.your_vm_ip} ansible_user=${local.debian_admin_user}
+  EOF
+  filename        = "../ansible/inventory/inventory.txt"
+  file_permission = "0644"
 }
-```
-
-```ini
-# inventory.ini.tpl
-[debian_vms]
-your-vm ansible_host=${your_vm_ip} ansible_user=${debian_admin_user}
 ```
 
 # Closing Thoughts
@@ -486,9 +507,10 @@ Being able to nuke entire stacks and re-create them at will, with just a `tofu d
 
 Plus, the setup is extremely simple: just a base headless Debian with `libvirtd` installed.
 
-Sure, I could have installed Proxmox, use the [Proxmox Tofu Provider](https://registry.terraform.io/providers/Terraform-for-Proxmox/proxmox/latest/docs) provider, and have something more resembling AWS or GCP. But, in truth, this simple setup is already more than enough to cosplay as a bigtech Cloud Engineer, and it surely helped me a lot when deploying my @home [k8s cluster](TODO/link).
+Sure, I could have installed Proxmox, use one of the [Proxmox Tofu Providers](https://search.opentofu.org/provider/bpg/proxmox/latest), and have something more like AWS or GCP.
+But, in truth, this simple setup is already more than enough to cosplay as a bigtech Cloud Engineer, and it surely helped me a lot when deploying my @home [k8s cluster](/posts/talos-k8s).
 
 
-Once again, you can download the full [main.tf](/files/kvm-terraform/main.tf), and play with it.
+Once again, you don't hesitate to download the full [main.tf](/files/kvm-terraform/main.tf), and play with it.
 
 Kudos to [Duncan Mac-Vicar P.](https://www.mac-vicar.eu/) for sharing this provider.

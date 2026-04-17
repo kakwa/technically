@@ -35,7 +35,7 @@ provider "dns" {
     server        = "192.168.1.25" # host that accepts RFC 2136 updates (BIND master, router, …)
     port          = 53
     key_name      = "terraform-homelab."
-    key_algorithm = "hmac-sha256"
+    key_algorithm = "hmac-sha512"
     key_secret    = "dGVzdC1leGFtcGxlLXRzaWctc2VjcmV0" # base64 TSIG secret from your nameserver config
   }
 }
