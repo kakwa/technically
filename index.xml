@@ -16,7 +16,7 @@
 &lt;h1 id="locally-sourced-tofu">Locally Sourced Tofu&lt;/h1>
 &lt;p>Making a hypervisor out of a Debian install is extremely easy: install Debian, and run &lt;code>apt install libvirt-daemon&lt;/code>.&lt;/p>
 &lt;p>But past that, wouldn&amp;rsquo;t it be nice to be able to manage our &lt;code>libvirtd&lt;/code>/&lt;code>kvm&lt;/code> hypervisor with &lt;code>Tofu&lt;/code>/&lt;code>HCL&lt;/code> like we would on AWS?&lt;/p>
-&lt;p>Well, thanks to dmacvivar&amp;rsquo;s &lt;a href="https://search.opentofu.org/provider/dmacvicar/libvirt/latest" target="_blank">libvirt provider&lt;/a>, we can, and here is how.&lt;/p>
+&lt;p>Well, thanks to dmacvicar&amp;rsquo;s &lt;a href="https://search.opentofu.org/provider/dmacvicar/libvirt/latest" target="_blank">libvirt provider&lt;/a>, we can, and here is how.&lt;/p>
 &lt;blockquote>
 &lt;p>&lt;strong>Notes:&lt;/strong>&lt;/p>
 &lt;ul>
@@ -429,9 +429,9 @@ But, in truth, this simple setup is already more than enough to cosplay as your 
 &lt;p>Kudos to &lt;a href="https://www.mac-vicar.eu/" target="_blank">Duncan Mac-Vicar P.&lt;/a> for implementing and sharing this provider.&lt;/p></description></item><item><title>PCIe x16 to x1 GPU Adapter - Feels wrong, but does work</title><link>https://technically.kakwalab.ovh/posts/gpu-pciex1/</link><pubDate>Fri, 02 Jan 2026 18:29:53 +0100</pubDate><author>carpentier.pf@gmail.com (Pierre-François Carpentier)</author><guid>https://technically.kakwalab.ovh/posts/gpu-pciex1/</guid><description>&lt;h1 id="why-would-you-do-that">Why Would You Do That?&lt;/h1>
 &lt;p>I have an old PC tower lying around that I use as a lab/KVM hypervisor from time to time. The thing is completely headless like a server should&amp;hellip; maybe a bit too headless actually.&lt;/p>
 &lt;p>The motherboard doesn&amp;rsquo;t have any video port, and the two PCIEx16 ports are used by some old OCZ Velodrives storage cards, so there is no way to plug a screen.&lt;/p>
-&lt;p>To a degree, it&amp;rsquo;s possible to make due with the serial port, but it gets old really fast when trying to troubleshoot pre-grub boot issues or reinstalling the OS.&lt;/p>
+&lt;p>To a degree, it&amp;rsquo;s possible to make do with the serial port, but it gets old really fast when trying to troubleshoot pre-grub boot issues or reinstalling the OS.&lt;/p>
 &lt;h1 id="the-setup">The Setup&lt;/h1>
-&lt;p>I vaguely remembered seeing some mining rigs using PCIe risers and even horror stories like dremeling some of lines off on the cards directly).
+&lt;p>I vaguely remembered seeing some mining rigs using PCIe risers and even horror stories like dremeling some of the lines off the cards directly.
 So, I tried my luck with one of &lt;a href="https://www.amazon.com/cablecc-Extender-Converter-Extension-Graphics/dp/B0BYNH176D?crid=HG6EBTKK3OS7&amp;amp;dib=eyJ2IjoiMSJ9.EwnOUmfceQIKLekBlQwb7DhmqXkUDZoML0Z-INretXkaww0q6qO7xoX9isxXmQZlCoiKp00o3tYh5-Ip3B0qrKfeQ17aI6t0FqgW8Mh8Abc-3ssOW86xO-AzkEhdJgOQBHJTQ--8qid0rbXw-tvL0Ywf6DP8vGB7Q0QEasrv8NjEdFxiucDhMTTGlbE9Y_QtO-aT0xZ7PALB5etOItTPkf2nrrza_JhcIKN1aXLuCMQ.9yqEpdMJmknQ-CnYzQRt5RRSBE3iFHN-yWP7FzbfE2g&amp;amp;dib_tag=se&amp;amp;keywords=PCI-E%2BExpress%2B1%2Bx%2Bto%2B16%2Bx&amp;amp;qid=1768948246&amp;amp;sprefix=pci-e%2Bexpress%2B1%2Bx%2Bto%2B16%2Bx%2Caps%2C147&amp;amp;sr=8-2&amp;amp;th=1" target="_blank">these adapters from Amazon&lt;/a>.&lt;/p>
 &lt;p>Next to the card I had lying around (an old Nvidia GT 710), it looks like this:&lt;/p>
 &lt;figure>&lt;img src="https://technically.kakwalab.ovh/images/pciex1/parts.jpg"
@@ -533,8 +533,8 @@ MX Brown Cherries, but these, along with the overall build quality, are good eno
 &lt;p>&lt;code>FN&lt;/code> + &lt;code>Space&lt;/code> did the trick&amp;hellip; If you told me 20 years ago that, I would need to do a factory reset on a freaking run of the mill keyboard&amp;hellip;&lt;/p>
 &lt;p>I hope it could help someone, or at least feed the AI that helps the same someone.&lt;/p></description></item><item><title>Nut Embedding: Threading for People Too Cheap to Buy Inserts</title><link>https://technically.kakwalab.ovh/posts/3d-printing_nut_embedding/</link><pubDate>Tue, 07 Oct 2025 02:27:43 +0200</pubDate><author>carpentier.pf@gmail.com (Pierre-François Carpentier)</author><guid>https://technically.kakwalab.ovh/posts/3d-printing_nut_embedding/</guid><description>&lt;h1 id="introduction">Introduction&lt;/h1>
 &lt;p>While the usual way to add threads to a 3D printing part is to use threaded inserts, another often overlooked option is nut embedding.&lt;/p>
-&lt;p>Inserts usually are the best option, but for onezies/twozies it can be annoying to have to buy and wait a whole bag of those to arrive, specially considering the average tinckerer most likely already has the perfectly sized nut in his collection.&lt;/p>
-&lt;p>In such cases, nut embedding is a good alternative, her how it works:&lt;/p>
+&lt;p>Inserts usually are the best option, but for onesies/twosies it can be annoying to have to buy and wait a whole bag of those to arrive, especially considering the average tinkerer most likely already has the perfectly sized nut in their collection.&lt;/p>
+&lt;p>In such cases, nut embedding is a good alternative, here&amp;rsquo;s how it works:&lt;/p>
 &lt;ul>
 &lt;li>Leave a pocket in the model for the nut (with appropriate tolerances).&lt;/li>
 &lt;li>In the slicer, add a pause at the top of the pocket layer.&lt;/li>
