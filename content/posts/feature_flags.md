@@ -11,9 +11,9 @@ summary = 'Experimenting with feature flags'
 
 On 19 July 2024, a faulty update from CrowdStrike crashed millions of Windows computers around the World, disrupting industries ranging from retail and healthcare to air transport and manufacturing. 
 
-While many measure could have helped prevent this incident, in truth, even with state-of-the-art implementation, testing and QA practices, shit can still hit the fan.
+While many measures could have helped prevent this incident, in truth, even with state-of-the-art implementation, testing and QA practices, shit can still hit the fan.
 
-But among the many things CrowdStrike could have done better, one, in my opinion, resonate more than others: **staggered rollouts**.
+But among the many things CrowdStrike could have done better, one, in my opinion, resonates more than others: **staggered rollouts**.
 
 By using  staggered rollouts, the blast radius of the faulty update could have been dramatically reduced.
 Instead of impacting millions of machines, the update could have been stopped early by switching a **flag**, limiting the damage to a smaller number of devices—perhaps a few thousand at most.
@@ -28,9 +28,9 @@ At these kinds of scale, manually sshing into every server one by one and applyi
 
 At first, a bit of scripting and a rough deployment strategy such as geo/region or static lists of servers to do staggered rollouts could work. 
 
-But this too has its limits, and at some points you will need some dedicated tooling.
+But this too has its limits, and at some point you will need some dedicated tooling.
 
-Enters Configuration Management solutions such as [SaltStack](https://docs.saltproject.io/en/latest/contents.html), [Ansible](https://docs.ansible.com/ansible/latest/index.html), [Puppet](https://www.puppet.com/docs/puppet/8/puppet_index), [Chef](https://docs.chef.io/) or [CFEngine](https://docs.cfengine.com/docs/3.24/) and the [OpenFeature Standard](https://openfeature.dev/).
+Enter configuration management solutions such as [SaltStack](https://docs.saltproject.io/en/latest/contents.html), [Ansible](https://docs.ansible.com/ansible/latest/index.html), [Puppet](https://www.puppet.com/docs/puppet/8/puppet_index), [Chef](https://docs.chef.io/) or [CFEngine](https://docs.cfengine.com/docs/3.24/) and the [OpenFeature Standard](https://openfeature.dev/).
 
 ## What is OpenFeature?
 
@@ -38,9 +38,9 @@ While Ansible&co needs no introduction, OpenFeature is probably less known.
 
 [OpenFeature](https://openfeature.dev/) is a project under the [Cloud Native Computing Foundation](https://www.cncf.io/projects/openfeature/).
 
-It's goal is vendor-independent Feature Flag SDKs for all major languages and frameworks.
+Its goal is vendor-independent Feature Flag SDKs for all major languages and frameworks.
 
-It's architectured around two main components:
+It is structured around two main components:
 * **Evaluation Layer**: A fully standardized layer with stable, developer-friendly APIs for feature wrapping. 
 * **Provider Layer**: A vendor-specific translation layer between the Evaluation Layer and a Feature Flag Management Tool. 
 
@@ -69,7 +69,7 @@ else:
 
 OpenFeature is already widely supported by the industry, and most open source or commercial tools such as [LaunchDarkly](https://docs.launchdarkly.com/), [GO Feature Flag](https://gofeatureflag.org/docs) or [Flagsmith](https://docs.flagsmith.com/) have created officially supported providers.
 
-In addition, OpenFeature also provides it's own Feature Flag Management Tool called [flagd](https://github.com/open-feature/flagd), which we will leverage in this post.
+In addition, OpenFeature also provides its own Feature Flag Management Tool called [flagd](https://github.com/open-feature/flagd), which we will leverage in this post.
 
 For more details, visit the [openfeature.dev](https://openfeature.dev/docs/reference/intro) Documentation.
 
@@ -77,13 +77,13 @@ For more details, visit the [openfeature.dev](https://openfeature.dev/docs/refer
 
 I'm more of an infrastructure guy (SRE, Devops, CloudOps, Infra Dev, pick your poison), so here, I'm actually not interested in using Feature Flags in the traditional "in-code on/off switch to wrap a feature in" sense.
 
-I'm much more interested in the safe paradigm these SDKs offers: sane defaults and none-blocking if the Feature Flag Management Service is down.
+I'm much more interested in the safe paradigm these SDKs offer: sane defaults and non-blocking behavior if the Feature Flag Management Service is down.
 
-But what particularly interests me is the rule engines these Feature Flag Management Services usually provides.
+But what particularly interests me is the rule engines these Feature Flag Management Services usually provide.
 
 I want to leverage these rules to have deployments be as hands-off as possible, while still being controllable.
 
-Here is my unsorted and incomplete wish list of the kind of :
+Here is my unsorted and incomplete wish list of things like the following:
 * filter on environment ownership (internal, non-paying customers, paying customers, etc)
 * ability to call external APIs such as a ticketing system to exclude environment currently experiencing issue
 * ability to hook monitoring, to automatically stop a rollout in case something abnormal is occurring

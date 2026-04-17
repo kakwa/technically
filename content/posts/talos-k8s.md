@@ -44,7 +44,7 @@ By the end of this process, I want:
 
 # Kubernetes Basics
 
-## Chosing A Kubernetes Distribution
+## Choosing A Kubernetes Distribution
 
 Like chocolate, k8s comes in various flavors. I contemplated deploying it on a traditional distribution, maybe dusting off my Gentoo skills for example.
 

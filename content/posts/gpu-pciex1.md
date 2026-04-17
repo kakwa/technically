@@ -11,11 +11,11 @@ I have an old PC tower lying around that I use as a lab/KVM hypervisor from time
 
 The motherboard doesn't have any video port, and the two PCIEx16 ports are used by some old OCZ Velodrives storage cards, so there is no way to plug a screen.
 
-To a degree, it's possible to make due with the serial port, but it gets old really fast when trying to troubleshoot pre-grub boot issues or reinstalling the OS.
+To a degree, it's possible to make do with the serial port, but it gets old really fast when trying to troubleshoot pre-grub boot issues or reinstalling the OS.
 
 # The Setup
 
-I vaguely remembered seeing some mining rigs using PCIe risers and even horror stories like dremeling some of lines off on the cards directly).
+I vaguely remembered seeing some mining rigs using PCIe risers and even horror stories like dremeling some of the lines off the cards directly.
 So, I tried my luck with one of [these adapters from Amazon](https://www.amazon.com/cablecc-Extender-Converter-Extension-Graphics/dp/B0BYNH176D?crid=HG6EBTKK3OS7&dib=eyJ2IjoiMSJ9.EwnOUmfceQIKLekBlQwb7DhmqXkUDZoML0Z-INretXkaww0q6qO7xoX9isxXmQZlCoiKp00o3tYh5-Ip3B0qrKfeQ17aI6t0FqgW8Mh8Abc-3ssOW86xO-AzkEhdJgOQBHJTQ--8qid0rbXw-tvL0Ywf6DP8vGB7Q0QEasrv8NjEdFxiucDhMTTGlbE9Y_QtO-aT0xZ7PALB5etOItTPkf2nrrza_JhcIKN1aXLuCMQ.9yqEpdMJmknQ-CnYzQRt5RRSBE3iFHN-yWP7FzbfE2g&dib_tag=se&keywords=PCI-E%2BExpress%2B1%2Bx%2Bto%2B16%2Bx&qid=1768948246&sprefix=pci-e%2Bexpress%2B1%2Bx%2Bto%2B16%2Bx%2Caps%2C147&sr=8-2&th=1).
 
 Next to the card I had lying around (an old Nvidia GT 710), it looks like this:

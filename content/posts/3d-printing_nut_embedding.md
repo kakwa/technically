@@ -10,9 +10,9 @@ summary = 'Tips on how to model and print parts with nut embedding instead of th
 
 While the usual way to add threads to a 3D printing part is to use threaded inserts, another often overlooked option is nut embedding.
 
-Inserts usually are the best option, but for onezies/twozies it can be annoying to have to buy and wait a whole bag of those to arrive, specially considering the average tinckerer most likely already has the perfectly sized nut in his collection.
+Inserts usually are the best option, but for onesies/twosies it can be annoying to have to buy and wait a whole bag of those to arrive, especially considering the average tinkerer most likely already has the perfectly sized nut in their collection.
 
-In such cases, nut embedding is a good alternative, her how it works:
+In such cases, nut embedding is a good alternative, here's how it works:
 
 * Leave a pocket in the model for the nut (with appropriate tolerances).
 * In the slicer, add a pause at the top of the pocket layer.
