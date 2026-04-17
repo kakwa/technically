@@ -31,7 +31,7 @@ Making a hypervisor out of a Debian install is extremely easy: install Debian, a
 
 But past that, wouldn't it be nice to be able to manage our `libvirtd`/`kvm` hypervisor with `Tofu`/`HCL` like we would on AWS?
 
-Well, thanks to dmacvivar's [libvirt provider](https://search.opentofu.org/provider/dmacvicar/libvirt/latest/docs), we can, and here is how.
+Well, thanks to dmacvivar's [libvirt provider](https://search.opentofu.org/provider/dmacvicar/libvirt/latest), we can, and here is how.
 
 > **Notes:**
 >  * Don't hesitate to play with this code. You can download the [full main.tf](/files/kvm-terraform/main.tf), and with a few tweaks, you should be able to apply it on your own hypervisor.
