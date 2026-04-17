@@ -27,7 +27,7 @@ This post will present one of them: **Terraform/Tofu** and show how it can manag
 
 # Creating Stuff
 
-Making an hypervisor out of a Debian install is extremely easy: just run `apt install libvirt-daemon`.
+Making a hypervisor out of a Debian install is extremely easy: just run `apt install libvirt-daemon`.
 
 But past that, wouldn't it be nice to be able to manage our `libvirt`/`kvm` hypervisor in `HCL` like we would on an AWS account?
 
@@ -144,7 +144,7 @@ We could install the VM using a modified `.iso` or with `pxe` netboot setup, lik
 
 But, since we are already past the bare metal, a more convenient option is to directly download and use official images from [Debian](https://cloud.debian.org/images/cloud/), [Rocky](https://download.rockylinux.org/pub/rocky/10/images/x86_64/) or your preferred distribution.
 
-By just pointing at the URL, the `libvirt` `Tofu` module can download and register these base image in our hypervisor's libvirt:
+By just pointing at the URL, the `libvirt` `Tofu` module can download and register this base image in our hypervisor's libvirt:
 
 ```hcl
 locals {
@@ -288,7 +288,7 @@ resource "libvirt_domain" "YOUR_VM" {
     type_arch    = "x86_64"
     type_machine = "q35"
 
-    # Wierdly in bios mode, virtio on disks was not working.
+    # Weirdly in bios mode, virtio on disks was not working.
     # The VM was not booting completely.
     # So EFI it is.
     firmware     = "efi"
@@ -359,7 +359,7 @@ resource "libvirt_domain" "YOUR_VM" {
       }
     ]
 
-    # Usefull to get a console without vnc/spice
+    # Useful to get a console without vnc/spice
     # run > sudo screen `virsh ttyconsole YOUR_VM`
     consoles = [
       {
@@ -454,7 +454,7 @@ provider "dns" {
   update {
     server        = "192.168.100.100" # Replace with your DNS server 
     port          = 53
-    key_name      = "tofu-homelab." $ Replace with your zone
+    key_name      = "tofu-homelab." # Replace with your zone
     key_algorithm = "hmac-sha512"
     key_secret    = "dGVzdC1leGFtcGxlLXRzaWctc2VjcmV0" # base64 TSIG secret from your nameserver config
   }
@@ -501,7 +501,7 @@ resource "local_file" "inventory" {
 
 # Closing Thoughts
 
-Honestly, after struggling a bit (my fault, I was using an old buggy version, make sure you are at least on `v0.9`), I was surprised how well I manage to get it working.
+Honestly, after struggling a bit (my fault, I was using an old buggy version, make sure you are at least on `v0.9`), I was surprised how well I managed to get it working.
 
 Being able to nuke entire stacks and re-create them at will, with just a `tofu destroy;tofu apply` is extremely convenient and satisfying.
 
@@ -511,6 +511,6 @@ Sure, I could have installed Proxmox, use one of the [Proxmox Tofu Providers](ht
 But, in truth, this simple setup is already more than enough to cosplay as a bigtech Cloud Engineer, and it surely helped me a lot when deploying my @home [k8s cluster](/posts/talos-k8s).
 
 
-Once again, you don't hesitate to download the full [main.tf](/files/kvm-terraform/main.tf), and play with it.
+Once again, don't hesitate to download the full [main.tf](/files/kvm-terraform/main.tf), and play with it.
 
 Kudos to [Duncan Mac-Vicar P.](https://www.mac-vicar.eu/) for sharing this provider.
