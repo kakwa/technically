@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Technically some technical stuff.</title><link>https://technically.kakwalab.ovh/posts/</link><description>Recent content in Posts on Technically some technical stuff.</description><generator>Hugo</generator><language>en</language><managingEditor>carpentier.pf@gmail.com (Pierre-François Carpentier)</managingEditor><webMaster>carpentier.pf@gmail.com (Pierre-François Carpentier)</webMaster><copyright>&amp;copy; &lt;a href="https://github.com/kakwa">Pierre-Francois Carpentier&lt;/a> 2025</copyright><lastBuildDate>Fri, 17 Apr 2026 12:55:15 +0100</lastBuildDate><atom:link href="https://technically.kakwalab.ovh/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>Hyperscaler Cloud @Home</title><link>https://technically.kakwalab.ovh/posts/virtualization-terraform-kvm/</link><pubDate>Fri, 17 Apr 2026 12:55:15 +0100</pubDate><author>carpentier.pf@gmail.com (Pierre-François Carpentier)</author><guid>https://technically.kakwalab.ovh/posts/virtualization-terraform-kvm/</guid><description>&lt;h1 id="introduction">Introduction&lt;/h1>
-&lt;p>These days, @Work, we don&amp;rsquo;t really have to care about server racking, cabling, powering, and the many other *ings required when dealing with hardware.&lt;/p>
-&lt;p>Logistic companies like Amazon/AWS have managed to hide it all behind a convenient API, and frankly, they do it better than we could.&lt;/p>
-&lt;p>That&amp;rsquo;s only valid in a professional context however. @Home, unless you are /r/wallstreetbets inclined financially, putting your credit card into Vercel, AWS or GCP is a bit risky for your bank account (see &lt;a href="https://www.reddit.com/r/aws/comments/lbqcos/my_forgotten_account_has_a_20000_bill_how_screwed/" target="_blank">these&lt;/a> &lt;a href="https://www.reddit.com/r/googlecloud/comments/1kimlc8/ddos_98k_firebase_bill_guy_the_billing_support/" target="_blank">billing&lt;/a> &lt;a href="https://www.reddit.com/r/nextjs/comments/1o1zs2u/unexpected_1100_vercel_bill_im_just_an_employee_i/" target="_blank">horror&lt;/a> &lt;a href="https://www.youtube.com/watch?v=ihnGot4nUS4" target="_blank">stories&lt;/a>).&lt;/p>
-&lt;p>Homelabing with an old rig in the closet or a fancy 10&amp;quot; rack of refurb mini-PCs is often a more sensible option.&lt;/p>
+&lt;p>These days, at work, we don&amp;rsquo;t really have to care about server racking, cabling, powering, and the many other *ings required when dealing with hardware.&lt;/p>
+&lt;p>Logistic companies like Amazon/AWS have managed to hide it all behind convenient APIs, and frankly, they do it better than we could.&lt;/p>
+&lt;p>That&amp;rsquo;s only valid in a professional context however. At home, unless you are &lt;code>/r/wallstreetbets&lt;/code> inclined financially, putting your credit card into Vercel, AWS or GCP is a bit risky for your bank account (see &lt;a href="https://www.reddit.com/r/aws/comments/lbqcos/my_forgotten_account_has_a_20000_bill_how_screwed/" target="_blank">these&lt;/a> &lt;a href="https://www.reddit.com/r/googlecloud/comments/1kimlc8/ddos_98k_firebase_bill_guy_the_billing_support/" target="_blank">billing&lt;/a> &lt;a href="https://www.reddit.com/r/nextjs/comments/1o1zs2u/unexpected_1100_vercel_bill_im_just_an_employee_i/" target="_blank">horror&lt;/a> &lt;a href="https://www.youtube.com/watch?v=ihnGot4nUS4" target="_blank">stories&lt;/a>).&lt;/p>
+&lt;p>Homelabing with an old rig in the closet or a fancy 10&amp;quot; rack of refurb mini-PCs often are more sensible options.&lt;/p>
 &lt;figure>&lt;img src="https://technically.kakwalab.ovh/images/cloud-at-home/meme.jpg"
  alt="meme cloud at home">&lt;figcaption>
  &lt;p>Cloud @Home&lt;/p>
  &lt;/figcaption>
 &lt;/figure>
 
-&lt;p>But it seems to come at a cost: things are no longer hidden behind convenient Cloud APIs&amp;hellip;&lt;/p>
+&lt;p>But at first glance, it comes at a cost: manual setup is in and things are no longer abstracted away&amp;hellip;&lt;/p>
 &lt;p>&amp;hellip; or so it seems&amp;hellip;&lt;/p>
-&lt;p>In reality, we can actually re-use at home most of the same tools available for the Cloud.&lt;/p>
-&lt;p>This post will present one of them: &lt;strong>Terraform/Tofu&lt;/strong> and show how it can manage a simple &lt;code>LibVirtd&lt;/code>/&lt;code>KVM&lt;/code> hypervisor.&lt;/p>
-&lt;h1 id="creating-stuff">Creating Stuff&lt;/h1>
-&lt;p>Making a hypervisor out of a Debian install is extremely easy: just run &lt;code>apt install libvirt-daemon&lt;/code>.&lt;/p>
-&lt;p>But past that, wouldn&amp;rsquo;t it be nice to be able to manage our &lt;code>libvirt&lt;/code>/&lt;code>kvm&lt;/code> hypervisor in &lt;code>HCL&lt;/code> like we would on an AWS account?&lt;/p>
+&lt;p>In reality, we can actually re-use at home most of the same tools available for the Cloud(™).&lt;/p>
+&lt;p>This post will present one of them: &lt;strong>Terraform/Tofu&lt;/strong> and show how it can manage a basic &lt;code>Libvirtd&lt;/code>/&lt;code>KVM&lt;/code> hypervisor.&lt;/p>
+&lt;h1 id="locally-sourced-tofu">Locally Sourced Tofu&lt;/h1>
+&lt;p>Making a hypervisor out of a Debian install is extremely easy: install Debian, and run &lt;code>apt install libvirt-daemon&lt;/code>.&lt;/p>
+&lt;p>But past that, wouldn&amp;rsquo;t it be nice to be able to manage our &lt;code>libvirtd&lt;/code>/&lt;code>kvm&lt;/code> hypervisor with &lt;code>Tofu&lt;/code>/&lt;code>HCL&lt;/code> like we would on AWS?&lt;/p>
 &lt;p>Well, thanks to dmacvivar&amp;rsquo;s &lt;a href="https://search.opentofu.org/provider/dmacvicar/libvirt/latest/docs" target="_blank">libvirt provider&lt;/a>, we can, and here is how.&lt;/p>
 &lt;blockquote>
 &lt;p>&lt;strong>Notes:&lt;/strong>&lt;/p>
 &lt;ul>
-&lt;li>Don&amp;rsquo;t hesitate to play with this code. You can download the full &lt;a href="https://technically.kakwalab.ovh/files/kvm-terraform/main.tf">main.tf&lt;/a>, and with a few tweaks, you should be able to apply it.&lt;/li>
-&lt;li>To apply this configuration, run &lt;code>tofu init&lt;/code> (once) and &lt;code>tofu apply&lt;/code> as root.&lt;/li>
+&lt;li>Don&amp;rsquo;t hesitate to play with this code. You can download the &lt;a href="https://technically.kakwalab.ovh/files/kvm-terraform/main.tf">full main.tf&lt;/a>, and with a few tweaks, you should be able to apply it on your own hypervisor.&lt;/li>
+&lt;li>To apply this configuration, run &lt;code>tofu init&lt;/code> (once) and &lt;code>tofu apply&lt;/code> as root in the same dir as &lt;code>main.tf&lt;/code>.&lt;/li>
 &lt;li>OpenTofu can be installed from the &lt;a href="https://opentofu.org/docs/intro/install/" target="_blank">official website&lt;/a>.&lt;/li>
 &lt;/ul>
 &lt;/blockquote>
-&lt;h2 id="provider-setup">Provider Setup&lt;/h2>
+&lt;h2 id="libvirt-provider-setup">Libvirt Provider Setup&lt;/h2>
 &lt;p>First, declare the &lt;code>libvirt&lt;/code> provider and point it at the local hypervisor:&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-hcl" data-lang="hcl">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">terraform&lt;/span> {
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">required_providers&lt;/span> {
@@ -39,16 +39,18 @@
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">provider&lt;/span> &lt;span style="color:#e6db74">&amp;#34;libvirt&amp;#34;&lt;/span> {
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> uri &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;qemu:///system&amp;#34;&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>qemu:///system&lt;/code> connects to the local hypervisor. You can also point it at a remote host over SSH with &lt;code>qemu+ssh://&amp;lt;USER&amp;gt;@&amp;lt;HOST&amp;gt;/system&lt;/code>.
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;blockquote>
+&lt;p>&lt;strong>Notes&lt;/strong>: &lt;code>qemu:///system&lt;/code> connects to the local hypervisor.
+You can also point it at a remote host over SSH with &lt;code>qemu+ssh://&amp;lt;USER&amp;gt;@&amp;lt;HOST&amp;gt;/system&lt;/code>.
 But be aware that it could make image management fiddly (local FS vs remote FS).&lt;/p>
+&lt;/blockquote>
 &lt;h2 id="networks">Networks&lt;/h2>
-&lt;p>First we need some LAN segments to put our VMs in. And also, usually, it could be nice to give these VMs access to our home network.&lt;/p>
-&lt;p>The &lt;code>libvirt&lt;/code> provider can manage these networks with its &lt;code>libvirt_network&lt;/code> resources.&lt;/p>
-&lt;p>Here, we simply declare a private network:&lt;/p>
+&lt;p>We probably need some LAN segments to put our VMs in, at least a private network and also, usually, a bridge to our home network.&lt;/p>
+&lt;p>The &lt;code>libvirt&lt;/code> provider can manage these networks through its &lt;code>libvirt_network&lt;/code> resources.&lt;/p>
+&lt;p>Here is private NATed network declaration:&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-hcl" data-lang="hcl">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">locals&lt;/span> {
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> network_name &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;homelab-nat&amp;#34;&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> network_cidr &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;192.168.150.0/24&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> bridge_name &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;br0&amp;#34;&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">resource&lt;/span> &lt;span style="color:#e6db74">&amp;#34;libvirt_network&amp;#34; &amp;#34;MY_NETWORK&amp;#34;&lt;/span> {
@@ -71,11 +73,11 @@ But be aware that it could make image management fiddly (local FS vs remote FS).
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }]
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Outside of Tofu &amp;amp; libvirt we will also create &lt;code>br0&lt;/code> NIC bridge to give some of our VMs direct access to our home network.&lt;/p>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Outside of Tofu &amp;amp; libvirt we will also need to create a &lt;code>br0&lt;/code> NIC bridge for direct access to our home network.&lt;/p>
 &lt;p>To create it temporarily:&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>ip link add name br0 type bridge
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>ip link set br0 up
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>To make it persistent on Debian, edit &lt;code>/etc/network/interfaces&lt;/code>:&lt;/p>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>To make it persistent on Debian, edit &lt;code>/etc/network/interfaces&lt;/code> and add something like:&lt;/p>
 &lt;pre tabindex="0">&lt;code>auto br0
 iface br0 inet dhcp
  bridge_ports eth0
@@ -83,8 +85,8 @@ iface br0 inet dhcp
  bridge_fd 0
 &lt;/code>&lt;/pre>&lt;p>Replace &lt;code>eth0&lt;/code> with your actual physical NIC.&lt;/p>
 &lt;h2 id="storage-pools">Storage Pools&lt;/h2>
-&lt;p>Before creating any volumes, we need storage pools to hold them. A pool is just a directory (or LVM VG, NFS share, …) that &lt;code>libvirt&lt;/code> manages.&lt;/p>
-&lt;p>Here we declare three pools that the rest of the configuration will reference:&lt;/p>
+&lt;p>Before creating any disks/volumes, we need storage pools first. A pool is just a directory that &lt;code>libvirt&lt;/code> manages.&lt;/p>
+&lt;p>At its simplest, a declaration looks like that:&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-hcl" data-lang="hcl">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">resource&lt;/span> &lt;span style="color:#e6db74">&amp;#34;libvirt_pool&amp;#34; &amp;#34;MY_DISK_POOL&amp;#34;&lt;/span> {
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> name &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;MY_DISK_POOL&amp;#34;&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> type &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;dir&amp;#34;&lt;/span>
@@ -92,8 +94,7 @@ iface br0 inet dhcp
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> path &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;/var/lib/libvirt/images/MY_DISK_POOL&amp;#34;&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>type = &amp;quot;dir&amp;quot;&lt;/code> is the simplest option: &lt;code>libvirt&lt;/code> will create the directory if it doesn&amp;rsquo;t exist and track volumes inside it. You can use &lt;code>&amp;quot;logical&amp;quot;&lt;/code> for LVM-backed pools or &lt;code>&amp;quot;netfs&amp;quot;&lt;/code> for NFS if you want something more elaborate.&lt;/p>
-&lt;h2 id="base-vm-image">Base VM Image&lt;/h2>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="base-vm-image">Base VM Image&lt;/h2>
 &lt;p>We could install the VM using a modified &lt;code>.iso&lt;/code> or with &lt;code>pxe&lt;/code> netboot setup, like we would with bare metal machines.&lt;/p>
 &lt;p>But, since we are already past the bare metal, a more convenient option is to directly download and use official images from &lt;a href="https://cloud.debian.org/images/cloud/" target="_blank">Debian&lt;/a>, &lt;a href="https://download.rockylinux.org/pub/rocky/10/images/x86_64/" target="_blank">Rocky&lt;/a> or your preferred distribution.&lt;/p>
 &lt;p>By just pointing at the URL, the &lt;code>libvirt&lt;/code> &lt;code>Tofu&lt;/code> module can download and register this base image in our hypervisor&amp;rsquo;s libvirt:&lt;/p>
@@ -113,16 +114,17 @@ iface br0 inet dhcp
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> format &lt;span style="color:#f92672">=&lt;/span> { type &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;qcow2&amp;#34;&lt;/span> }
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="cloud-init">Cloud Init&lt;/h2>
-&lt;p>These cloud images usually ship with &lt;a href="https://docs.cloud-init.io/en/latest/index.html" target="_blank">&lt;code>cloud-init&lt;/code>&lt;/a>, which we can leverage to bootstrap the VMs.&lt;/p>
-&lt;p>At this stage, it&amp;rsquo;s advisable to do as little as possible, but we will typically configure:&lt;/p>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>And from there, with the &lt;code>backing_store&lt;/code> directive, this image can be used as the foundation for multiple VMs.&lt;/p>
+&lt;h2 id="cloud-init">Cloud Init&lt;/h2>
+&lt;p>Cloud images usually ship with &lt;a href="https://docs.cloud-init.io/en/latest/index.html" target="_blank">cloud-init&lt;/a>, which we can leverage to bootstrap the VMs.&lt;/p>
+&lt;p>At this stage, it&amp;rsquo;s advisable to do as little as possible, but we will typically want to configure:&lt;/p>
 &lt;ul>
 &lt;li>some network settings&lt;/li>
-&lt;li>a &lt;a href="https://docs.saltproject.io/en/latest/contents.html" target="_blank">Salt&lt;/a>/&lt;a href="https://help.puppet.com/core/current/Content/PuppetCore/puppet_index.htm" target="_blank">Puppet&lt;/a>/&lt;a href="https://docs.chef.io/" target="_blank">Chef&lt;/a> agent or some SSH credentials for &lt;a href="https://docs.ansible.com/" target="_blank">Ansible&lt;/a> for further configuration.&lt;/li>
+&lt;li>a &lt;a href="https://docs.saltproject.io/en/latest/contents.html" target="_blank">Salt&lt;/a>/&lt;a href="https://help.puppet.com/core/current/Content/PuppetCore/puppet_index.htm" target="_blank">Puppet&lt;/a>/&lt;a href="https://docs.chef.io/" target="_blank">Chef&lt;/a> agent or some SSH credentials for &lt;a href="https://docs.ansible.com/" target="_blank">Ansible&lt;/a>&lt;/li>
 &lt;li>usually, a default account for troubleshooting&lt;/li>
 &lt;/ul>
-&lt;p>The &lt;code>cloud-init&lt;/code> payload can also be managed directly by the Tofu &lt;code>libvirt&lt;/code> provider.&lt;/p>
-&lt;p>With &lt;code>tofu apply&lt;/code>, this will create a small (&amp;lt; 1MB) &lt;code>.iso&lt;/code> volume which can be attached to the VM, and consumed at first boot:&lt;/p>
+&lt;p>One of the nice feature of this &lt;code>tofu&lt;/code>/&lt;code>libvirt&lt;/code> provider is its ability to create &lt;code>cloud-init&lt;/code> payloads/volumes.&lt;/p>
+&lt;p>With &lt;code>tofu apply&lt;/code>, this will create a small (&amp;lt; 1MB) &lt;code>.iso&lt;/code> volume which can be attached to the VM cdrom, and consumed at first boot:&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-hcl" data-lang="hcl">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Cloud-init configuration for the YOUR_VM VM
 &lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">resource&lt;/span> &lt;span style="color:#e6db74">&amp;#34;libvirt_cloudinit_disk&amp;#34; &amp;#34;YOUR_VM_seed&amp;#34;&lt;/span> {
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> name &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;YOUR_VM-cloudinit&amp;#34;&lt;/span>
@@ -189,14 +191,19 @@ iface br0 inet dhcp
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Note: we also install and enable &lt;code>qemu-guest-agent&lt;/code> here. Installing it is necessary to have the VM report back its IP(s) to the Tofu &lt;code>libvirt&lt;/code> provider, otherwise, the provider will error in timeout.&lt;/p>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;blockquote>
+&lt;p>&lt;strong>Notes&lt;/strong>: we also install and enable &lt;code>qemu-guest-agent&lt;/code> here.
+Installing it helps a lot with IP management in the &lt;code>libvirt&lt;/code> provider.&lt;/p>
+&lt;/blockquote>
 &lt;h2 id="vm-creation">VM Creation&lt;/h2>
-&lt;p>Once we have the base OS image and some cloud-init configuration, we can create the VM itself.&lt;/p>
+&lt;p>Once we have the networks, the pools, the base OS image and some cloud-init configuration, we can at last create the VM itself.&lt;/p>
 &lt;p>Let&amp;rsquo;s start with the main disk:&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-hcl" data-lang="hcl">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">resource&lt;/span> &lt;span style="color:#e6db74">&amp;#34;libvirt_volume&amp;#34; &amp;#34;YOUR_VM_disk&amp;#34;&lt;/span> {
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> name &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;YOUR_VM-disk.qcow2&amp;#34;&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> pool &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">libvirt_pool&lt;/span>.&lt;span style="color:#66d9ef">MY_DISK_POOL&lt;/span>.&lt;span style="color:#66d9ef">name&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> capacity &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">53687091200&lt;/span>&lt;span style="color:#75715e"> # 50GB
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"> # Reuse the cloud image we got previously
 &lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> backing_store &lt;span style="color:#f92672">=&lt;/span> {
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> path &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">libvirt_volume&lt;/span>.&lt;span style="color:#66d9ef">debian_base&lt;/span>.&lt;span style="color:#66d9ef">path&lt;/span>&lt;span style="color:#75715e"> # Base VM Image we downloaded earlier.
 &lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> format &lt;span style="color:#f92672">=&lt;/span> { type &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;qcow2&amp;#34;&lt;/span> }
@@ -205,7 +212,7 @@ iface br0 inet dhcp
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> format &lt;span style="color:#f92672">=&lt;/span> { type &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;qcow2&amp;#34;&lt;/span> }
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>And from there, we can create the VM:&lt;/p>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>And from there, we can actually create the VM:&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-hcl" data-lang="hcl">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">resource&lt;/span> &lt;span style="color:#e6db74">&amp;#34;libvirt_domain&amp;#34; &amp;#34;YOUR_VM&amp;#34;&lt;/span> {
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> name &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;YOUR_VM&amp;#34;&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> type &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;kvm&amp;#34;&lt;/span>
@@ -242,8 +249,9 @@ iface br0 inet dhcp
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> disks &lt;span style="color:#f92672">=&lt;/span> [
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> {
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> source &lt;span style="color:#f92672">=&lt;/span> {
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> volume &lt;span style="color:#f92672">=&lt;/span> {
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> pool &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">libvirt_volume&lt;/span>.&lt;span style="color:#66d9ef">YOUR_VM_disk&lt;/span>.&lt;span style="color:#66d9ef">pool&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> volume &lt;span style="color:#f92672">=&lt;/span> {&lt;span style="color:#75715e">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"> # our disk
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> pool &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">libvirt_volume&lt;/span>.&lt;span style="color:#66d9ef">YOUR_VM_disk&lt;/span>.&lt;span style="color:#66d9ef">pool&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> volume &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">libvirt_volume&lt;/span>.&lt;span style="color:#66d9ef">YOUR_VM_disk&lt;/span>.&lt;span style="color:#66d9ef">name&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
@@ -262,7 +270,7 @@ iface br0 inet dhcp
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ]&lt;span style="color:#75715e">
 &lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"> # Two network interfaces: bridge + MY_NETWORK
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"> # Two network interfaces: bridge br0 + MY_NETWORK
 &lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> interfaces &lt;span style="color:#f92672">=&lt;/span> [
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> {
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> type &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;bridge&amp;#34;&lt;/span>
@@ -282,7 +290,8 @@ iface br0 inet dhcp
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ]&lt;span style="color:#75715e">
 &lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"> # Channel for qemu-guest-agent communication mostly to report back the VM&amp;#39;s IPs
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"> # Channel for qemu-guest-agent communication between VM and hypervisor
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"> # mostly to report back the VM&amp;#39;s IPs
 &lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> channels &lt;span style="color:#f92672">=&lt;/span> [
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> {
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> target &lt;span style="color:#f92672">=&lt;/span> { virt_io &lt;span style="color:#f92672">=&lt;/span> { name &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;org.qemu.guest_agent.0&amp;#34;&lt;/span> } }
@@ -325,7 +334,7 @@ iface br0 inet dhcp
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="dns-records">DNS Records&lt;/h2>
 &lt;p>Lastly, as it&amp;rsquo;s nicer to deal with proper hostname rather than IP addresses, let&amp;rsquo;s configure a Tofu DNS provider.&lt;/p>
 &lt;p>First, you need to configure have a DNS server allowing &lt;strong>RFC 2136&lt;/strong> dynamic updates to a zone.&lt;/p>
-&lt;p>I will not detail the DNS server configuration here, but with &lt;code>Bind&lt;/code>/&lt;code>Named&lt;/code>, it could be done like that:&lt;/p>
+&lt;p>I will not detail this configuration much here, but with &lt;code>Bind&lt;/code>/&lt;code>Named&lt;/code>, it could be done like that:&lt;/p>
 &lt;p>First, generate a key:&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ dnssec-keygen -a HMAC-SHA512 -b &lt;span style="color:#ae81ff">512&lt;/span> -n HOST example.com.
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># it creates two files:&lt;/span>
@@ -393,8 +402,9 @@ iface br0 inet dhcp
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ttl &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">300&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="generating-ansible-inventory">Generating Ansible Inventory&lt;/h2>
-&lt;p>The last bit I like to do is to have Tofu generate an Ansible inventory file. This enables me to bridge the &lt;code>.tf&lt;/code>/infrastructure creation bits and the server configuration bits more naturally.&lt;/p>
-&lt;p>And in terms of implementation, it&amp;rsquo;s nothing fancy, just a basic template leveraging the output of the other resources:&lt;/p>
+&lt;p>The last bit I like to do is to have Tofu generate an Ansible inventory file.&lt;/p>
+&lt;p>This enables me to bridge the &lt;code>.tf&lt;/code>/infrastructure creation step and the server configuration step more naturally.&lt;/p>
+&lt;p>In terms of implementation, it&amp;rsquo;s nothing fancy, just a basic template leveraging the output of the other resources:&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-hcl" data-lang="hcl">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">locals&lt;/span> {
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> your_vm_ip &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#66d9ef">data&lt;/span>.&lt;span style="color:#66d9ef">libvirt_domain_interface_addresses&lt;/span>.&lt;span style="color:#66d9ef">YOUR_VM&lt;/span>.&lt;span style="color:#66d9ef">interfaces&lt;/span>[&lt;span style="color:#ae81ff">2&lt;/span>].&lt;span style="color:#66d9ef">addrs&lt;/span>[&lt;span style="color:#ae81ff">0&lt;/span>].&lt;span style="color:#66d9ef">addr&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
@@ -408,13 +418,15 @@ iface br0 inet dhcp
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> file_permission &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;0644&amp;#34;&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h1 id="closing-thoughts">Closing Thoughts&lt;/h1>
-&lt;p>Honestly, after struggling a bit (my fault, I was using an old buggy version, make sure you are at least on &lt;code>v0.9&lt;/code>), I was surprised how well I managed to get it working.&lt;/p>
-&lt;p>Being able to nuke entire stacks and re-create them at will, with just a &lt;code>tofu destroy;tofu apply&lt;/code> is extremely convenient and satisfying.&lt;/p>
-&lt;p>Plus, the setup is extremely simple: just a base headless Debian with &lt;code>libvirtd&lt;/code> installed.&lt;/p>
-&lt;p>Sure, I could have installed Proxmox, use one of the &lt;a href="https://search.opentofu.org/provider/bpg/proxmox/latest" target="_blank">Proxmox Tofu Providers&lt;/a>, and have something more like AWS or GCP.
-But, in truth, this simple setup is already more than enough to cosplay as a bigtech Cloud Engineer, and it surely helped me a lot when deploying my @home &lt;a href="https://technically.kakwalab.ovh/posts/talos-k8s">k8s cluster&lt;/a>.&lt;/p>
+&lt;p>Honestly, after struggling a bit (mostly my fault, I was using an old and buggy version for a while, make sure you are at least on &lt;code>v0.9&lt;/code>),
+even if it&amp;rsquo;s a little finicky at times, I was surprised how well I managed to get it working.&lt;/p>
+&lt;p>Being able to nuke entire stacks and re-create them at will, with just a &lt;code>tofu destroy;tofu apply&lt;/code> is extremely convenient and strangely satisfying.&lt;/p>
+&lt;p>Plus, the base hypervisor is extremely simple: just a base headless Debian with &lt;code>libvirtd&lt;/code> installed.&lt;/p>
+&lt;p>Sure, I could have installed Proxmox, use one of the &lt;a href="https://search.opentofu.org/provider/bpg/proxmox/latest" target="_blank">Proxmox Tofu Providers&lt;/a>, and a more AWS or GCP like experience.
+But, in truth, this simple setup is already more than enough to cosplay as your typical &amp;ldquo;latte drinking bigtech/GAFAM SRE/DevSecOps/CloudEng&amp;rdquo;.&lt;/p>
+&lt;p>It surely helped me a lot when deploying my @home &lt;a href="https://technically.kakwalab.ovh/posts/talos-k8s">k8s cluster&lt;/a>.&lt;/p>
 &lt;p>Once again, don&amp;rsquo;t hesitate to download the full &lt;a href="https://technically.kakwalab.ovh/files/kvm-terraform/main.tf">main.tf&lt;/a>, and play with it.&lt;/p>
-&lt;p>Kudos to &lt;a href="https://www.mac-vicar.eu/" target="_blank">Duncan Mac-Vicar P.&lt;/a> for sharing this provider.&lt;/p></description></item><item><title>PCIe x16 to x1 GPU Adapter - Feels wrong, but does work</title><link>https://technically.kakwalab.ovh/posts/gpu-pciex1/</link><pubDate>Fri, 02 Jan 2026 18:29:53 +0100</pubDate><author>carpentier.pf@gmail.com (Pierre-François Carpentier)</author><guid>https://technically.kakwalab.ovh/posts/gpu-pciex1/</guid><description>&lt;h1 id="why-would-you-do-that">Why Would You Do That?&lt;/h1>
+&lt;p>Kudos to &lt;a href="https://www.mac-vicar.eu/" target="_blank">Duncan Mac-Vicar P.&lt;/a> for implementing and sharing this provider.&lt;/p></description></item><item><title>PCIe x16 to x1 GPU Adapter - Feels wrong, but does work</title><link>https://technically.kakwalab.ovh/posts/gpu-pciex1/</link><pubDate>Fri, 02 Jan 2026 18:29:53 +0100</pubDate><author>carpentier.pf@gmail.com (Pierre-François Carpentier)</author><guid>https://technically.kakwalab.ovh/posts/gpu-pciex1/</guid><description>&lt;h1 id="why-would-you-do-that">Why Would You Do That?&lt;/h1>
 &lt;p>I have an old PC tower lying around that I use as a lab/KVM hypervisor from time to time. The thing is completely headless like a server should&amp;hellip; maybe a bit too headless actually.&lt;/p>
 &lt;p>The motherboard doesn&amp;rsquo;t have any video port, and the two PCIEx16 ports are used by some old OCZ Velodrives storage cards, so there is no way to plug a screen.&lt;/p>
 &lt;p>To a degree, it&amp;rsquo;s possible to make due with the serial port, but it gets old really fast when trying to troubleshoot pre-grub boot issues or reinstalling the OS.&lt;/p>
