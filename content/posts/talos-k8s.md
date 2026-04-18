@@ -91,17 +91,17 @@ Load Balancer:
                    │ - HTTP / TCP Routing       │                    |    │ kube-apiserver               │
                    │ - TLS Termination          │                    |    │ - Kubernetes HTTP API        │
                    └────────────┬───────────────┘                    |    │ - AuthN / AuthZ / Admission  │
-            ┌───────────────────┼───────────────────────┐            |    │                              │
- ┌──────────▼──────┐   ┌────────▼────────┐   ┌──────────▼───────┐    |    │ kube-scheduler               │
- │  Worker Node 1  │   │  Worker Node 2  │   │   Worker Node N  │    |    │                              │
- │ kubelet         │   │ kubelet         │   │  kubelet         │    |    │ kube-controller-manager      │
- │ containerd      │   │ containerd      │   │  containerd      │    |    │ - Namespace controller       │
- │ ----------------│   │ --------------- │   │  --------------- │    |    │ - Replication controller     │
- │ Pods            │   │ Pods            │   │  Pods            │    |    │                              │
- │ - App containers│   │ - App containers│   │ - App containers │    |    │ etcd (cluster state storage) │
- │ - Sidecars      │   │                 │   │                  │    |    │                              │
- └──────────┬──────┘   └────────┬────────┘   └──────────┬───────┘    |    └──────────────────┬───────────┘
-            └───────────────────┴───────────────────────┴─Kubernetes API (mTLS)──────────────┘
+          ┌─────────────────────┼──────────────────────┐             |    │                              │
+ ┌────────▼─────────┐  ┌────────▼─────────┐  ┌─────────▼────────┐    |    │ kube-scheduler               │
+ │  Worker Node 1   │  │  Worker Node 2   │  │   Worker Node N  │    |    │                              │
+ │ kubelet          │  │ kubelet          │  │  kubelet         │    |    │ kube-controller-manager      │
+ │ containerd       │  │ containerd       │  │  containerd      │    |    │ - Namespace controller       │
+ │ ---------------- │  │ ---------------  │  │  --------------- │    |    │ - Replication controller     │
+ │ Pods             │  │ Pods             │  │  Pods            │    |    │                              │
+ │ - App containers │  │ - App containers │  │ - App containers │    |    │ etcd (cluster state storage) │
+ │ - Sidecars       │  │                  │  │                  │    |    │                              │
+ └────────┬─────────┘  └────────┬─────────┘  └─────────┬────────┘    |    └───────────────┬──────────────┘
+          └─────────────────────┴──────────────────────┴── Kubernetes API (mTLS)──────────┘
                                                                      |
 ```
 
