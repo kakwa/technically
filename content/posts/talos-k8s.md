@@ -1,8 +1,8 @@
 +++
-title = 'K8s at home - Over-Engineered Self-Hosting'
-date = 2026-02-01T16:55:15+01:00
+title = 'Over-Engineered My Self-Hosting with Kubernetes'
+date = 2026-04-19T16:55:15+01:00
 draft = true
-summary = "How to have more microservices than users"
+summary = "Is 'just use a vps' wrong?"
 +++
 
 # Introduction
@@ -32,19 +32,20 @@ But, well, it's what the cool kids are doing, so I need to fill this gap in my C
 Through the magic of Open Source, the Internet and a 12-year-old PC
 with 32GB of RAM (actually quite valuable these days :p), I should be able to manage.
 
-## What I Want Out Of This
+## What I Wanted Out Of This
 
 By the end of this process, I want:
 
-* Mostly automated base KVM hypervisor deployment
+* A mostly automated base KVM hypervisor deployment
 * The Base Kubernetes Cluster, with all the control plane bits
 * HTTPS load balancer + DNS
 * CI/CD with Argo (and integration with GitHub)
 * Docker/Container Registry
 
-This infrastructure should be managed through the usual "configuration as code" tools like Ansible, Tofu and a bit of scripting.
+This infrastructure should also be managed through the usual "configuration as code" tools, namely Ansible, Tofu and a bit of scripting.
 
-The code is available [here](https://github.com/kakwa/home.tf)
+I'm making the code available [here](https://github.com/kakwa/home.tf).
+But be aware it might be tighly coupled to my infrastructure, and not be easily reusable.
 
 # Kubernetes Basics
 
@@ -403,7 +404,7 @@ export WORKER_IP=(${join(" ", [for ip in worker_ips : "${"\""}${ip}${"\""}"])})
 export CONTROL_PLANE_VIP="${control_plane_vip}"
 ```
 
-And a bit of Terraform code leveraging the [data.libvirt_domain_interface_addresses](TODO link doc tofu) Tofu datasource:
+And a bit of Terraform code leveraging the [data.libvirt_domain_interface_addresses](https://search.opentofu.org/provider/dmacvicar/libvirt/latest/docs/datasources/domain_interface_addresses) Tofu datasource:
 
 ```hcl
 # Recovery of the IPs
@@ -444,20 +445,19 @@ We can let Tofu create an env file which once sourced, will provide convenient v
 
 ## Cluster Configuration Deployment
 
-After a while, you should have a bunch of new VMs, booted-up with an unconfigured Talos.
+After a while, you should have a bunch of new VMs, booted-up into an unconfigured Talos.
 
 If you use virt-manager, you should see a dashboard like that in the first tty of each VM:
 
-TODO image TTY_unconfigured
+{{< figure src="/images/talos-k8s/talos-unconfigured.png" alt="Talos dashboard on an unconfigured node: TYPE unknown, STAGE maintenance, CLUSTER n/a" caption="Fresh Talos VM in maintenance mode before apply-config" >}}
 
-Note that when the type is `unknown`, the node is in `Maintenance`, the cluster is `n/a`, etc.
+Note that on all nodes, currently, `Type` is `unknown`, `Stage` is `Maintenance`, `Cluster` and various other parameters are `n/a`.
 
 This means that right now, we have just a bunch of individual nodes not talking to each other.
 
 Also note that the cluster is in a vulnerable state at this point, with anybody able to take control of your freshly provisioned nodes.
 
-We must configure all the nodes in order to have a properly functioning k8s cluster.
-
+We must configure all the nodes in order to have a properly functioning and secured k8s cluster.
 
 ### Generating The Cluster Config
 
@@ -503,6 +503,10 @@ sleep 120
 talosctl bootstrap --endpoints "${BOOTSTRAP_CP}" --nodes "${BOOTSTRAP_CP}"
 ```
 
+While nodes restart and synchronize after `apply-config`, the nodes could stay in booting state for a few minutes:
+
+{{< figure src="/images/talos-k8s/talos-worker-booting.png" alt="Talos worker dashboard during boot: STAGE booting, Kubernetes components not yet healthy" caption="Worker node still coming up after configuration" >}}
+
 After the bootstrap, check the cluster health, and fetch the `kubeconfig` file for `kubectl` once it's healthy:
 
 ```bash
@@ -513,6 +517,14 @@ talosctl health --endpoints "${BOOTSTRAP_CP}" --nodes "${BOOTSTRAP_CP}" \
 
 talosctl kubeconfig . --endpoints "${BOOTSTRAP_CP}" --nodes "${BOOTSTRAP_CP}"
 ```
+
+On a control node node TTY, a healthy dashboard looks like this:
+
+{{< figure src="/images/talos-k8s/talos-cp-ok.png" alt="Talos dashboard: control plane talos-cp-1 running, READY true, kubelet and API server healthy" caption="Healthy control plane after bootstrap" >}}
+
+Workers should show a similar status in the dasboard dashboard:
+
+{{< figure src="/images/talos-k8s/talos-worker-ok.png" alt="Talos dashboard: healthy worker node with kubelet and container runtime ready" caption="Healthy worker node" >}}
 
 From there, you should be able to run kubectl, and see your cluster:
 
@@ -576,7 +588,16 @@ talosctl kubeconfig . --endpoints "${BOOTSTRAP_CP}" --nodes "${BOOTSTRAP_CP}"
 
 ## DNS Management
 
-TODO DNS names are nice, solution: ExternalDNS link
+Usually, if you host a service on K8S, you want to give it a public DNS name.
+It could be managed separatly from k8s, maybe with a bit glue scripting against the DNS providers APIs.
+
+But it's way nicer to have K8S directly manage these records and have them directly in the helm template description.
+
+To achieve that, the most common solution at the moment seems to be [ExternalDNS](https://kubernetes-sigs.github.io/external-dns/latest/), which integrates with tons of DNS providers (Route53, Gandi, OVH, etc).
+
+In my case, I use the RFC2136/TSIG integration to let it manage records in a provite int.kakwalab.ovh zone.
+
+To enable `ExternalDNS`, first, you need a base configuratin template for the deployment, with the necessary parameters (zone name, key algorithm, dns server IP and port, etc)
 
 ```yaml
 provider:
@@ -627,6 +648,8 @@ resources:
     memory: 128Mi
 ```
 
+From there, we can prepare a namespace and some secrets with ou TSIG key for it:
+
 ```shell
 export KUBECONFIG="./kubeconfig"
 
@@ -644,7 +667,11 @@ kubectl -n "$EXTERNAL_DNS_NAMESPACE" create secret generic external-dns-rfc2136 
   --from-literal=rfc2136-tsig-secret="$DNS_TSIG_KEY_SECRET" \
   --from-literal=rfc2136-tsig-keyname="$TSIG_KEYNAME" \
   --dry-run=client -o yaml | kubectl apply -f -
+```
 
+And finally, use `helm` to deploy this add-on:
+
+```
 # Add Helm Repository
 helm repo add external-dns https://kubernetes-sigs.github.io/external-dns/ >/dev/null
 helm repo update external-dns >/dev/null
