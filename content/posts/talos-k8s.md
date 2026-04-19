@@ -19,7 +19,7 @@ to fix minor issues and in the end, eat a lot of time which should actually be u
 to solve the problems our customers pay us for.
 
 On the other, it can leave gaps in your CV, especially if like me, you have scruples
-about gratuitously over-engineering things just to learn new tools/framework 
+about gratuitously over-engineering things just to learn new tools/frameworks
 at your employer's expense on the job.
 
 One such gap I currently have is deploying and managing Kubernetes Clusters.
@@ -52,13 +52,13 @@ The code is available [here](https://github.com/kakwa/home.tf)
 
 Like chocolate, k8s comes in various flavors. I contemplated deploying it on a traditional distribution, maybe dusting off my Gentoo skills for example.
 
-But in the end, I ended taking the easier path of picking a specialized distribution.
+But in the end, I ended up taking the easier path of picking a specialized distribution.
 
 I considered the following ones:
 
 **Talos Linux** is an immutable, API-driven operating system built specifically and exclusively for Kubernetes. It has no SSH access, no shell, and everything is configured through declarative configs and the `talosctl` CLI.
 
-**Flatcar Container Linux** is a fork of the original CoreOS Container Linux backed by [Kinvolk](https://kinvolk.io/) now part of Microsoft. It's a minimal and immutable distribution but with SSH access.
+**Flatcar Container Linux** is a fork of the original CoreOS Container Linux backed by [Kinvolk](https://kinvolk.io/), now part of Microsoft. It's a minimal and immutable distribution but with SSH access.
 
 **OpenShift & Fedora CoreOS** is Red Hat's successor to the original CoreOS.
 
@@ -115,17 +115,17 @@ Cluster Add-ons (non-exhaustive):
 
 The cluster components talk to each other using http & gRPC and usually authenticate each other using mutual TLS certificates.
 
-In addition, Talos adds its own [components (apid, machined, etc)](https://docs.siderolabs.com/talos/v1.6/learn-more/components) to configure the cluster and manage their idiosyncrasies (custom init, etc).
+In addition, Talos adds its own [components (apid, machined, etc)](https://docs.siderolabs.com/talos/v1.6/learn-more/components) to configure the cluster and manage its idiosyncrasies (custom init, etc).
 
 # Non-K8s Bits
 
-This K8s deployment required also a few bits outside of the cluster itself.
+This K8s deployment also required a few bits outside of the cluster itself.
 
 First, there was the recommissioning of my old rig itself (i5 2500k/32GB DDR3) which required a bit of work, like installing some new storage with 3d printed adapters ([5.25" to 3.5"](https://www.printables.com/model/1306664-35-to-525-hdd-silencer-bracket) + [3.5" to 2.5"](https://www.printables.com/model/229753-small-hdd-adapter-35-inch-to-25-inch))
 I also did some power consumption optimization (CPU down-clocking, removing/disabling unnecessary cards) to not have the thing draw ~120W continuously. It still draws ~50W however, which is... "not great, not terrible"...
 (I might consider replacing it with a mini-pc or old laptop to be honest).
 
-After that, I installed the latest Debian and applied [the following Ansible playbook](https://github.com/kakwa/home.tf/blob/main/ansible/hypervisor.yml) to make it a basic hypervisor out of it.
+After that, I installed the latest Debian and applied [the following Ansible playbook](https://github.com/kakwa/home.tf/blob/main/ansible/hypervisor.yml) to make a basic hypervisor out of it.
 
 I also deployed an [internal DNS](https://github.com/kakwa/ansible-openbsd) server with TSIG/RFC 2136 dynamic zones on a [Sparc V100](/posts/silly-sun-server-software) using OpenBSD for funsies.
 
@@ -373,8 +373,8 @@ resource "libvirt_cloudinit_disk" "worker_seed" {
 }
 
 # Convert cloud-init to ISO volume
-resource "libvirt_volume" "cp_seed_volume" {
-  for_each = local.control_plane_nodes
+resource "libvirt_volume" "worker_seed_volume" {
+  for_each = local.worker_nodes
   name = "${each.key}-cloudinit.iso"
   [...]
 }
@@ -391,55 +391,107 @@ resource "libvirt_domain" "workers" {
 }
 ```
 
-# At Last, K8S & Talos Setup
+## Remember Remember, The IPs Of Our Cluster
 
-## Cluster Configuration Deployment
+Once we have our VMs, it would be nice to not have to go fishing for the IPs of our cluster nodes.
 
-After the VMs are up, we need to drive Talos from a machine that can reach them.
+So, through a simple template like:
 
-The [home.tf](https://github.com/kakwa/home.tf/tree/main/terraform) setup uses a small script plus an environment file so the steps are explicit; the same could be done from Terraform (e.g. `null_resource` + `local-exec`), but a script makes the sequence easier to follow and re-run by hand.
-
-### Environment file (`talos-env.sh`) from Terraform
-
-Terraform generates `talos-env.sh` from the `env.tpl` template so the script knows control plane IPs, worker IPs, and the control-plane VIP. The IPs come from libvirt domain interface addresses (or a `virsh domifaddr` fallback when VMs are not running during `terraform apply`). The template looks like:
-
-```hcl
-# env.tpl (Terraform template)
-# Generated from Terraform. Talos node IPs from virsh domifaddr when VMs are running.
-
+```tpl
 export CONTROL_PLANE_IP=(${join(" ", [for ip in control_plane_ips : "${"\""}${ip}${"\""}"])})
 export WORKER_IP=(${join(" ", [for ip in worker_ips : "${"\""}${ip}${"\""}"])})
 export CONTROL_PLANE_VIP="${control_plane_vip}"
 ```
 
-The `local_file.env` resource in `inventory.tf` renders this with `control_plane_ips`, `worker_ips`, and `control_plane_vip` (from `var.control_plane_vip`), and writes `terraform/talos-env.sh`. The init script sources it.
+And a bit of Terraform code leveraging the [data.libvirt_domain_interface_addresses](TODO link doc tofu) Tofu datasource:
 
-### Configuration init
+```hcl
+# Recovery of the IPs
+# might need some modification (FIXME hard coded indices are sketchy)
+locals {
+  provider_talos_cp_ips = {
+    for k in keys(local.control_plane_nodes) :
+    k => try(data.libvirt_domain_interface_addresses.control_plane[k].interfaces[1].addrs[0].addr, "")
+  }
+  talos_worker_ips = {
+    for k in keys(local.worker_nodes) :
+    k => try(data.libvirt_domain_interface_addresses.workers[k].interfaces[1].addrs[0].addr, "")
+  }
+}
 
-From the directory where `talos-env.sh` and the script live, source the env and generate the Talos/Kubernetes config with a temporary endpoint (first control plane node):
+# We also define a VIP for the cluster, to more easily access it in the future.
+variable "control_plane_vip" {
+  description = "Virtual IP for the Talos/Kubernetes control plane API"
+  type        = string
+  default     = "192.168.100.10"
+}
+
+# Use the template and the IPs to generate the talos-env.sh inventory file
+resource "local_file" "env" {
+  content = templatefile("${path.module}/env.tpl", {
+    control_plane_ips      = local.provider_talos_cp_ips
+    worker_ips             = local.talos_worker_ips
+    control_plane_vip      = var.control_plane_vip
+  })
+  filename        = ".//talos-env.sh"
+  file_permission = "0644"
+}
+```
+
+We can let Tofu create an env file which once sourced, will provide convenient variables for the rest of this setup.
+
+# At Last, K8S & Talos Setup
+
+## Cluster Configuration Deployment
+
+After a while, you should have a bunch of new VMs, booted-up with an unconfigured Talos.
+
+If you use virt-manager, you should see a dashboard like that in the first tty of each VM:
+
+TODO image TTY_unconfigured
+
+Note that when the type is `unknown`, the node is in `Maintenance`, the cluster is `n/a`, etc.
+
+This means that right now, we have just a bunch of individual nodes not talking to each other.
+
+Also note that the cluster is in a vulnerable state at this point, with anybody able to take control of your freshly provisioned nodes.
+
+We must configure all the nodes in order to have a properly functioning k8s cluster.
+
+
+### Generating The Cluster Config
+
+So, the first step is to generate a configuration auto-magically using `talosctl gen config`
 
 ```bash
+# Set some variables
 source ./talos-env.sh
-CLUSTER_NAME="kawkalab-talos-cluster"
+CLUSTER_NAME="kakwalab-talos-cluster"
 BOOTSTRAP_CP="${CONTROL_PLANE_IP[0]}"
 TEMP_ENDPOINT="https://${BOOTSTRAP_CP}:6443"
 
 talosctl gen config "${CLUSTER_NAME}" "${TEMP_ENDPOINT}"
 ```
 
-This creates `controlplane.yaml`, `worker.yaml`, and `talosconfig`. The script skips this if those files already exist.
+This creates a base configuration consisting of `controlplane.yaml`, `worker.yaml`, and `talosconfig`.
+
+And for the most part, these mainly serve to create mTLS key pairs (the Certificate Authority) for authentication. And they also configure some internal network stuff for the cluster.
+
 
 ### Configuration bootstrapping
 
 Apply the generated config to all nodes (control planes first, then workers), then bootstrap the cluster once:
 
 ```bash
-# Apply control planes
+# If not already done
+source ./talos-env.sh
+
+# Apply control planes configuration
 for ip in "${CONTROL_PLANE_IP[@]}"; do
   talosctl apply-config --insecure --nodes "${ip}" --file controlplane.yaml
 done
 
-# Apply workers
+# Apply workers configuration
 for ip in "${WORKER_IP[@]}"; do
   talosctl apply-config --insecure --nodes "${ip}" --file worker.yaml
 done
@@ -451,7 +503,7 @@ sleep 120
 talosctl bootstrap --endpoints "${BOOTSTRAP_CP}" --nodes "${BOOTSTRAP_CP}"
 ```
 
-The script uses the node lists from `talos-env.sh` so it does not rely on Talos discovery. After bootstrap, it waits for cluster health (with a timeout) and then fetches the kubeconfig:
+After the bootstrap, check the cluster health, and fetch the `kubeconfig` file for `kubectl` once it's healthy:
 
 ```bash
 talosctl health --endpoints "${BOOTSTRAP_CP}" --nodes "${BOOTSTRAP_CP}" \
@@ -462,9 +514,30 @@ talosctl health --endpoints "${BOOTSTRAP_CP}" --nodes "${BOOTSTRAP_CP}" \
 talosctl kubeconfig . --endpoints "${BOOTSTRAP_CP}" --nodes "${BOOTSTRAP_CP}"
 ```
 
+From there, you should be able to run kubectl, and see your cluster:
+
+```bash
+export KUBECONFIG=$(pwd)/kubeconfig
+
+kubectl get nodes
+
+NAME             STATUS   ROLES           AGE   VERSION
+talos-cp-1       Ready    control-plane   65m   v1.35.0
+talos-cp-2       Ready    control-plane   65m   v1.35.0
+talos-cp-3       Ready    control-plane   65m   v1.35.0
+talos-worker-1   Ready    <none>          64m   v1.35.0
+talos-worker-2   Ready    <none>          64m   v1.35.0
+talos-worker-3   Ready    <none>          64m   v1.35.0
+talos-worker-4   Ready    <none>          64m   v1.35.0
+talos-worker-5   Ready    <none>          64m   v1.35.0
+talos-worker-6   Ready    <none>          64m   v1.35.0
+```
+
 ### VIP for kubectl
 
-To talk to the API through a single, stable address, the script enables a virtual IP on the control plane nodes and points the cluster endpoint at it. First it patches the machine config to add the VIP on the main interface:
+It's optional, but let's add a virtual IP on the control plane nodes to ease management.
+
+First, let's patch the control plane node configuration to use this VIP:
 
 ```bash
 for ip in "${CONTROL_PLANE_IP[@]}"; do
@@ -480,7 +553,7 @@ machine:
 done
 ```
 
-After a short wait for VIP election, it updates the cluster endpoint to use the VIP and regenerates the kubeconfig:
+After VIP election, we can then set the control plane endpoint to it
 
 ```bash
 for ip in "${CONTROL_PLANE_IP[@]}"; do
@@ -491,44 +564,116 @@ cluster:
 "
 done
 
+```
+
+And grab an updated kubeconfig
+
+```
 talosctl kubeconfig . --endpoints "${BOOTSTRAP_CP}" --nodes "${BOOTSTRAP_CP}"
 ```
 
-Then use the VIP for kubectl: `export KUBECONFIG=$(pwd)/kubeconfig` and `kubectl get nodes`. The control plane VIP is the same one used in DNS (e.g. RFC 2136) for the Talos/Kubernetes API hostname.
+# (Not So) Optional K8S plugins
 
-## DNS Manager
+## DNS Management
 
-TODO
+TODO DNS names are nice, solution: ExternalDNS link
+
+```yaml
+provider:
+  name: rfc2136
+
+#  Replace with your DNS server
+extraArgs:
+  - --rfc2136-host=192.168.1.25
+  - --rfc2136-port=5353
+  - --rfc2136-zone=int.kakwalab.ovh
+  - --rfc2136-tsig-secret-alg=hmac-sha512
+
+env:
+  - name: EXTERNAL_DNS_RFC2136_TSIG_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: external-dns-rfc2136
+        key: rfc2136-tsig-secret
+  - name: EXTERNAL_DNS_RFC2136_TSIG_KEYNAME
+    valueFrom:
+      secretKeyRef:
+        name: external-dns-rfc2136
+        key: rfc2136-tsig-keyname
+
+txtOwnerId: talos-home-tf
+
+#  Replace with your DNS zone
+domainFilters:
+  - int.kakwalab.ovh
+
+sources:
+  - service
+  - ingress
+
+policy: upsert-only
+
+logLevel: info
+interval: 1m
+
+rbac:
+  create: true
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    memory: 128Mi
+```
+
+```shell
+export KUBECONFIG="./kubeconfig"
+
+export EXTERNAL_DNS_NAMESPACE="external-dns"
+
+# TSIG credentials (replace with your own)
+DNS_TSIG_KEY_SECRET="LTEzODcyLTE0NzIxCgLTEzODcyLTE0NzIxCgLTEzODcyLTE0NzIxCgQ=="
+TSIG_KEYNAME="sec1_key"
+
+# Create namespace for ExternalDNS
+kubectl create namespace "$EXTERNAL_DNS_NAMESPACE" --dry-run=client -o yaml | kubectl apply -f -
+
+# Create the service secrets
+kubectl -n "$EXTERNAL_DNS_NAMESPACE" create secret generic external-dns-rfc2136 \
+  --from-literal=rfc2136-tsig-secret="$DNS_TSIG_KEY_SECRET" \
+  --from-literal=rfc2136-tsig-keyname="$TSIG_KEYNAME" \
+  --dry-run=client -o yaml | kubectl apply -f -
+
+# Add Helm Repository
+helm repo add external-dns https://kubernetes-sigs.github.io/external-dns/ >/dev/null
+helm repo update external-dns >/dev/null
+
+# Install it, using the upstream helm template and our configuration
+helm upgrade --install external-dns external-dns/external-dns \
+  --namespace "$EXTERNAL_DNS_NAMESPACE" \
+  -f "./external-dns-helm-values.yaml"
+```
 
 ## Traefik Deployment
 
 TODO
 
-TODO VIP for k8s(?)
+
+# Closing Thoughts
 
 ## Our First App!
 
 TODO
 
-# Additional Bits
+## Conclusion
 
-## ArgoCD
-
-TODO
-
-## Management UI
-
-TODO
-
-
-## Persistent iSCSI Volumes
-
-TODO
-
-## Log Centralization
-
-TODO
-
-## Prometheus
+Not yet deployed:
+CI/CD ArgoCD
+Management UI TODO link
+RBAC and access control TODO link
+Persistent iSCSI Volumes TODO link
+Log Centralization TODO links (ELK or maybe ClickHouse)
+Prometheus (TODO link)
 
 TODO
