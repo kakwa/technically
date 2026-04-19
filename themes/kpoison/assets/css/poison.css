@@ -369,9 +369,15 @@ div.highlight pre {
     color: var(--text-color);
 }
 
-figcaption p {
-  font-size: 0.9em;
+figure figcaption {
+  font-size: 0.8em;
+  font-style: italic;
+}
+
+figure figcaption p {
   margin: 0;
+  font-size: inherit;
+  font-style: inherit;
 }
 
 figure img {
@@ -380,10 +386,14 @@ figure img {
 }
 
 figure {
-  border: 1px solid gray;
+  border: 1px solid var(--table-border-color);
   padding: 6px;
   display: inline-block;
-  border-radius: 8px;
-  background: #FFFEF6;
-  --text-color: black;
+  border-radius: 5px;
+  background: #fffef6;
+}
+
+body.dark-theme figure {
+  background: var(--table-stripe-color);
+  border-color: var(--table-border-color);
 }
