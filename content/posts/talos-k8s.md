@@ -10,17 +10,17 @@ summary = "How to have more microservices than users"
 ## Too Honest For CV Driven Development
 
 Working at a "Big Tech" company has its perks: because of the scale such company operates at,
-there are a lot of base services like DNS, authentication, or load balancing that are
-managed by dedicated core/infrastructure teams.
+you typically don't have to deal with basic services like DNS, authentication or CI/CD as
+these services are managed by dedicated core teams.
 
-On one hand, it's great, because these core services require a lot
-of babysitting and eat a lot of the bandwidth which would be better
-used elsewhere, namely implementing higher level services closer to the
-business & client needs.
+On one hand, it's great: badly deployed on the side by an over-worked ops or dev,
+these core services require a lot of babysitting, cause tons of context switching
+to fix minor issues and in the end, eat a lot of time which should actually be used
+to solve the problems our customers pay us for.
 
-On the other, it can leave gaps in your CV, especially if, like me, you have scruples
-about gratuitously over-engineering things at your employer's expense just to learn new
-(irrelevant to the project) tools/framework on the job.
+On the other, it can leave gaps in your CV, especially if like me, you have scruples
+about gratuitously over-engineering things just to learn new tools/framework 
+at your employer's expense on the job.
 
 One such gap I currently have is deploying and managing Kubernetes Clusters.
 
@@ -29,7 +29,7 @@ but Kubernetes always felt a bit overcomplicated, clunky and not very pleasant t
 
 But, well, it's what the cool kids are doing, so I need to fill this gap in my CV.
 
-Through the magic of Open Source, the Internet and a 12 years old PC
+Through the magic of Open Source, the Internet and a 12-year-old PC
 with 32GB of RAM (actually quite valuable these days :p), I should be able to manage.
 
 ## What I Want Out Of This
@@ -41,6 +41,10 @@ By the end of this process, I want:
 * HTTPS load balancer + DNS
 * CI/CD with Argo (and integration with GitHub)
 * Docker/Container Registry
+
+This infrastructure should be managed through the usual "configuration as code" tools like Ansible, Tofu and a bit of scripting.
+
+The code is available [here](https://github.com/kakwa/home.tf)
 
 # Kubernetes Basics
 
@@ -54,13 +58,16 @@ I considered the following ones:
 
 **Talos Linux** is an immutable, API-driven operating system built specifically and exclusively for Kubernetes. It has no SSH access, no shell, and everything is configured through declarative configs and the `talosctl` CLI.
 
-**Flatcar Container Linux** is a fork of the original CoreOS Container Linux backed by [Kinvolk](https://kinvolk.io/) now part of Microsoft. It's a minimal, immutable OS optimized for containers with a more traditional approach (SSH access, shell available).
+**Flatcar Container Linux** is a fork of the original CoreOS Container Linux backed by [Kinvolk](https://kinvolk.io/) now part of Microsoft. It's a minimal and immutable distribution but with SSH access.
 
 **OpenShift & Fedora CoreOS** is Red Hat's successor to the original CoreOS.
 
 I ended up choosing **Talos Linux**. It looked like the most common option on [/r/kubernetes](https://www.reddit.com/r/kubernetes/), and it's not linked (yet) to the usual corporate vampires.
 
-## K8s Base Architecture
+## Kubernetes Base Architecture
+
+Kubernetes has three main categories of components. First is the Control Plane, which coordinates the cluster. Second are the Workers, i.e. the nodes actually running stuff.
+The third and last category are the `Cluster Add-Ons` adding optional (but nearly always deployed) things like public DNS record management, load-balancing or audit tools.
 
 Control Plane Components:
 
@@ -74,9 +81,10 @@ Worker Components:
 * [kubelet](https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet/): Ensures that Pods are running, including their containers.
 * container runtime (third party): Software responsible for running containers, in our case [containerd](https://containerd.io/), but others are possible
 
-Load Balancer:
+Cluster Add-ons (non-exhaustive):
 
 * [Gateway API](https://kubernetes.io/docs/concepts/services-networking/gateway/) (third party): OSI Layer 4 and 7 load balancer to connect our Pods to the outside, here, we will use Traefik, but [other implementations are available](https://gateway-api.sigs.k8s.io/implementations/#gateway-controller-implementation-status). It replaces the old [Ingress Controllers](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/).
+* [ExternalDNS](https://kubernetes-sigs.github.io/external-dns/latest) (third party): DNS record manager, which integrates with various DNS providers' APIs (AWS Route53, GCP DNS, OVH, Gandi, RFC2136) and gives names to your exposed services.
 
 ```
                           Worker/Apps Runtime                        |            Control Plane
@@ -105,29 +113,41 @@ Load Balancer:
                                                                      |
 ```
 
-The cluster components talks to each other using http & gRPC and usually authenticate each other using mutual TLS certificates.
+The cluster components talk to each other using http & gRPC and usually authenticate each other using mutual TLS certificates.
 
 In addition, Talos adds its own [components (apid, machined, etc)](https://docs.siderolabs.com/talos/v1.6/learn-more/components) to configure the cluster and manage their idiosyncrasies (custom init, etc).
 
-# None k8s Stuff
+# Non-K8s Bits
 
-My old computer, is well, old. It required a bit of R&R. Like a [hacky video card](/posts/gpu-pciex1/) to get a video output, and a few [5.25" to 3.5"](https://www.printables.com/model/1306664-35-to-525-hdd-silencer-bracket) + [3.5" to 2.5"](https://www.printables.com/model/229753-small-hdd-adapter-35-inch-to-25-inch) 3D printed adapters to add some disks.
+This K8s deployment required also a few bits outside of the cluster itself.
 
-Aside from that, I installed the latest Debian and configured it through [the following Ansible playbook](https://github.com/kakwa/home.tf/blob/main/ansible/hypervisor.yml).
+First, there was the recommissioning of my old rig itself (i5 2500k/32GB DDR3) which required a bit of work, like installing some new storage with 3d printed adapters ([5.25" to 3.5"](https://www.printables.com/model/1306664-35-to-525-hdd-silencer-bracket) + [3.5" to 2.5"](https://www.printables.com/model/229753-small-hdd-adapter-35-inch-to-25-inch))
+I also did some power consumption optimization (CPU down-clocking, removing/disabling unnecessary cards) to not have the thing draw ~120W continuously. It still draws ~50W however, which is... "not great, not terrible"...
+(I might consider replacing it with a mini-pc or old laptop to be honest).
 
-I also deployed an [internal DNS](https://github.com/kakwa/ansible-openbsd) server with TSIG/RFC 2136 zones on a [Sparc V100](/posts/silly-sun-server-software) using OpenBSD for funzzies.
+After that, I installed the latest Debian and applied [the following Ansible playbook](https://github.com/kakwa/home.tf/blob/main/ansible/hypervisor.yml) to make it a basic hypervisor out of it.
 
-And finally, I've added created a utility VM for the services supporting the k8s cluster, namely the futur Docker image `registry` and `ldap` server (VM created like in [Cloud @Home](/posts/virtualization-terraform-kvm)).
+I also deployed an [internal DNS](https://github.com/kakwa/ansible-openbsd) server with TSIG/RFC 2136 dynamic zones on a [Sparc V100](/posts/silly-sun-server-software) using OpenBSD for funsies.
+
+And finally, I've created a Debian `utility` VM for support services like a Docker image `registry` or an `ldap` server directory (VM created like in [Cloud @Home](/posts/virtualization-terraform-kvm) and configured through this [utility.yml](https://github.com/kakwa/home.tf/blob/main/ansible/utility.yml) ansible playbook).
 
 # Deploy That Damn Cluster Already!
 
-Like the Debian utily VM, the nodes were deployed using OpenTofu/Terraform.
+Like the Debian utility VM, I've also used Tofu to create the k8s/Talos Cluster, except this time, we are "simply" creating nine nodes (3 control plane + 6 workers) instead of one (and I do mean "simply", the `for(each)` loop really feels like cheating sometimes).
 
-The [full code is available on GitHub](https://github.com/kakwa/home.tf/tree/main/terraform) and leverages the (somewhat clunky) [KVM/libvirt](https://registry.terraform.io/providers/dmacvicar/libvirt/latest/docs) and the [Talos](https://registry.terraform.io/providers/siderolabs/talos/latest/docs/resources/image_factory_schematic) Terraform/Tofu providers.
+The [full code is available on GitHub](https://github.com/kakwa/home.tf/tree/main/terraform) and leverages the [KVM/libvirt](https://search.opentofu.org/provider/dmacvicar/libvirt/latest/docs), the [Talos](https://search.opentofu.org/provider/siderolabs/talos/latest/docs/resources/image_factory_schematic) and the [`dns`](https://search.opentofu.org/provider/hashicorp/dns/latest/docs) Tofu providers.
 
-## Talos Image Factory
+Be aware that unlike the Tofu code from [Hyperscaler Cloud @Home](posts/virtualization-terraform-kvm), it's more tied to my home network environment, and would need a fair bit of tweaking to run on your setup.
 
-Talos has an [Image Factory](https://factory.talos.dev/) that enables creating custom images with specific versions, architectures, and extensions. The Terraform provider is used to configure and download the custom image:
+## Talos Image Management
+
+Talos has an [Image Factory](https://factory.talos.dev/) for creating custom images with specific versions, architectures, and extensions.
+
+In my case, I left it nearly vanilla, but you can add things if you have special needs, for example, completely at random in these AI days, NVIDIA drivers for CUDA workloads.
+
+To get the list of customization/versions, simply go through the form and grab the generated `schematic` at the end.
+
+The schematic can be used to configure and download the Talos image in the Tofu provider, and register it in Libvirt:
 
 ```hcl
 # Create a schematic with custom extensions
@@ -166,7 +186,9 @@ resource "libvirt_volume" "talos_base" {
 
 ## Cluster Network
 
-The cluster runs in its own isolated natted network with DHCP:
+It's not k8s, but we need a network for our cluster.
+
+Let's create one quickly, behind a NAT and with DHCP:
 
 ```hcl
 resource "libvirt_network" "talos_network" {
@@ -190,53 +212,15 @@ resource "libvirt_network" "talos_network" {
   }]
 }
 ```
-## cloud-init Configuration
 
-To bootstrap the nodes, in particular the network configuration, we need to pass cloud-init parameters:
-
-```hcl
-resource "libvirt_cloudinit_disk" "cp_seed" {
-  for_each = local.control_plane_nodes
-
-  name = "${each.key}-cloudinit"
-
-  user_data = <<-EOF
-    #cloud-config
-    timezone: UTC
-  EOF
-
-  meta_data = <<-EOF
-    instance-id: ${each.key}
-    local-hostname: ${each.key}
-  EOF
-
-  network_config = <<-EOF
-    version: 2
-    ethernets:
-      eth0:
-        dhcp4: true
-  EOF
-}
-
-# Convert cloud-init to ISO volume
-resource "libvirt_volume" "cp_seed_volume" {
-  for_each = local.control_plane_nodes
-
-  name = "${each.key}-cloudinit.iso"
-  pool = "slow-pool"
-  create = {
-    content = {
-      url = "file://${libvirt_cloudinit_disk.cp_seed[each.key].path}"
-    }
-  }
-}
-```
 
 ## Control Plane Nodes
 
-The control plane uses 3 nodes with the minimal specs Talos (2 cores, 2GB RAM). For resiliency in production, this number can be increased to 5.
+Our Kubernetes control plane will use 3 nodes with the minimal Talos specs, i.e. 2 cores+2GB RAM as we are fairly limited in space here.
 
-On paper this could be further increased to any odd value, but at the cost of latency. Keep in mind that the cluster stats are backed by the [raft](https://en.wikipedia.org/wiki/Raft_(algorithm))-based, strongly consistent, [etcd](https://etcd.io/) key/value store.
+For resiliency in production, this number is usually increased to 5.
+On paper this could be further increased to any odd value, but at the cost of latency.
+Underneath all that, the cluster states are backed by the [raft](https://en.wikipedia.org/wiki/Raft_(algorithm))-based, strongly consistent, [etcd](https://etcd.io/) key/value store, which explains this behavior.
 
 Here is the definition of the nodes:
 
@@ -249,7 +233,46 @@ locals {
     }
   }
 }
+```
 
+To bootstrap the nodes, in particular the network configuration, we need to pass a few `cloud-init` parameters, which we can create with the [`libvirt_cloudinit_disk`](https://search.opentofu.org/provider/dmacvicar/libvirt/latest/docs/resources/cloudinit_disk) resource from the libvirt Tofu provider:
+
+```hcl
+resource "libvirt_cloudinit_disk" "cp_seed" {
+  for_each = local.control_plane_nodes
+
+  name = "${each.key}-cloudinit"
+  user_data = <<-EOF
+    timezone: UTC
+  EOF
+  meta_data = <<-EOF
+    instance-id: ${each.key}
+    local-hostname: ${each.key}
+  EOF
+  network_config = <<-EOF
+    version: 2
+    ethernets:
+      eth0:
+        dhcp4: true
+  EOF
+}
+
+# Convert cloud-init to ISO volume
+resource "libvirt_volume" "cp_seed_volume" {
+  for_each = local.control_plane_nodes
+  name = "${each.key}-cloudinit.iso"
+  pool = "slow-pool"
+  create = {
+    content = {
+      url = "file://${libvirt_cloudinit_disk.cp_seed[each.key].path}"
+    }
+  }
+}
+```
+
+We also need some disks for our nodes, using the Talos image as a base:
+
+```hcl
 # Each node gets its own disk backed by the base image
 resource "libvirt_volume" "cp_disk" {
   for_each = local.control_plane_nodes
@@ -265,7 +288,11 @@ resource "libvirt_volume" "cp_disk" {
     format = { type = "qcow2" }
   }
 }
+```
 
+And finally, we can create the VMs themselves, reusing these disks:
+
+```hcl
 resource "libvirt_domain" "control_plane" {
   for_each = local.control_plane_nodes
 
@@ -326,44 +353,41 @@ resource "libvirt_domain" "control_plane" {
 
 ## Worker Nodes
 
-Similarly, 6 worker nodes are deployed with the same specifications, a similar cloud-init iso and the same disk image:
+Similarly, we will deploy 6 nodes which will be used as workers.
+
+Here is a rough outline of the code, but since it's mostly identical to the control plane, this is a cut down version of the code as it's just more of the same:
 
 ```hcl
 locals {
   worker_nodes = {
     for i in range(6) : "talos-worker-${i + 1}" => {
-      memory_mb = 2048
-      vcpu      = 2
+      [...]
     }
   }
 }
 
-# Boot disk per worker VM
+resource "libvirt_cloudinit_disk" "worker_seed" {
+  for_each = local.worker_nodes
+  name = "${each.key}-cloudinit"
+  [...]
+}
+
+# Convert cloud-init to ISO volume
+resource "libvirt_volume" "cp_seed_volume" {
+  for_each = local.control_plane_nodes
+  name = "${each.key}-cloudinit.iso"
+  [...]
+}
+
+# main worker VM disks
 resource "libvirt_volume" "worker_disk" {
   for_each = local.worker_nodes
-
-  name     = "${each.key}-disk.qcow2"
-  pool     = "mid-pool"
-  capacity = 107374182400 # 100GB
-  backing_store = {
-    path   = libvirt_volume.talos_base.path
-    format = { type = "qcow2" }
-  }
-  target = {
-    format = { type = "qcow2" }
-  }
+  [...]
 }
 
 resource "libvirt_domain" "workers" {
   for_each = local.worker_nodes
-
-  name      = each.key
-  memory    = each.value.memory_mb * 1024
-  vcpu      = each.value.vcpu
-  running   = true
-  autostart = true
-
-  # same hardware definition
+  [...]
 }
 ```
 
@@ -371,7 +395,9 @@ resource "libvirt_domain" "workers" {
 
 ## Cluster Configuration Deployment
 
-After the VMs are up, we need to drive Talos from a machine that can reach them. The [home.tf](https://github.com/kakwa/technically.kakwalab.ovh/tree/main/home.tf) setup uses a small script plus an environment file so the steps are explicit; the same could be done from Terraform (e.g. `null_resource` + `local-exec`), but a script makes the sequence easier to follow and re-run by hand.
+After the VMs are up, we need to drive Talos from a machine that can reach them.
+
+The [home.tf](https://github.com/kakwa/home.tf/tree/main/terraform) setup uses a small script plus an environment file so the steps are explicit; the same could be done from Terraform (e.g. `null_resource` + `local-exec`), but a script makes the sequence easier to follow and re-run by hand.
 
 ### Environment file (`talos-env.sh`) from Terraform
 
@@ -495,7 +521,7 @@ TODO
 TODO
 
 
-## Persistant iSCSI Volumes
+## Persistent iSCSI Volumes
 
 TODO
 
