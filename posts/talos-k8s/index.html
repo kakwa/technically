@@ -41,7 +41,7 @@ The third and last category is the Cluster <code>Add-Ons</code>, enabling option
 </span></span></code></pre></div><p>For <code>talosctl</code>, I packaged it in my <a href=https://github.com/kakwa/misc-pkg target=_blank>own repository</a>, but you can directly <a href=https://github.com/siderolabs/talos/releases target=_blank>grab it from Talos releases</a> if you don&rsquo;t trust me (protip: you shouldn&rsquo;t):</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span><span style=color:#75715e># Get the architecture and version</span>
 </span></span><span style=display:flex><span>. /etc/os-release
 </span></span><span style=display:flex><span>ARCH<span style=color:#f92672>=</span><span style=color:#66d9ef>$(</span>dpkg --print-architecture<span style=color:#66d9ef>)</span>
-</span></span><span style=display:flex><span>wget -qO - https://kakwa.github.io/misc-pkg/GPG-KEY.pub | sudo tee /etc/apt/keyrings/misc-pkg.gpg &gt;/dev/null
+</span></span><span style=display:flex><span>wget -qO - https://kakwa.github.io/misc-pkg/GPG-KEY.pub | gpg --dearmor |sudo tee /etc/apt/keyrings/misc-pkg.gpg &gt;/dev/null
 </span></span><span style=display:flex><span>sudo tee /etc/apt/sources.list.d/misc-pkg.sources &gt;/dev/null <span style=color:#e6db74>&lt;&lt;EOF
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>Types: deb
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>URIs: https://kakwa.github.io/misc-pkg/deb.${VERSION_CODENAME}.${ARCH}/
@@ -53,20 +53,20 @@ The third and last category is the Cluster <code>Add-Ons</code>, enabling option
 </span></span><span style=display:flex><span>apt update
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>apt install talosctl
-</span></span></code></pre></div><p>OpenTofu publishes <code>tofu</code> packages in their own repository:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>curl -fsSL https://get.opentofu.org/opentofu.gpg | sudo tee /etc/apt/keyrings/opentofu.gpg &gt; /dev/null
+</span></span></code></pre></div><p>OpenTofu publishes <code>tofu</code> packages in their own repository:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>curl -fsSL https://get.opentofu.org/opentofu.gpg | gpg --dearmor | sudo tee /etc/apt/keyrings/opentofu.gpg &gt; /dev/null
+</span></span><span style=display:flex><span>curl -fsSL https://packages.opentofu.org/opentofu/tofu/gpgkey | gpg --dearmor | sudo tee /etc/apt/keyrings/opentofu-repo.gpg &gt; /dev/null
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>sudo tee /etc/apt/sources.list.d/opentofu.sources &gt; /dev/null <span style=color:#e6db74>&lt;&lt;EOF
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>Types: deb
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>URIs: https://packages.opentofu.org/opentofu/tofu/any/
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>Suites: any
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>Components: main
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>Signed-By: /etc/apt/keyrings/opentofu.gpg
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>Signed-By: /etc/apt/keyrings/opentofu.gpg /etc/apt/keyrings/opentofu-repo.gpg
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
 </span></span><span style=display:flex><span>apt update
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>apt install tofu
-</span></span></code></pre></div><p>And so does Helm:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>sudo apt-get install curl apt-transport-https --yes
-</span></span><span style=display:flex><span>curl -fsSL https://packages.buildkite.com/helm-linux/helm-debian/gpgkey | sudo tee /etc/apt/keyrings/helm.gpg &gt; /dev/null
+</span></span></code></pre></div><p>And so does Helm:</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>curl -fsSL https://packages.buildkite.com/helm-linux/helm-debian/gpgkey | gpg --dearmor | sudo tee /etc/apt/keyrings/helm.gpg &gt; /dev/null
 </span></span><span style=display:flex><span>sudo tee /etc/apt/sources.list.d/helm-stable-debian.sources &gt; /dev/null <span style=color:#e6db74>&lt;&lt;EOF
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>Types: deb
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>URIs: https://packages.buildkite.com/helm-linux/helm-debian/any/

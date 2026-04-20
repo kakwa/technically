@@ -117,7 +117,7 @@ The third and last category is the Cluster &lt;code>Add-Ons&lt;/code>, enabling 
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># Get the architecture and version&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>. /etc/os-release
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>ARCH&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>dpkg --print-architecture&lt;span style="color:#66d9ef">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>wget -qO - https://kakwa.github.io/misc-pkg/GPG-KEY.pub | sudo tee /etc/apt/keyrings/misc-pkg.gpg &amp;gt;/dev/null
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>wget -qO - https://kakwa.github.io/misc-pkg/GPG-KEY.pub | gpg --dearmor |sudo tee /etc/apt/keyrings/misc-pkg.gpg &amp;gt;/dev/null
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo tee /etc/apt/sources.list.d/misc-pkg.sources &amp;gt;/dev/null &lt;span style="color:#e6db74">&amp;lt;&amp;lt;EOF
 &lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">Types: deb
 &lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">URIs: https://kakwa.github.io/misc-pkg/deb.${VERSION_CODENAME}.${ARCH}/
@@ -130,21 +130,21 @@ The third and last category is the Cluster &lt;code>Add-Ons&lt;/code>, enabling 
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>apt install talosctl
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>OpenTofu publishes &lt;code>tofu&lt;/code> packages in their own repository:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>curl -fsSL https://get.opentofu.org/opentofu.gpg | sudo tee /etc/apt/keyrings/opentofu.gpg &amp;gt; /dev/null
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>curl -fsSL https://get.opentofu.org/opentofu.gpg | gpg --dearmor | sudo tee /etc/apt/keyrings/opentofu.gpg &amp;gt; /dev/null
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>curl -fsSL https://packages.opentofu.org/opentofu/tofu/gpgkey | gpg --dearmor | sudo tee /etc/apt/keyrings/opentofu-repo.gpg &amp;gt; /dev/null
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo tee /etc/apt/sources.list.d/opentofu.sources &amp;gt; /dev/null &lt;span style="color:#e6db74">&amp;lt;&amp;lt;EOF
 &lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">Types: deb
 &lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">URIs: https://packages.opentofu.org/opentofu/tofu/any/
 &lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">Suites: any
 &lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">Components: main
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">Signed-By: /etc/apt/keyrings/opentofu.gpg
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">Signed-By: /etc/apt/keyrings/opentofu.gpg /etc/apt/keyrings/opentofu-repo.gpg
 &lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">EOF&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>apt update
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>apt install tofu
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>And so does Helm:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>sudo apt-get install curl apt-transport-https --yes
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>curl -fsSL https://packages.buildkite.com/helm-linux/helm-debian/gpgkey | sudo tee /etc/apt/keyrings/helm.gpg &amp;gt; /dev/null
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>curl -fsSL https://packages.buildkite.com/helm-linux/helm-debian/gpgkey | gpg --dearmor | sudo tee /etc/apt/keyrings/helm.gpg &amp;gt; /dev/null
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo tee /etc/apt/sources.list.d/helm-stable-debian.sources &amp;gt; /dev/null &lt;span style="color:#e6db74">&amp;lt;&amp;lt;EOF
 &lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">Types: deb
 &lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#e6db74">URIs: https://packages.buildkite.com/helm-linux/helm-debian/any/
@@ -1203,7 +1203,7 @@ Installing it helps a lot with IP management in the &lt;code>libvirt&lt;/code> p
 even if it&amp;rsquo;s a little finicky at times, I was surprised how well I managed to get it working.&lt;/p>
 &lt;p>Being able to nuke entire stacks and re-create them at will, with just a &lt;code>tofu destroy;tofu apply&lt;/code> is extremely convenient and strangely satisfying.&lt;/p>
 &lt;p>Plus, the base hypervisor is extremely simple: just a base headless Debian with &lt;code>libvirtd&lt;/code> installed.&lt;/p>
-&lt;p>Sure, I could have installed Proxmox, use one of the &lt;a href="https://search.opentofu.org/provider/bpg/proxmox/latest" target="_blank">Proxmox Tofu Providers&lt;/a>, and a more AWS or GCP like experience.
+&lt;p>Sure, I could have installed Proxmox, use one of the &lt;a href="https://search.opentofu.org/provider/bpg/proxmox/latest" target="_blank">Proxmox Tofu Providers&lt;/a>, and have a more AWS/GCP-like experience.
 But, in truth, this simple setup is already more than enough to cosplay as your typical &amp;ldquo;latte drinking bigtech/GAFAM SRE/DevSecOps/CloudEng&amp;rdquo;.&lt;/p>
 &lt;p>It surely helped me a lot when deploying my @home &lt;a href="https://technically.kakwalab.ovh/posts/talos-k8s">k8s cluster&lt;/a>.&lt;/p>
 &lt;p>Once again, don&amp;rsquo;t hesitate to download the full &lt;a href="https://technically.kakwalab.ovh/files/kvm-terraform/main.tf">main.tf&lt;/a>, and play with it.&lt;/p>
