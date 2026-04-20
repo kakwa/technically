@@ -587,18 +587,81 @@ talosctl kubeconfig . --endpoints "${BOOTSTRAP_CP}" --nodes "${BOOTSTRAP_CP}"
 
 # (Not So) Optional K8S plugins
 
-## DNS Management
+## MetalLB
 
-Usually, if you host a service on K8S, you want to give it a public DNS name.
-It could be managed separatly from k8s, maybe with a bit glue scripting against the DNS providers APIs.
+In the cloud, K8S leverages the providers' Load Balanccer services such as NLB on AWS. But that's not something was have at home.
 
-But it's way nicer to have K8S directly manage these records and have them directly in the helm template description.
+[MetalLB](https://metallb.io/) fills that gap for on-premise deployment. In a simple deployment, it watches `LoadBalancer` services and assigns addresses from a pool you define.
 
-To achieve that, the most common solution at the moment seems to be [ExternalDNS](https://kubernetes-sigs.github.io/external-dns/latest/), which integrates with tons of DNS providers (Route53, Gandi, OVH, etc).
+It's deployed as a Kubernetes app:
 
-In my case, I use the RFC2136/TSIG integration to let it manage records in a provite int.kakwalab.ovh zone.
+TODO add yaml config files
 
-To enable `ExternalDNS`, first, you need a base configuratin template for the deployment, with the necessary parameters (zone name, key algorithm, dns server IP and port, etc)
+```shell
+export KUBECONFIG="${KUBECONFIG:-${K8S_DIR:-.}/kubeconfig}"
+: "${METALLB_NAMESPACE:=metallb-system}"
+
+kubectl apply -f "${K8S_DIR:-.}/metallb-namespace.yaml"
+
+helm repo add metallb https://metallb.github.io/metallb --force-update
+helm repo update metallb
+helm upgrade --install metallb metallb/metallb --namespace "$METALLB_NAMESPACE"
+
+kubectl rollout status deployment/metallb-controller -n "$METALLB_NAMESPACE" --timeout=300s
+kubectl rollout status daemonset/metallb-speaker -n "$METALLB_NAMESPACE" --timeout=300s
+
+kubectl apply -f "${K8S_DIR:-.}/metallb-lan.yaml"
+```
+
+
+## Traefik Deployment
+
+On top of MetalLB we can now deploy [Traefik](https://traefik.io/), which will handle our load balancing needs, both of TCP/UDP and HTTP directly.
+
+Again, it's deployed as a Kubernetes app:
+
+TODO add yaml config
+
+```shell
+export KUBECONFIG="${KUBECONFIG:-${K8S_DIR:-.}/kubeconfig}"
+export TRAEFIK_NAMESPACE="${TRAEFIK_NAMESPACE:-traefik}"
+
+kubectl apply -f "${K8S_DIR:-.}/traefik-namespace.yaml"
+```
+
+Add the chart repository and install or upgrade Traefik:
+
+```shell
+helm repo add traefik https://traefik.github.io/traefik-helm-chart --force-update
+helm repo update traefik
+
+if [ -n "${TRAEFIK_CHART_VERSION:-}" ]; then
+  helm upgrade --install traefik traefik/traefik \
+    --namespace "$TRAEFIK_NAMESPACE" \
+    -f "${K8S_DIR:-.}/traefik-helm-values.yaml" \
+    --version "$TRAEFIK_CHART_VERSION"
+else
+  helm upgrade --install traefik traefik/traefik \
+    --namespace "$TRAEFIK_NAMESPACE" \
+    -f "${K8S_DIR:-.}/traefik-helm-values.yaml"
+fi
+```
+
+After the controller is up, check that the load balancer received an address from your pool:
+
+```shell
+kubectl -n "$TRAEFIK_NAMESPACE" get svc
+```
+
+From there, standard `Ingress` objects with `ingressClassName: traefik` (and optional Traefik annotations) are what connect hostnames to workloads—exactly what the first application chart below relies on.
+
+## DNS Management (ExternalDNS)
+
+Thanks to Traefik, we have exposed and load balance our service, but usually, you also want to give it **names** in DBS. While it could be managed separately from Kubernetes, It is nicer to have the cluster own those records and declare the desired hostname next to the `Ingress` in Helm. The usual tool for that is [ExternalDNS](https://kubernetes-sigs.github.io/external-dns/latest/), which can integrate with many DNS providers (Route53, Gandi, OVH, and so on).
+
+In my case, I use the generic RFC2136/TSIG integration to let it manage records in a private `int.kakwalab.ovh` zone.
+
+To enable ExternalDNS, start from a Helm values template with the parameters your server needs (zone name, key algorithm, DNS server IP and port, and so on):
 
 ```yaml
 provider:
@@ -649,7 +712,7 @@ resources:
     memory: 128Mi
 ```
 
-From there, we can prepare a namespace and some secrets with ou TSIG key for it:
+From there, prepare a namespace and a secret with your TSIG key:
 
 ```shell
 export KUBECONFIG="./kubeconfig"
@@ -670,7 +733,7 @@ kubectl -n "$EXTERNAL_DNS_NAMESPACE" create secret generic external-dns-rfc2136 
   --dry-run=client -o yaml | kubectl apply -f -
 ```
 
-And finally, use `helm` to deploy this add-on:
+And install with Helm:
 
 ```
 # Add Helm Repository
@@ -683,16 +746,29 @@ helm upgrade --install external-dns external-dns/external-dns \
   -f "./external-dns-helm-values.yaml"
 ```
 
-## Traefik Deployment
-
-TODO
-
-
-# Closing Thoughts
+# Closing Stuffs
 
 ## Our First App!
 
-TODO
+Now that we have a cluster, let's use it! As it happened, the prevalence of AI on HackerNews was a bit too high for my taste, so, I've created a small fork of [hnrss](https://github.com/hnrss/hnrss) filtering AI stuff out into its dedicated feeds.
+
+This service is actually a very good candidate k8s since it doesn't have to store data: it just run a search and build a feed out of it.
+
+The fork code is available here [**hnrss-ai-filtering**](https://github.com/kakwa/hnrss-ai-filtering). It also adds a Dockerfile, and a minimal Helm chart under [`helm/`](https://github.com/kakwa/hnrss-ai-filtering/tree/master/helm) for our deployment:
+
+
+```yaml
+# Excerpt: https://github.com/kakwa/hnrss-ai-filtering/blob/master/helm/templates/ingress.yaml
+metadata:
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: {{ .Values.ingress.host | quote }}
+    {{- if eq .Values.ingress.upstreamScheme "https" }}
+    traefik.ingress.kubernetes.io/service.scheme: "https"
+    {{- end }}
+    {{- if .Values.ingress.upstreamInsecureSkipVerify }}
+    traefik.ingress.kubernetes.io/service.serverstransport: {{ include "hnrss.serversTransportRef" . | quote }}
+    {{- end }}
+```
 
 ## Conclusion
 
