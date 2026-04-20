@@ -890,7 +890,7 @@ helm upgrade --install external-dns external-dns/external-dns \
 
 ## Deploying A Private Docker Registry
 
-To Store and distribute our app container image, I've also deployed a private `Docker Registry` on the utility VM.
+To store and distribute our app container image, I've also deployed a private `Docker Registry` on the utility VM.
 
 The deployment is done through this Ansible [`docker_registry/`](https://github.com/kakwa/home.tf/tree/main/ansible/roles/docker_registry) role.
 
@@ -898,7 +898,7 @@ The gist being it deploys a [`docker-registry`](https://github.com/kakwa/misc-pk
 
 For TLS, it uses a proper Let's Encrypt certificate as loading a custom, self-signed, CA in Talos seems tedious.
 
-As It's a non-public service, the certificate was obtained using the [DNS-01 challenge](https://github.com/kakwa/home.tf/tree/main/ansible/roles/certbot_letsencrypt) with certbot's [OVH plugin](https://certbot-dns-ovh.readthedocs.io/en/stable/) (my DNS provider).
+As it's a non-public service, the certificate was obtained using the [DNS-01 challenge](https://github.com/kakwa/home.tf/tree/main/ansible/roles/certbot_letsencrypt) with certbot's [OVH plugin](https://certbot-dns-ovh.readthedocs.io/en/stable/) (my DNS provider).
 
 
 For our app, this is where our Kubernetes cluster will download its container images
@@ -971,13 +971,13 @@ So, was this exercise worth it?
 ... Well... Kind of... but not completely.
 
 For my personal stuff, I'm much more in the "just use a VPS" camp.
-Just to illustrate, the hnrss app took me 15 minutes to deploy on my vps. In k8s, with all the Helm template and Docker stuff, it was closer to two hours (granted, I was also fixing the last cluster setup issues).
+Just to illustrate, the hnrss app took me 15 minutes to deploy on my VPS. In k8s, with all the Helm template and Docker stuff, it was closer to two hours (granted, I was also fixing the last cluster setup issues).
 
-In a profesional context, while I do appreciate what K8S brings (clean decoupling between infrastructure and app + easy instrumentation enabling stuff like CI/CD), I just want to remain being a user of the thing, not administer it.
+In a professional context, while I do appreciate what K8S brings (clean decoupling between infrastructure and app + easy instrumentation enabling stuff like CI/CD), I just want to remain being a user of the thing, not administer it.
 
-I like things often considered boring, Ldap and IAM topics for example, but here, I think I've reached my limits. There are simply too many moving pieces and too much magic glue going on. Kubernet does solve problems, but it really feels like a tedious and clunky solution. To the point I'm wondering if something a bit more opinionated, complete out of the box and simpler will not pop-up and replace it in the future.
+I like things often considered boring, LDAP and IAM topics for example, but here, I think I've reached my limits. There are simply too many moving pieces and too much magic glue going on. Kubernetes does solve problems, but it really feels like a tedious and clunky solution. To the point I'm wondering if something a bit more opinionated, complete out of the box and simpler will not pop-up and replace it in the future.
 
-Just to illustrate, this already lenghty deployment is in fact far from complete. From the goals I set-out at the begining, I'm still missing the **CI/CD** part (for example using [ArgoCD](https://argo-cd.readthedocs.io/en/stable/). And beyond that, there are many other subjects which would need to be tackled in a production & non-solo environment:
+Just to illustrate, this already lengthy deployment is in fact far from complete. From the goals I set out at the beginning, I'm still missing the **CI/CD** part (for example using [ArgoCD](https://argo-cd.readthedocs.io/en/stable/). And beyond that, there are many other subjects which would need to be tackled in a production & non-solo environment:
 
 * **RBAC and access control**
 * **Management UI**
@@ -986,9 +986,9 @@ Just to illustrate, this already lenghty deployment is in fact far from complete
 * **Logging**
 * **Persistent volumes**
 
-But it was not lost time either. Even if right now, I'm kind of feed-up with it, I will probably revisit it in the future and do the CI/CD stuff (easily bootstrapping a new service is simply too appealing).
+But it was not lost time either. Even if right now, I'm kind of fed up with it, I will probably revisit it in the future and do the CI/CD stuff (easily bootstrapping a new service is simply too appealing).
 
-It also gave me an appreciation for Kubernetes operators. now I get why it's a specialized role and hard to fill role.
+It also gave me an appreciation for Kubernetes operators. Now I get why it's a specialized and hard-to-fill role.
 
 And lastly, discovering what you want and **don't** want to do before fully committing to it is always valuable.
 Managing Kubernetes clusters all day long is simply not for me.
