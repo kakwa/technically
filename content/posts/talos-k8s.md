@@ -823,26 +823,29 @@ helm upgrade --install external-dns external-dns/external-dns \
 
 ## Our First App!
 
-Now that we have a cluster, let's use it! As it happened, the prevalence of AI on HackerNews was a bit too high for my taste, so, I've created a small fork of [hnrss](https://github.com/hnrss/hnrss) filtering AI stuff out into its dedicated feeds.
+Now that we have a cluster, let's use it!
 
-This service is actually a very good candidate for k8s since it doesn't have to store data: it just run a search and build a feed out of it.
+As it happened, the prevalence of AI on HackerNews was a bit too high for my taste, so, I've created a small fork of [hnrss](https://github.com/hnrss/hnrss) filtering AI stuff out into its dedicated feeds.
 
-The fork code is available here [**hnrss-ai-filtering**](https://github.com/kakwa/hnrss-ai-filtering).
+The fork is available here [**hnrss-ai-filtering**](https://github.com/kakwa/hnrss-ai-filtering).
+Through quick vibecoding, it adds `/ai` and `/noai` endpoints leveraging a bit of key words matching (`ai` `llm`, `anthropic`, etc).
 
-In addition to the functional modification, it adds the bits necessary for K8S, namely a Dockerfile, a [docker registry helper](TODO) to publish our container image, and a minimal [`Helm Chart`](https://github.com/kakwa/hnrss-ai-filtering/tree/master/helm)
+This service is actually a good candidate for k8s since it doesn't have a persistent layer.
 
+In addition to the functional modification, I've added the bits necessary for K8S, namely:
 
-```yaml
-# Excerpt: https://github.com/kakwa/hnrss-ai-filtering/blob/master/helm/templates/ingress.yaml
-metadata:
-  annotations:
-    external-dns.alpha.kubernetes.io/hostname: {{ .Values.ingress.host | quote }}
-    {{- if eq .Values.ingress.upstreamScheme "https" }}
-    traefik.ingress.kubernetes.io/service.scheme: "https"
-    {{- end }}
-    {{- if .Values.ingress.upstreamInsecureSkipVerify }}
-    traefik.ingress.kubernetes.io/service.serverstransport: {{ include "hnrss.serversTransportRef" . | quote }}
-    {{- end }}
+* a [Dockerfile](https://github.com/kakwa/hnrss-ai-filtering/blob/master/Dockerfile) to create a container,
+* a small [script to publish](https://github.com/kakwa/hnrss-ai-filtering/blob/master/scripts/publish-image.sh) our container image into our registry
+* a minimal [Helm Chart](https://github.com/kakwa/hnrss-ai-filtering/tree/master/helm)
+
+Once the image has been published, we can create the service in k8s with the following kubectl helm commands:
+
+```
+# Create the namespace
+kubectl create namespace hnrss
+
+Deploy the service with the helm template
+helm upgrade --install hnrss ./ --namespace hnrss --set registryAuth.password="$REGISTRY_PASSWORD"
 ```
 
 ## Conclusion
