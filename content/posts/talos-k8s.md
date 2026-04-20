@@ -977,14 +977,14 @@ In a professional context, while I do appreciate what K8S brings (clean decoupli
 
 I like things often considered boring, LDAP and IAM topics for example, but here, I think I've reached my limits. There are simply too many moving pieces and too much magic glue going on. Kubernetes does solve problems, but it really feels like a tedious and clunky solution. To the point I'm wondering if something a bit more opinionated, complete out of the box and simpler will not pop-up and replace it in the future.
 
-Just to illustrate, this already lengthy deployment is in fact far from complete. From the goals I set out at the beginning, I'm still missing the **CI/CD** part (for example using [ArgoCD](https://argo-cd.readthedocs.io/en/stable/). And beyond that, there are many other subjects which would need to be tackled in a production & non-solo environment:
+Just to illustrate, this already lengthy deployment is in fact far from complete. From the goals I set out at the beginning, I'm still missing the **CI/CD** part (for example [ArgoCD](https://argo-cd.readthedocs.io/en/stable/)). And beyond that, there are many other subjects which would need to be tackled in a production & non-solo environment:
 
-* **RBAC and access control**
-* **Management UI**
-* **Project Templates**
-* **Monitoring**
-* **Logging**
-* **Persistent volumes**
+* **RBAC and access control**, like described in [Kubernetes RBAC](https://kubernetes.io/docs/reference/access-authn-authz/rbac/) and [authentication](https://kubernetes.io/docs/reference/access-authn-authz/authentication/) (OIDC, webhooks, group claims).
+* **Management UI**, for example [Headlamp](https://headlamp.dev/)
+* **Monitoring**, probably levering [Prometheus](https://prometheus.io/)
+* **Logging**: probably leveraging [Fluentd](https://www.fluentd.org/) for log forwarding, and either [Elasticsearch](https://www.elastic.co/elasticsearch/) or [ClickHouse](https://clickhouse.com/) for indexing.
+* **Persistent volumes**, could for example leverage [iSCSI volumes](https://kubernetes.io/docs/concepts/storage/volumes/#iscsi)
+* **Project templates**
 
 But it was not lost time either. Even if right now, I'm kind of fed up with it, I will probably revisit it in the future and do the CI/CD stuff (easily bootstrapping a new service is simply too appealing).
 
@@ -993,11 +993,12 @@ It also gave me an appreciation for Kubernetes operators. Now I get why it's a s
 And lastly, discovering what you want and **don't** want to do before fully committing to it is always valuable.
 Managing Kubernetes clusters all day long is simply not for me.
 
-## Links
+## Relevant Links
 
-* [Talos Linux](https://www.talos.dev/): API-driven immutable OS for Kubernetes.
+* [Kubernetes Documentation](https://kubernetes.io/docs/home/): The star of the show.
+* [Talos Linux](https://www.talos.dev/): API-driven, immutable OS for Kubernetes.
 * [Talos Documentation](https://docs.siderolabs.com): Official documentation for Talos.
-* [Talos Image Factory](https://factory.talos.dev/): Build custom Talos images with extensions.
+* [Talos Image Factory](https://factory.talos.dev/): Custom Talos images builder.
 * [OpenTofu](https://opentofu.org/): Open-source infrastructure as code tool (Terraform Fork).
 * [kubectl](https://kubernetes.io/docs/reference/kubectl/): CLI tool for k8s administration.
 * [Helm](https://helm.sh/): "package manager" & service specification for k8s
@@ -1007,4 +1008,6 @@ Managing Kubernetes clusters all day long is simply not for me.
 * [Traefik](https://traefik.io/): K8S LoadBalancer/Service Gateway add-on.
 * [ExternalDNS](https://kubernetes-sigs.github.io/external-dns/latest/): K8S add-ons to manage DNS records.
 * [Argo CD](https://argo-cd.readthedocs.io/en/stable/): GitOps continuous delivery for K8S applications.
+* [Headlamp](https://headlamp.dev/): Management UI for K8s.
+* [Fluentd](https://www.fluentd.org/): Unified logging layer.
 * [home.tf](https://github.com/kakwa/home.tf): The Ansible and OpenTofu code used in this article.
