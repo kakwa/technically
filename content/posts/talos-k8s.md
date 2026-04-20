@@ -602,7 +602,7 @@ First we need a bit of configuration to tweak the MetalLB namespace permissions 
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: metallb-system
+  name: metallb
   labels:
     pod-security.kubernetes.io/enforce: privileged
     pod-security.kubernetes.io/audit: privileged
@@ -618,7 +618,7 @@ apiVersion: metallb.io/v1beta1
 kind: IPAddressPool
 metadata:
   name: lan-pool
-  namespace: metallb-system
+  namespace: metallb
 spec:
   addresses:
     - 192.168.1.48/28 # Modify with your own IPs (be cautious about collision, specially with dhcp ranges)
@@ -627,7 +627,7 @@ apiVersion: metallb.io/v1beta1
 kind: L2Advertisement
 metadata:
   name: lan-pool-l2
-  namespace: metallb-system
+  namespace: metallb
 spec:
   ipAddressPools:
     - lan-pool
@@ -635,7 +635,7 @@ spec:
 
 ```shell
 export KUBECONFIG="`pwd`/kubeconfig}"
-export METALLB_NAMESPACE="metallb-system"
+export METALLB_NAMESPACE="metallb"
 
 kubectl apply -f ./metallb-namespace.yaml
 
@@ -700,31 +700,24 @@ deployment:
   replicas: 1
 ```
 
-TODO add yaml config
+We can then use these to create the Traefik namespace:
 
 ```shell
-export KUBECONFIG="${KUBECONFIG:-$(pwd)/kubeconfig}"
+export KUBECONFIG="./kubeconfig"
 export TRAEFIK_NAMESPACE="traefik"
 
 kubectl apply -f ./traefik-namespace.yaml
 ```
 
-Add the chart repository and install or upgrade Traefik:
+And finally add the Helm chart repository and install or upgrade Traefik:
 
 ```shell
 helm repo add traefik https://traefik.github.io/traefik-helm-chart --force-update
 helm repo update traefik
 
-if [ -n "${TRAEFIK_CHART_VERSION:-}" ]; then
-  helm upgrade --install traefik traefik/traefik \
-    --namespace "$TRAEFIK_NAMESPACE" \
-    -f ./traefik-helm-values.yaml \
-    --version "$TRAEFIK_CHART_VERSION"
-else
-  helm upgrade --install traefik traefik/traefik \
-    --namespace "$TRAEFIK_NAMESPACE" \
-    -f ./traefik-helm-values.yaml
-fi
+helm upgrade --install traefik traefik/traefik \
+  --namespace "$TRAEFIK_NAMESPACE" \
+  -f ./traefik-helm-values.yaml
 ```
 
 After the controller is up, check that the load balancer received an address from your pool:
