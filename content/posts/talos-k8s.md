@@ -589,19 +589,55 @@ talosctl kubeconfig . --endpoints "${BOOTSTRAP_CP}" --nodes "${BOOTSTRAP_CP}"
 
 ## MetalLB
 
-In the cloud, K8S leverages the providers' Load Balanccer services such as NLB on AWS. But that's not something was have at home.
+In the cloud, K8S leverages the providers' load balancer services such as NLB on AWS. But that is not something we have at home.
 
-[MetalLB](https://metallb.io/) fills that gap for on-premise deployment. In a simple deployment, it watches `LoadBalancer` services and assigns addresses from a pool you define.
+[MetalLB](https://metallb.io/) fills that gap for on-premise deployment. In a simple deployment, it watches `LoadBalancer` services and assigns addresses from a pool you define to be used by said `LoadBalancer` services.
 
-It's deployed as a Kubernetes app:
+First we need a bit of configuration to tweak the MetalLB namespace permissions (aka PSS/PSA or Pod Security Standards).
 
-TODO add yaml config files
+`metallb-namespace.yaml`:
+
+```yaml
+# PSA: MetalLB speaker/FRR need NET_ADMIN, hostNetwork, etc. — not compatible with restricted.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: metallb-system
+  labels:
+    pod-security.kubernetes.io/enforce: privileged
+    pod-security.kubernetes.io/audit: privileged
+    pod-security.kubernetes.io/warn: privileged
+```
+
+And from there, we need to declare the range of IPs we let MetalLB to play with:
+
+`metallb-lan.yaml`
+```yaml
+# Apply after the MetalLB Helm release is healthy. Namespace must match the chart install.
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: lan-pool
+  namespace: metallb-system
+spec:
+  addresses:
+    - 192.168.1.48/28 # Modify with your own IPs (be cautious about collision, specially with dhcp ranges)
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: lan-pool-l2
+  namespace: metallb-system
+spec:
+  ipAddressPools:
+    - lan-pool
+```
 
 ```shell
-export KUBECONFIG="${KUBECONFIG:-${K8S_DIR:-.}/kubeconfig}"
-: "${METALLB_NAMESPACE:=metallb-system}"
+export KUBECONFIG="`pwd`/kubeconfig}"
+export METALLB_NAMESPACE="metallb-system"
 
-kubectl apply -f "${K8S_DIR:-.}/metallb-namespace.yaml"
+kubectl apply -f ./metallb-namespace.yaml
 
 helm repo add metallb https://metallb.github.io/metallb --force-update
 helm repo update metallb
@@ -610,7 +646,7 @@ helm upgrade --install metallb metallb/metallb --namespace "$METALLB_NAMESPACE"
 kubectl rollout status deployment/metallb-controller -n "$METALLB_NAMESPACE" --timeout=300s
 kubectl rollout status daemonset/metallb-speaker -n "$METALLB_NAMESPACE" --timeout=300s
 
-kubectl apply -f "${K8S_DIR:-.}/metallb-lan.yaml"
+kubectl apply -f ./metallb-lan.yaml
 ```
 
 
@@ -618,15 +654,59 @@ kubectl apply -f "${K8S_DIR:-.}/metallb-lan.yaml"
 
 On top of MetalLB we can now deploy [Traefik](https://traefik.io/), which will handle our load balancing needs, both of TCP/UDP and HTTP directly.
 
-Again, it's deployed as a Kubernetes app:
+We also need some permissions on the traefik namepsace, which we will set with a a bit of yaml:
+
+`traefik-namespace.yaml`:
+
+```yaml
+# PSA baseline: avoids restricted seccomp warnings on Traefik controller without full privileged.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: traefik
+  labels:
+    pod-security.kubernetes.io/enforce: baseline
+    pod-security.kubernetes.io/audit: baseline
+    pod-security.kubernetes.io/warn: baseline
+```
+
+And from there, we configure a fairly generic Helm values for Traefik:
+
+`traefik-helm-values.yaml`:
+
+```yaml
+# Traefik as cluster ingress (Ingress + IngressRoute CRD).
+ingressClass:
+  enabled: true
+  isDefaultClass: true
+
+service:
+  annotations:
+    metallb.universe.tf/address-pool: lan-pool
+  spec:
+    type: LoadBalancer
+
+providers:
+  kubernetesCRD:
+    enabled: true
+  kubernetesIngress:
+    enabled: true
+    # Fill Ingress status.loadBalancer so ExternalDNS (and clients) see the Traefik LB IP/hostname.
+    publishedService:
+      enabled: true
+      pathOverride: traefik/traefik
+
+deployment:
+  replicas: 1
+```
 
 TODO add yaml config
 
 ```shell
-export KUBECONFIG="${KUBECONFIG:-${K8S_DIR:-.}/kubeconfig}"
-export TRAEFIK_NAMESPACE="${TRAEFIK_NAMESPACE:-traefik}"
+export KUBECONFIG="${KUBECONFIG:-$(pwd)/kubeconfig}"
+export TRAEFIK_NAMESPACE="traefik"
 
-kubectl apply -f "${K8S_DIR:-.}/traefik-namespace.yaml"
+kubectl apply -f ./traefik-namespace.yaml
 ```
 
 Add the chart repository and install or upgrade Traefik:
@@ -638,12 +718,12 @@ helm repo update traefik
 if [ -n "${TRAEFIK_CHART_VERSION:-}" ]; then
   helm upgrade --install traefik traefik/traefik \
     --namespace "$TRAEFIK_NAMESPACE" \
-    -f "${K8S_DIR:-.}/traefik-helm-values.yaml" \
+    -f ./traefik-helm-values.yaml \
     --version "$TRAEFIK_CHART_VERSION"
 else
   helm upgrade --install traefik traefik/traefik \
     --namespace "$TRAEFIK_NAMESPACE" \
-    -f "${K8S_DIR:-.}/traefik-helm-values.yaml"
+    -f ./traefik-helm-values.yaml
 fi
 ```
 
@@ -752,9 +832,11 @@ helm upgrade --install external-dns external-dns/external-dns \
 
 Now that we have a cluster, let's use it! As it happened, the prevalence of AI on HackerNews was a bit too high for my taste, so, I've created a small fork of [hnrss](https://github.com/hnrss/hnrss) filtering AI stuff out into its dedicated feeds.
 
-This service is actually a very good candidate k8s since it doesn't have to store data: it just run a search and build a feed out of it.
+This service is actually a very good candidate for k8s since it doesn't have to store data: it just run a search and build a feed out of it.
 
-The fork code is available here [**hnrss-ai-filtering**](https://github.com/kakwa/hnrss-ai-filtering). It also adds a Dockerfile, and a minimal Helm chart under [`helm/`](https://github.com/kakwa/hnrss-ai-filtering/tree/master/helm) for our deployment:
+The fork code is available here [**hnrss-ai-filtering**](https://github.com/kakwa/hnrss-ai-filtering).
+
+In addition to the functional modification, it adds the bits necessary for K8S, namely a Dockerfile, a [docker registry helper](TODO) to publish our container image, and a minimal [`Helm Chart`](https://github.com/kakwa/hnrss-ai-filtering/tree/master/helm)
 
 
 ```yaml
