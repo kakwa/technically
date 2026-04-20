@@ -22,7 +22,7 @@ On the other, it can leave gaps in your CV, especially if like me, you have scru
 about gratuitously over-engineering things just to learn new tools/frameworks
 at your employer's expense on the job.
 
-One such gap I currently have is deploying and managing Kubernetes Clusters.
+One such gap I currently have is deploying and managing Kubernetes clusters.
 
 To be honest, I kind of avoided diving into K8s. Maybe it's an unfounded bias on my part,
 but Kubernetes always felt a bit overcomplicated, clunky and not very pleasant to manage.
@@ -39,15 +39,15 @@ with 32GB of RAM (actually quite valuable these days :p), I should be able to ma
 By the end of this process, I want:
 
 * A mostly automated base KVM hypervisor deployment
-* The Base Kubernetes Cluster, with all the control plane bits
+* The base Kubernetes cluster, with all the control plane bits
 * HTTPS load balancer + DNS
 * CI/CD with Argo (and integration with GitHub)
 * Docker/Container Registry
 
-This infrastructure should also be managed through the usual "configuration as code" tools, namely Ansible, Tofu and a bit of scripting.
+This infrastructure should also be managed through the usual "configuration as code" tools, namely Ansible, Tofu, and a bit of scripting.
 
 I'm making the code available [here](https://github.com/kakwa/home.tf).
-But be aware it might be tighly coupled to my infrastructure, and not be easily reusable.
+But be aware it is quite tightly coupled to my infrastructure, and might not be easily reusable.
 
 # Kubernetes Basics
 
@@ -70,7 +70,7 @@ I ended up choosing **Talos Linux**. It looked like the most common option on [/
 ## Kubernetes Base Architecture
 
 Kubernetes has three main categories of components. First is the `Control Plane`, which coordinates the cluster. Second are the `Workers`, i.e. the nodes actually running stuff.
-The third and last category are the Cluster `Add-Ons` adding optional (but often deployed) things like public DNS record management, load-balancing or audit tools.
+The third and last category is the Cluster `Add-Ons`, adding optional (but often deployed) things like public DNS record management, load-balancing or audit tools.
 
 Control Plane Components:
 
@@ -115,7 +115,7 @@ Cluster Add-ons (non-exhaustive):
                                                               |
 ```
 
-The cluster components talk to each other using http & gRPC and usually authenticate each other using mutual TLS certificates.
+The cluster components talk to each other using HTTP and gRPC and usually authenticate each other using mutual TLS certificates.
 
 In addition, Talos adds its own [components (apid, machined, etc)](https://docs.siderolabs.com/talos/v1.6/learn-more/components) to configure the cluster and manage its idiosyncrasies (custom init, etc).
 
@@ -123,17 +123,16 @@ In addition, Talos adds its own [components (apid, machined, etc)](https://docs.
 
 ## The Metal + A Few Nuts
 
-My old computer, is well, old. It required a bit of R&R. Like a [hacky video card](/posts/gpu-pciex1/) to get a video output, and a few [5.25" to 3.5"](https://www.printables.com/model/1306664-35-to-525-hdd-silencer-bracket) + [3.5" to 2.5"](https://www.printables.com/model/229753-small-hdd-adapter-35-inch-to-25-inch) 3D printed adapters to add some disks.
+First, there was the recommissioning of my old rig itself (i5 2500k/32GB DDR3) which required a bit of work, like installing some new storage with 3d printed adapters ([5.25" to 3.5"](https://www.printables.com/model/1306664-35-to-525-hdd-silencer-bracket) + [3.5" to 2.5"](https://www.printables.com/model/229753-small-hdd-adapter-35-inch-to-25-inch)).
 
-First, there was the recommissioning of my old rig itself (i5 2500k/32GB DDR3) which required a bit of work, like installing some new storage with 3d printed adapters ([5.25" to 3.5"](https://www.printables.com/model/1306664-35-to-525-hdd-silencer-bracket) + [3.5" to 2.5"](https://www.printables.com/model/229753-small-hdd-adapter-35-inch-to-25-inch))
 I also did some power consumption optimization (CPU down-clocking, removing/disabling unnecessary cards) to not have the thing draw ~120W continuously. It still draws ~50W however, which is... "not great, not terrible"...
-(I might consider replacing it with a mini-pc or old laptop to be honest).
+(I am considering replacing it with a refurb mini-pc or an old laptop to be honest).
 
 After that, I installed the latest Debian and applied [the following Ansible playbook](https://github.com/kakwa/home.tf/blob/main/ansible/hypervisor.yml) to make a basic hypervisor out of it.
 
-I also deployed an [internal DNS](https://github.com/kakwa/ansible-openbsd) server with TSIG/RFC 2136 dynamic zones on a [Sparc V100](/posts/silly-sun-server-software) using OpenBSD for funsies.
+I also deployed an [internal DNS](https://github.com/kakwa/ansible-openbsd) server with TSIG/RFC 2136 dynamic zones on a [SPARC V100](/posts/silly-sun-server-software) using OpenBSD for funsies.
 
-And finally, I've created a Debian `utility` VM for support services like a Docker image `registry` or an `ldap` server directory (VM created like in [Cloud @Home](/posts/virtualization-terraform-kvm) and configured through this [utility.yml](https://github.com/kakwa/home.tf/blob/main/ansible/utility.yml) ansible playbook).
+And finally, I've created a Debian `utility` VM for support services like a Docker image `registry` or an `LDAP` server directory (VM created like in [Cloud @Home](/posts/virtualization-terraform-kvm) and configured through this [utility.yml](https://github.com/kakwa/home.tf/blob/main/ansible/utility.yml) Ansible playbook).
 
 ## Bad Tools, Bad Worker
 
@@ -143,10 +142,10 @@ You will need the following tools:
 * [OpenTofu](https://opentofu.org/) (`tofu`): Open-source Terraform fork; describes and applies.
 * [kubectl](https://kubernetes.io/docs/reference/kubectl/): CLI to administer and debug k8s.
 * [talosctl](https://www.talos.dev/latest/talos-guides/install/talosctl/): CLI for bootstrapping and operating Talos.
-* [Helm](https://helm.sh/): "Package Manager" used to install k8s application and components.
+* [Helm](https://helm.sh/): "Package Manager" used to install k8s applications and components.
 
 
-Assuming you are using a `deb` base distribution, here is how to install them (if you use MacOS, Windows or OS2, I leave the exercise to the reader).
+Assuming you are using a `deb`-based distribution, here is how to install them (if you use macOS, Windows, or OS/2, I leave the exercise to the reader).
 
 `docker` and `kubectl` are usually available in Debian/Ubuntu and derivative repositories.
 
@@ -208,11 +207,11 @@ sudo apt install helm
 
 # Deploy That Damn Cluster Already!
 
-Like the Debian utility VM, I've also used Tofu to create the k8s/Talos Cluster, except this time, we are "simply" creating nine nodes (3 control plane + 6 workers) instead of one (and I do mean "simply", the `for(each)` loop really feels like cheating sometimes).
+Like the Debian utility VM, I've also used Tofu to create the k8s/Talos cluster, except this time, we are "simply" creating nine nodes (3 control plane + 6 workers) instead of one (and I do mean "simply", the `for(each)` loop really feels like cheating sometimes).
 
 The [full code is available on GitHub](https://github.com/kakwa/home.tf/tree/main/terraform) and leverages the [KVM/libvirt](https://search.opentofu.org/provider/dmacvicar/libvirt/latest/docs), the [Talos](https://search.opentofu.org/provider/siderolabs/talos/latest/docs/resources/image_factory_schematic) and the [`dns`](https://search.opentofu.org/provider/hashicorp/dns/latest/docs) Tofu providers.
 
-Be aware that unlike the Tofu code from [Hyperscaler Cloud @Home](posts/virtualization-terraform-kvm), it's more tied to my home network environment, and would need a fair bit of tweaking to run on your setup.
+Be aware that unlike the Tofu code from [Hyperscaler Cloud @Home](/posts/virtualization-terraform-kvm), it's more tied to my home network environment, and would need a fair bit of tweaking to run on your setup.
 
 ## Talos Image Management
 
@@ -478,7 +477,7 @@ export WORKER_IP=(${join(" ", [for ip in worker_ips : "${"\""}${ip}${"\""}"])})
 export CONTROL_PLANE_VIP="${control_plane_vip}"
 ```
 
-And a bit of Terraform code leveraging the [data.libvirt_domain_interface_addresses](https://search.opentofu.org/provider/dmacvicar/libvirt/latest/docs/datasources/domain_interface_addresses) Tofu datasource:
+And a bit of OpenTofu code leveraging the [data.libvirt_domain_interface_addresses](https://search.opentofu.org/provider/dmacvicar/libvirt/latest/docs/datasources/domain_interface_addresses) Tofu datasource:
 
 ```hcl
 # Recovery of the IPs
@@ -515,7 +514,7 @@ resource "local_file" "env" {
 
 We can let Tofu create an env file which once sourced, will provide convenient variables for the rest of this setup.
 
-# At Last, K8S & Talos Setup
+# At Last, Kubernetes & Talos Setup
 
 ## Cluster Configuration Deployment
 
@@ -592,11 +591,11 @@ talosctl health --endpoints "${BOOTSTRAP_CP}" --nodes "${BOOTSTRAP_CP}" \
 talosctl kubeconfig . --endpoints "${BOOTSTRAP_CP}" --nodes "${BOOTSTRAP_CP}"
 ```
 
-On a control node node TTY, a healthy dashboard looks like this:
+On a control plane node TTY, a healthy dashboard looks like this:
 
 {{< figure src="/images/talos-k8s/talos-cp-ok.png" alt="Talos dashboard: control plane talos-cp-1 running, READY true, kubelet and API server healthy" caption="Healthy control plane after bootstrap" >}}
 
-Workers should show a similar status in the dasboard dashboard:
+Workers should show a similar status in the dashboard:
 
 {{< figure src="/images/talos-k8s/talos-worker-ok.png" alt="Talos dashboard: healthy worker node with kubelet and container runtime ready" caption="Healthy worker node" >}}
 
@@ -639,7 +638,7 @@ machine:
 done
 ```
 
-After VIP election, we can then set the control plane endpoint to it
+After VIP election, we can then set the control plane endpoint to it.
 
 ```bash
 for ip in "${CONTROL_PLANE_IP[@]}"; do
@@ -658,13 +657,13 @@ And grab an updated kubeconfig
 talosctl kubeconfig . --endpoints "${BOOTSTRAP_CP}" --nodes "${BOOTSTRAP_CP}"
 ```
 
-# (Not So) Optional K8S plugins
+# (Not So) Optional Kubernetes plugins
 
 ## MetalLB
 
-In the cloud, K8S leverages the providers' load balancer services such as NLB on AWS. But that is not something we have at home.
+In the cloud, Kubernetes leverages the providers' load balancer services such as NLB on AWS. But that is not something we have at home.
 
-[MetalLB](https://metallb.io/) fills that gap for on-premise deployment. In a simple deployment, it watches `LoadBalancer` services and assigns addresses from a pool you define to be used by said `LoadBalancer` services.
+[MetalLB](https://metallb.io/) fills that gap for on-premises deployments. In a simple deployment, it watches `LoadBalancer` services and assigns addresses from a pool you define to be used by said `LoadBalancer` services.
 
 First we need a bit of configuration to tweak the MetalLB namespace permissions (aka PSS/PSA or Pod Security Standards).
 
@@ -694,7 +693,7 @@ metadata:
   namespace: metallb
 spec:
   addresses:
-    - 192.168.1.48/28 # Modify with your own IPs (be cautious about collision, specially with dhcp ranges)
+    - 192.168.1.48/28 # Modify with your own IPs (be cautious about collision, especially with DHCP ranges)
 ---
 apiVersion: metallb.io/v1beta1
 kind: L2Advertisement
@@ -707,7 +706,7 @@ spec:
 ```
 
 ```shell
-export KUBECONFIG="`pwd`/kubeconfig}"
+export KUBECONFIG="$(pwd)/kubeconfig"
 export METALLB_NAMESPACE="metallb"
 
 kubectl apply -f ./metallb-namespace.yaml
@@ -727,7 +726,7 @@ kubectl apply -f ./metallb-lan.yaml
 
 On top of MetalLB we can now deploy [Traefik](https://traefik.io/), which will handle our load balancing needs, both of TCP/UDP and HTTP directly.
 
-We also need some permissions on the traefik namepsace, which we will set with a a bit of yaml:
+We also need some permissions on the Traefik namespace, which we will set with a bit of YAML:
 
 `traefik-namespace.yaml`:
 
@@ -803,7 +802,7 @@ From there, standard `Ingress` objects with `ingressClassName: traefik` (and opt
 
 ## DNS Management (ExternalDNS)
 
-Thanks to Traefik, we have exposed and load balance our service, but usually, you also want to give it **names** in DBS. While it could be managed separately from Kubernetes, It is nicer to have the cluster own those records and declare the desired hostname next to the `Ingress` in Helm. The usual tool for that is [ExternalDNS](https://kubernetes-sigs.github.io/external-dns/latest/), which can integrate with many DNS providers (Route53, Gandi, OVH, and so on).
+Thanks to Traefik, we have exposed and load-balanced our service, but usually you also want to give it **names** in DNS. While it could be managed separately from Kubernetes, it is nicer to have the cluster own those records and declare the desired hostname next to the `Ingress` in Helm. The usual tool for that is [ExternalDNS](https://kubernetes-sigs.github.io/external-dns/latest/), which can integrate with many DNS providers (Route53, Gandi, OVH, and so on).
 
 In my case, I use the generic RFC2136/TSIG integration to let it manage records in a private `int.kakwalab.ovh` zone.
 
@@ -881,7 +880,7 @@ kubectl -n "$EXTERNAL_DNS_NAMESPACE" create secret generic external-dns-rfc2136 
 
 And install with Helm:
 
-```
+```shell
 # Add Helm Repository
 helm repo add external-dns https://kubernetes-sigs.github.io/external-dns/ >/dev/null
 helm repo update external-dns >/dev/null
@@ -892,20 +891,20 @@ helm upgrade --install external-dns external-dns/external-dns \
   -f "./external-dns-helm-values.yaml"
 ```
 
-# Closing Stuffs
+# A Few Closing Items
 
 ## Our First App!
 
 Now that we have a cluster, let's use it!
 
-As it happened, the prevalence of AI on HackerNews was a bit too high for my taste, so, I've created a small fork of [hnrss](https://github.com/hnrss/hnrss) filtering AI stuff out into its dedicated feeds.
+As it happened, the prevalence of AI on Hacker News was a bit too high for my taste, so I've created a small fork of [hnrss](https://github.com/hnrss/hnrss) filtering AI stuff out into its dedicated feeds.
 
 The fork is available here [**hnrss-ai-filtering**](https://github.com/kakwa/hnrss-ai-filtering).
-Through quick vibecoding, it adds `/ai` and `/noai` endpoints leveraging a bit of key words matching (`ai` `llm`, `anthropic`, etc).
+Through quick vibecoding, it adds `/ai` and `/noai` endpoints leveraging a bit of keyword matching (`ai`, `llm`, `anthropic`, etc.).
 
 This service is actually a good candidate for k8s since it doesn't have a persistent layer.
 
-In addition to the functional modification, I've added the bits necessary for K8S, namely:
+In addition to the functional modification, I've added the bits necessary for Kubernetes, namely:
 
 * a [Dockerfile](https://github.com/kakwa/hnrss-ai-filtering/blob/master/Dockerfile) to create a container,
 * a small [script to publish](https://github.com/kakwa/hnrss-ai-filtering/blob/master/scripts/publish-image.sh) our container image into our registry
