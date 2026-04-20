@@ -13,7 +13,7 @@ Working at a "Big Tech" company has its perks: because of the scale such company
 you typically don't have to deal with basic services like DNS, authentication or CI/CD as
 these services are managed by dedicated core teams.
 
-On one hand, it's great: badly deployed by an over-stretch dev or ops guy,
+On one hand, it's great: badly deployed by an overstretched dev or ops guy,
 these core services can easily become huge times & efficiency sinks 
 distracting us from solving the problems our customers pay us for.
 
@@ -134,7 +134,7 @@ And finally, I've created a Debian `utility` VM for support services like a Dock
 
 ## Bad Tools, Bad Worker
 
-On our dev machine, will need a few tools, namely:
+On our dev machine, we will need a few tools, namely:
 
 * [Docker](https://www.docker.com/): Build, ship, and run containers.
 * [OpenTofu](https://opentofu.org/) (`tofu`): Open-source Terraform fork; describes and applies.
@@ -892,16 +892,16 @@ helm upgrade --install external-dns external-dns/external-dns \
 
 To Store and distribute our app container image, I've also deployed a private `Docker Registry` on the utility VM.
 
-The deployement is done through this Ansible [`docker_registry/`](https://github.com/kakwa/home.tf/tree/main/ansible/roles/docker_registry) role.
+The deployment is done through this Ansible [`docker_registry/`](https://github.com/kakwa/home.tf/tree/main/ansible/roles/docker_registry) role.
 
-The jist being it deploys a [`docker-registry`](https://github.com/kakwa/misc-pkg/tree/main/docker-registry) package I've built, configures plus enables the service and puts an nginx in front of it for Auth Basic and TLS.
+The gist being it deploys a [`docker-registry`](https://github.com/kakwa/misc-pkg/tree/main/docker-registry) package I've built, configures plus enables the service and puts an nginx in front of it for Auth Basic and TLS.
 
 For TLS, it uses a proper Let's Encrypt certificate as loading a custom, self-signed, CA in Talos seems tedious.
 
 As It's a non-public service, the certificate was obtained using the [DNS-01 challenge](https://github.com/kakwa/home.tf/tree/main/ansible/roles/certbot_letsencrypt) with certbot's [OVH plugin](https://certbot-dns-ovh.readthedocs.io/en/stable/) (my DNS provider).
 
 
-For our app, this is were our Kubernetes cluster will download its container images
+For our app, this is where our Kubernetes cluster will download its container images
 
 ## Our First App!
 
@@ -909,7 +909,7 @@ Now that we have a cluster and its surrounding infrastructure, let's finally do 
 
 As it happened to be, I was getting a bit annoyed by the prevalence of AI posts in my Hacker News RSS feed.
 
-Through a bit Q&D vibe-coding on [hnrss](https://github.com/hnrss/hnrss) doing some keyword matching (words like `ai`, `llm`, `anthropic`...), I've created a [fork](https://github.com/kakwa/hnrss-ai-filtering) adding `/ai` and `/noai` endpoints separating AI and non AI content.
+Through a bit of Q&D vibe-coding on [hnrss](https://github.com/hnrss/hnrss) doing some keyword matching (words like `ai`, `llm`, `anthropic`...), I've created a [fork](https://github.com/kakwa/hnrss-ai-filtering) adding `/ai` and `/noai` endpoints separating AI and non AI content.
 
 This filtering works great, but now, we must host this thing, and well... we have a brand new Kubernetes cluster.
 
