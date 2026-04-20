@@ -156,7 +156,7 @@ For `talosctl`, I packaged it in my [own repository](https://github.com/kakwa/mi
 # Get the architecture and version
 . /etc/os-release
 ARCH=$(dpkg --print-architecture)
-wget -qO - https://kakwa.github.io/misc-pkg/GPG-KEY.pub | sudo tee /etc/apt/keyrings/misc-pkg.gpg >/dev/null
+wget -qO - https://kakwa.github.io/misc-pkg/GPG-KEY.pub | gpg --dearmor |sudo tee /etc/apt/keyrings/misc-pkg.gpg >/dev/null
 sudo tee /etc/apt/sources.list.d/misc-pkg.sources >/dev/null <<EOF
 Types: deb
 URIs: https://kakwa.github.io/misc-pkg/deb.${VERSION_CODENAME}.${ARCH}/
@@ -172,14 +172,15 @@ apt install talosctl
 
 OpenTofu publishes `tofu` packages in their own repository:
 ```shell
-curl -fsSL https://get.opentofu.org/opentofu.gpg | sudo tee /etc/apt/keyrings/opentofu.gpg > /dev/null
+curl -fsSL https://get.opentofu.org/opentofu.gpg | gpg --dearmor | sudo tee /etc/apt/keyrings/opentofu.gpg > /dev/null
+curl -fsSL https://packages.opentofu.org/opentofu/tofu/gpgkey | gpg --dearmor | sudo tee /etc/apt/keyrings/opentofu-repo.gpg > /dev/null
 
 sudo tee /etc/apt/sources.list.d/opentofu.sources > /dev/null <<EOF
 Types: deb
 URIs: https://packages.opentofu.org/opentofu/tofu/any/
 Suites: any
 Components: main
-Signed-By: /etc/apt/keyrings/opentofu.gpg
+Signed-By: /etc/apt/keyrings/opentofu.gpg /etc/apt/keyrings/opentofu-repo.gpg
 EOF
 apt update
 
@@ -188,8 +189,7 @@ apt install tofu
 
 And so does Helm:
 ```shell
-sudo apt-get install curl apt-transport-https --yes
-curl -fsSL https://packages.buildkite.com/helm-linux/helm-debian/gpgkey | sudo tee /etc/apt/keyrings/helm.gpg > /dev/null
+curl -fsSL https://packages.buildkite.com/helm-linux/helm-debian/gpgkey | gpg --dearmor | sudo tee /etc/apt/keyrings/helm.gpg > /dev/null
 sudo tee /etc/apt/sources.list.d/helm-stable-debian.sources > /dev/null <<EOF
 Types: deb
 URIs: https://packages.buildkite.com/helm-linux/helm-debian/any/
