@@ -966,12 +966,45 @@ kubectl rollout restart deployment -n hnrss
 
 ## Conclusion
 
-Not yet deployed:
-CI/CD ArgoCD
-Management UI TODO link
-RBAC and access control TODO link
-Persistent iSCSI Volumes TODO link
-Log Centralization TODO links (ELK or maybe ClickHouse)
-Prometheus (TODO link)
+So, was this exercise worth it?
 
-TODO
+... Well... Kind of... but not completely.
+
+For my personal stuff, I'm much more in the "just use a VPS" camp.
+Just to illustrate, the hnrss app took me 15 minutes to deploy on my vps. In k8s, with all the Helm template and Docker stuff, it was closer to two hours (granted, I was also fixing the last cluster setup issues).
+
+In a profesional context, while I do appreciate what K8S brings (clean decoupling between infrastructure and app + easy instrumentation enabling stuff like CI/CD), I just want to remain being a user of the thing, not administer it.
+
+I like things often considered boring, Ldap and IAM topics for example, but here, I think I've reached my limits. There are simply too many moving pieces and too much magic glue going on. Kubernet does solve problems, but it really feels like a tedious and clunky solution. To the point I'm wondering if something a bit more opinionated, complete out of the box and simpler will not pop-up and replace it in the future.
+
+Just to illustrate, this already lenghty deployment is in fact far from complete. From the goals I set-out at the begining, I'm still missing the **CI/CD** part (for example using [ArgoCD](https://argo-cd.readthedocs.io/en/stable/). And beyond that, there are many other subjects which would need to be tackled in a production & non-solo environment:
+
+* **RBAC and access control**
+* **Management UI**
+* **Project Templates**
+* **Monitoring**
+* **Logging**
+* **Persistent volumes**
+
+But it was not lost time either. Even if right now, I'm kind of feed-up with it, I will probably revisit it in the future and do the CI/CD stuff (easily bootstrapping a new service is simply too appealing).
+
+It also gave me an appreciation for Kubernetes operators. now I get why it's a specialized role and hard to fill role.
+
+And lastly, discovering what you want and **don't** want to do before fully committing to it is always valuable.
+Managing Kubernetes clusters all day long is simply not for me.
+
+## Links
+
+* [Talos Linux](https://www.talos.dev/): API-driven immutable OS for Kubernetes.
+* [Talos Documentation](https://docs.siderolabs.com): Official documentation for Talos.
+* [Talos Image Factory](https://factory.talos.dev/): Build custom Talos images with extensions.
+* [OpenTofu](https://opentofu.org/): Open-source infrastructure as code tool (Terraform Fork).
+* [kubectl](https://kubernetes.io/docs/reference/kubectl/): CLI tool for k8s administration.
+* [Helm](https://helm.sh/): "package manager" & service specification for k8s
+* [OpenTofu libvirt provider](https://search.opentofu.org/provider/dmacvicar/libvirt/latest): KVM/libvirt provider for Tofu. 
+* [OpenTofu Talos provider](https://search.opentofu.org/provider/siderolabs/talos/latest): Talos provider for Tofu.
+* [MetalLB](https://metallb.io/): K8S On-prem IPs management add-on for supporting LoadBalancer.
+* [Traefik](https://traefik.io/): K8S LoadBalancer/Service Gateway add-on.
+* [ExternalDNS](https://kubernetes-sigs.github.io/external-dns/latest/): K8S add-ons to manage DNS records.
+* [Argo CD](https://argo-cd.readthedocs.io/en/stable/): GitOps continuous delivery for K8S applications.
+* [home.tf](https://github.com/kakwa/home.tf): The Ansible and OpenTofu code used in this article.
