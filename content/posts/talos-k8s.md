@@ -32,6 +32,8 @@ But, well, it's what the cool kids are doing, so I need to fill this gap in my C
 Through the magic of Open Source, the Internet and a 12-year-old PC
 with 32GB of RAM (actually quite valuable these days :p), I should be able to manage.
 
+{{< figure src="/images/talos-k8s/talos-k8s-intro-stock.jpg" alt="Complex Highway Interchange" caption="Is complexity always justified?" >}}
+
 ## What I Wanted Out Of This
 
 By the end of this process, I want:
@@ -67,8 +69,8 @@ I ended up choosing **Talos Linux**. It looked like the most common option on [/
 
 ## Kubernetes Base Architecture
 
-Kubernetes has three main categories of components. First is the Control Plane, which coordinates the cluster. Second are the Workers, i.e. the nodes actually running stuff.
-The third and last category are the `Cluster Add-Ons` adding optional (but nearly always deployed) things like public DNS record management, load-balancing or audit tools.
+Kubernetes has three main categories of components. First is the `Control Plane`, which coordinates the cluster. Second are the `Workers`, i.e. the nodes actually running stuff.
+The third and last category are the Cluster `Add-Ons` adding optional (but often deployed) things like public DNS record management, load-balancing or audit tools.
 
 Control Plane Components:
 
