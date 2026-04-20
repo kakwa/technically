@@ -121,7 +121,9 @@ In addition, Talos adds its own [components (apid, machined, etc)](https://docs.
 
 # Non-K8s Bits
 
-This K8s deployment also required a few bits outside of the cluster itself.
+## The Metal + A Few Nuts
+
+My old computer, is well, old. It required a bit of R&R. Like a [hacky video card](/posts/gpu-pciex1/) to get a video output, and a few [5.25" to 3.5"](https://www.printables.com/model/1306664-35-to-525-hdd-silencer-bracket) + [3.5" to 2.5"](https://www.printables.com/model/229753-small-hdd-adapter-35-inch-to-25-inch) 3D printed adapters to add some disks.
 
 First, there was the recommissioning of my old rig itself (i5 2500k/32GB DDR3) which required a bit of work, like installing some new storage with 3d printed adapters ([5.25" to 3.5"](https://www.printables.com/model/1306664-35-to-525-hdd-silencer-bracket) + [3.5" to 2.5"](https://www.printables.com/model/229753-small-hdd-adapter-35-inch-to-25-inch))
 I also did some power consumption optimization (CPU down-clocking, removing/disabling unnecessary cards) to not have the thing draw ~120W continuously. It still draws ~50W however, which is... "not great, not terrible"...
@@ -132,6 +134,77 @@ After that, I installed the latest Debian and applied [the following Ansible pla
 I also deployed an [internal DNS](https://github.com/kakwa/ansible-openbsd) server with TSIG/RFC 2136 dynamic zones on a [Sparc V100](/posts/silly-sun-server-software) using OpenBSD for funsies.
 
 And finally, I've created a Debian `utility` VM for support services like a Docker image `registry` or an `ldap` server directory (VM created like in [Cloud @Home](/posts/virtualization-terraform-kvm) and configured through this [utility.yml](https://github.com/kakwa/home.tf/blob/main/ansible/utility.yml) ansible playbook).
+
+## Bad Tools, Bad Worker
+
+You will need the following tools:
+
+* [Docker](https://www.docker.com/): Build, ship, and run containers.
+* [OpenTofu](https://opentofu.org/) (`tofu`): Open-source Terraform fork; describes and applies.
+* [kubectl](https://kubernetes.io/docs/reference/kubectl/): CLI to administer and debug k8s.
+* [talosctl](https://www.talos.dev/latest/talos-guides/install/talosctl/): CLI for bootstrapping and operating Talos.
+* [Helm](https://helm.sh/): "Package Manager" used to install k8s application and components.
+
+
+Assuming you are using a `deb` base distribution, here is how to install them (if you use MacOS, Windows or OS2, I leave the exercise to the reader).
+
+`docker` and `kubectl` are usually available in Debian/Ubuntu and derivative repositories.
+
+```shell
+apt install kubectl docker.io
+```
+
+For `talosctl`, I packaged it in my [own repository](https://github.com/kakwa/misc-pkg), but you can directly [grab it from Talos releases](https://github.com/siderolabs/talos/releases) if you don't trust me (protip: you shouldn't):
+
+```shell
+# Get the architecture and version
+. /etc/os-release
+ARCH=$(dpkg --print-architecture)
+wget -qO - https://kakwa.github.io/misc-pkg/GPG-KEY.pub | sudo tee /etc/apt/keyrings/misc-pkg.gpg >/dev/null
+sudo tee /etc/apt/sources.list.d/misc-pkg.sources >/dev/null <<EOF
+Types: deb
+URIs: https://kakwa.github.io/misc-pkg/deb.${VERSION_CODENAME}.${ARCH}/
+Suites: ${VERSION_CODENAME}
+Components: main
+Signed-By: /etc/apt/keyrings/misc-pkg.gpg
+Architectures: ${ARCH}
+EOF
+apt update
+
+apt install talosctl
+```
+
+OpenTofu publishes `tofu` packages in their own repository:
+```shell
+curl -fsSL https://get.opentofu.org/opentofu.gpg | sudo tee /etc/apt/keyrings/opentofu.gpg > /dev/null
+
+sudo tee /etc/apt/sources.list.d/opentofu.sources > /dev/null <<EOF
+Types: deb
+URIs: https://packages.opentofu.org/opentofu/tofu/any/
+Suites: any
+Components: main
+Signed-By: /etc/apt/keyrings/opentofu.gpg
+EOF
+apt update
+
+apt install tofu
+```
+
+And so does Helm:
+```shell
+sudo apt-get install curl apt-transport-https --yes
+curl -fsSL https://packages.buildkite.com/helm-linux/helm-debian/gpgkey | sudo tee /etc/apt/keyrings/helm.gpg > /dev/null
+sudo tee /etc/apt/sources.list.d/helm-stable-debian.sources > /dev/null <<EOF
+Types: deb
+URIs: https://packages.buildkite.com/helm-linux/helm-debian/any/
+Suites: any
+Components: main
+Signed-By: /etc/apt/keyrings/helm.gpg
+EOF
+sudo apt update
+
+sudo apt install helm
+```
 
 # Deploy That Damn Cluster Already!
 
@@ -838,14 +911,45 @@ In addition to the functional modification, I've added the bits necessary for K8
 * a small [script to publish](https://github.com/kakwa/hnrss-ai-filtering/blob/master/scripts/publish-image.sh) our container image into our registry
 * a minimal [Helm Chart](https://github.com/kakwa/hnrss-ai-filtering/tree/master/helm)
 
-Once the image has been published, we can create the service in k8s with the following kubectl helm commands:
+To deploy it, do the following.
 
+Clone the reposorty
+```shell
+git clone kakwa hnrss-ai-filtering FIXME + cd
 ```
-# Create the namespace
+
+Set a few env vars for docker and kubectl/helm:
+```shell
+export REGISTRY_USER=R_USER
+export REGISTRY_PASSWORD=R_PASSWORD
+export REGISTRY_HOST=registry.example.com
+export REGISTRY=${REGISTRY_HOST}
+export KUBECONFIG=$HOME/.kubeconfig
+```
+
+Publishing a new version of the docker image in our registry:
+
+```shell
+./scripts/publish-image.sh
+```
+
+Creating or updating the service definition:
+```shell
+# Create a namespace for the service (if necessary)
 kubectl create namespace hnrss
 
-Deploy the service with the helm template
+# Go and tweak the helm configuration
+cd helm/
+vim values.yaml # in particular, tweak the DNS domain.
+
+# Apply helm configuration (creation and updates)
 helm upgrade --install hnrss ./ --namespace hnrss --set registryAuth.password="$REGISTRY_PASSWORD"
+```
+
+Rolling out a new version after publishing in the docker registry:
+
+```shell
+kubectl rollout restart deployment -n hnrss
 ```
 
 ## Conclusion
