@@ -1,7 +1,7 @@
 +++
 title = 'Over-Engineered My Self-Hosting with Kubernetes'
-date = 2026-04-19T16:55:15+01:00
-draft = true
+date = 2026-04-20T12:55:15+01:00
+draft = false
 summary = "Is 'just use a vps' wrong?"
 +++
 
@@ -14,7 +14,7 @@ you typically don't have to deal with basic services like DNS, authentication or
 these services are managed by dedicated core teams.
 
 On one hand, it's great: badly deployed by an overstretched dev or ops guy,
-these core services can easily become huge times & efficiency sinks 
+these core services can easily become huge time & efficiency sinks
 distracting us from solving the problems our customers pay us for.
 
 On the other, it can leave gaps in your CV, especially if like me, you have scruples
@@ -42,7 +42,7 @@ By the end of this process, I wanted:
 
 This infrastructure should also be managed through the usual "configuration as code" tools, namely Ansible, Tofu, and a bit of scripting. I want to be able to delete and recreate it at will.
 
-I'm making the actual code I've used available [here in my github](https://github.com/kakwa/home.tf). But be aware it is quite tightly coupled to my infrastructure, somewhat badly vibe-coded, and might not be easily reusable.
+I'm making the actual code I've used available [here in my GitHub](https://github.com/kakwa/home.tf). But be aware it is quite tightly coupled to my infrastructure, somewhat badly vibe-coded, and might not be easily reusable.
 
 # Kubernetes Basics
 
@@ -121,7 +121,7 @@ In addition, Talos adds its own [components (apid, machined, etc)](https://docs.
 
 ## The Metal + A Few Nuts & Bolts
 
-First, there was the recommissioning of my old rig itself (i5 2500k/32GB DDR3) which required a bit of work, like installing some new storage with 3d printed adapters ([5.25" to 3.5"](https://www.printables.com/model/1306664-35-to-525-hdd-silencer-bracket) + [3.5" to 2.5"](https://www.printables.com/model/229753-small-hdd-adapter-35-inch-to-25-inch)).
+First, there was the recommissioning of my old rig itself (i5 2500k/32GB DDR3) which required a bit of work, like installing some new storage with 3D printed adapters ([5.25" to 3.5"](https://www.printables.com/model/1306664-35-to-525-hdd-silencer-bracket) + [3.5" to 2.5"](https://www.printables.com/model/229753-small-hdd-adapter-35-inch-to-25-inch)).
 
 I also did some power consumption optimization (CPU down-clocking, removing/disabling unnecessary cards) to not have the thing draw ~120W continuously. It still draws ~50W however, which is... "not great, not terrible"...
 (I am considering replacing it with a refurb mini-pc or an old laptop to be honest).
@@ -894,7 +894,7 @@ To store and distribute our app container image, I've also deployed a private `D
 
 The deployment is done through this Ansible [`docker_registry/`](https://github.com/kakwa/home.tf/tree/main/ansible/roles/docker_registry) role.
 
-The gist being it deploys a [`docker-registry`](https://github.com/kakwa/misc-pkg/tree/main/docker-registry) package I've built, configures plus enables the service and puts an nginx in front of it for Auth Basic and TLS.
+The gist being that it deploys a [`docker-registry`](https://github.com/kakwa/misc-pkg/tree/main/docker-registry) package I've built, configures plus enables the service and puts an nginx in front of it for Auth Basic and TLS.
 
 For TLS, it uses a proper Let's Encrypt certificate as loading a custom, self-signed, CA in Talos seems tedious.
 
@@ -973,7 +973,7 @@ So, was this exercise worth it?
 For my personal stuff, I'm much more in the "just use a VPS" camp.
 Just to illustrate, the hnrss app took me 15 minutes to deploy on my VPS. In k8s, with all the Helm template and Docker stuff, it was closer to two hours (granted, I was also fixing the last cluster setup issues).
 
-In a professional context, while I do appreciate what K8S brings (clean decoupling between infrastructure and app + easy instrumentation enabling stuff like CI/CD), I just want to remain being a user of the thing, not administer it.
+In a professional context, while I do appreciate what K8s brings (clean decoupling between infrastructure and app + easy instrumentation enabling stuff like CI/CD), I just want to remain being a user of the thing, not administer it.
 
 I like things often considered boring, LDAP and IAM topics for example, but here, I think I've reached my limits. There are simply too many moving pieces and too much magic glue going on. Kubernetes does solve problems, but it really feels like a tedious and clunky solution. To the point I'm wondering if something a bit more opinionated, complete out of the box and simpler will not pop-up and replace it in the future.
 
