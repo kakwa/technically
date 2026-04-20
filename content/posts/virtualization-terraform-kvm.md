@@ -512,7 +512,7 @@ Being able to nuke entire stacks and re-create them at will, with just a `tofu d
 
 Plus, the base hypervisor is extremely simple: just a base headless Debian with `libvirtd` installed.
 
-Sure, I could have installed Proxmox, use one of the [Proxmox Tofu Providers](https://search.opentofu.org/provider/bpg/proxmox/latest), and a more AWS or GCP like experience.
+Sure, I could have installed Proxmox, use one of the [Proxmox Tofu Providers](https://search.opentofu.org/provider/bpg/proxmox/latest), and have a more AWS/GCP-like experience.
 But, in truth, this simple setup is already more than enough to cosplay as your typical "latte drinking bigtech/GAFAM SRE/DevSecOps/CloudEng".
 
 It surely helped me a lot when deploying my @home [k8s cluster](/posts/talos-k8s).
