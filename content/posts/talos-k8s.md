@@ -13,41 +13,36 @@ Working at a "Big Tech" company has its perks: because of the scale such company
 you typically don't have to deal with basic services like DNS, authentication or CI/CD as
 these services are managed by dedicated core teams.
 
-On one hand, it's great: badly deployed on the side by an over-worked ops or dev,
-these core services require a lot of babysitting, cause tons of context switching
-to fix minor issues and in the end, eat a lot of time which should actually be used
-to solve the problems our customers pay us for.
+On one hand, it's great: badly deployed by an over-stretch dev or ops guy,
+these core services can easily become huge times & efficiency sinks 
+distracting us from solving the problems our customers pay us for.
 
 On the other, it can leave gaps in your CV, especially if like me, you have scruples
-about gratuitously over-engineering things just to learn new tools/frameworks
-at your employer's expense on the job.
+about gratuitously over-engineering things just to learn new tools/frameworks on the
+job at your employer's expense.
 
 One such gap I currently have is deploying and managing Kubernetes clusters.
 
 To be honest, I kind of avoided diving into K8s. Maybe it's an unfounded bias on my part,
 but Kubernetes always felt a bit overcomplicated, clunky and not very pleasant to manage.
 
-But, well, it's what the cool kids are doing, so I need to fill this gap in my CV.
-
-Through the magic of Open Source, the Internet and a 12-year-old PC
-with 32GB of RAM (actually quite valuable these days :p), I should be able to manage.
+But, well, it's what the cool kids are doing these days, so here we go.
 
 {{< figure src="/images/talos-k8s/talos-k8s-intro-stock.jpg" alt="Complex Highway Interchange" caption="Is complexity always justified?" >}}
 
 ## What I Wanted Out Of This
 
-By the end of this process, I want:
+By the end of this process, I wanted:
 
 * A mostly automated base KVM hypervisor deployment
-* The base Kubernetes cluster, with all the control plane bits
+* A worker Kubernetes cluster, with all the control plane bits configured
 * HTTPS load balancer + DNS
 * CI/CD with Argo (and integration with GitHub)
 * Docker/Container Registry
 
-This infrastructure should also be managed through the usual "configuration as code" tools, namely Ansible, Tofu, and a bit of scripting.
+This infrastructure should also be managed through the usual "configuration as code" tools, namely Ansible, Tofu, and a bit of scripting. I want to be able to delete and recreate it at will.
 
-I'm making the code available [here](https://github.com/kakwa/home.tf).
-But be aware it is quite tightly coupled to my infrastructure, and might not be easily reusable.
+I'm making the actual code I've used available [here in my github](https://github.com/kakwa/home.tf). But be aware it is quite tightly coupled to my infrastructure, somewhat badly vibe-coded, and might not be easily reusable.
 
 # Kubernetes Basics
 
@@ -55,39 +50,42 @@ But be aware it is quite tightly coupled to my infrastructure, and might not be 
 
 Like chocolate, k8s comes in various flavors. I contemplated deploying it on a traditional distribution, maybe dusting off my Gentoo skills for example.
 
-But in the end, I ended up taking the easier path of picking a specialized distribution.
+But finally, I picked the easier path of using a specialized K8S distribution.
 
 I considered the following ones:
 
-**Talos Linux** is an immutable, API-driven operating system built specifically and exclusively for Kubernetes. It has no SSH access, no shell, and everything is configured through declarative configs and the `talosctl` CLI.
+* **[Talos Linux](https://www.talos.dev/)** is an immutable, API-driven distribution. It has no SSH access, no shell, and everything is configured through declarative configs and the `talosctl` CLI.
 
-**Flatcar Container Linux** is a fork of the original CoreOS Container Linux backed by [Kinvolk](https://kinvolk.io/), now part of Microsoft. It's a minimal and immutable distribution but with SSH access.
+* **[Flatcar Container Linux](https://www.flatcar.org/)** is a fork of the original CoreOS Container Linux backed by [Kinvolk](https://kinvolk.io/), now part of Microsoft. It's a minimal and immutable distribution but with SSH access.
 
-**OpenShift & Fedora CoreOS** is Red Hat's successor to the original CoreOS.
+* **[OpenShift](https://www.redhat.com/en/technologies/cloud-computing/openshift)** and **[Fedora CoreOS](https://fedoraproject.org/coreos/)** are Red Hat's successors to the original CoreOS.
 
-I ended up choosing **Talos Linux**. It looked like the most common option on [/r/kubernetes](https://www.reddit.com/r/kubernetes/), and it's not linked (yet) to the usual corporate vampires.
+I ended up choosing **[Talos Linux](https://www.talos.dev/)**. It looked like the most common option on [/r/kubernetes](https://www.reddit.com/r/kubernetes/), and it's not linked (yet) to the usual corporate vampires.
 
 ## Kubernetes Base Architecture
 
 Kubernetes has three main categories of components. First is the `Control Plane`, which coordinates the cluster. Second are the `Workers`, i.e. the nodes actually running stuff.
-The third and last category is the Cluster `Add-Ons`, adding optional (but often deployed) things like public DNS record management, load-balancing or audit tools.
+The third and last category is the Cluster `Add-Ons`, enabling optional (but commonly deployed) things like public DNS record management, load-balancing or audit tools.
 
-Control Plane Components:
+In the Control Plane, here are the main components:
 
 * [etcd](https://etcd.io/) (third party): Consistent and highly-available key value store for all API server data & states.
 * [kube-apiserver](https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver/): The core component server that exposes the Kubernetes HTTP API.
 * [kube-scheduler](https://kubernetes.io/docs/reference/command-line-tools-reference/kube-scheduler/): Looks for Pods not yet bound to a node, and assigns each Pod (~container execution) to a suitable node.
 * [kube-controller-manager](https://kubernetes.io/docs/reference/command-line-tools-reference/kube-controller-manager/): Runs the controller loops (replication, namespace, endpoint, etc).
 
-Worker Components:
+On the Workers, you have:
 
 * [kubelet](https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet/): Ensures that Pods are running, including their containers.
 * container runtime (third party): Software responsible for running containers, in our case [containerd](https://containerd.io/), but others are possible
 
-Cluster Add-ons (non-exhaustive):
+And here are some cluster Add-ons we will deploy (non-exhaustive):
 
 * [Gateway API](https://kubernetes.io/docs/concepts/services-networking/gateway/) (third party): OSI Layer 4 and 7 load balancer to connect our Pods to the outside, here, we will use Traefik, but [other implementations are available](https://gateway-api.sigs.k8s.io/implementations/#gateway-controller-implementation-status). It replaces the old [Ingress Controllers](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/).
 * [ExternalDNS](https://kubernetes-sigs.github.io/external-dns/latest) (third party): DNS record manager, which integrates with various DNS providers' APIs (AWS Route53, GCP DNS, OVH, Gandi, RFC2136) and gives names to your exposed services.
+
+
+Here is how everything fits together (simplified):
 
 ```
                      Worker/Apps Runtime                      |         Control Plane
@@ -121,7 +119,7 @@ In addition, Talos adds its own [components (apid, machined, etc)](https://docs.
 
 # Non-K8s Bits
 
-## The Metal + A Few Nuts
+## The Metal + A Few Nuts & Bolts
 
 First, there was the recommissioning of my old rig itself (i5 2500k/32GB DDR3) which required a bit of work, like installing some new storage with 3d printed adapters ([5.25" to 3.5"](https://www.printables.com/model/1306664-35-to-525-hdd-silencer-bracket) + [3.5" to 2.5"](https://www.printables.com/model/229753-small-hdd-adapter-35-inch-to-25-inch)).
 
@@ -136,7 +134,7 @@ And finally, I've created a Debian `utility` VM for support services like a Dock
 
 ## Bad Tools, Bad Worker
 
-You will need the following tools:
+On our dev machine, will need a few tools, namely:
 
 * [Docker](https://www.docker.com/): Build, ship, and run containers.
 * [OpenTofu](https://opentofu.org/) (`tofu`): Open-source Terraform fork; describes and applies.
@@ -144,8 +142,7 @@ You will need the following tools:
 * [talosctl](https://www.talos.dev/latest/talos-guides/install/talosctl/): CLI for bootstrapping and operating Talos.
 * [Helm](https://helm.sh/): "Package Manager" used to install k8s applications and components.
 
-
-Assuming you are using a `deb`-based distribution, here is how to install them (if you use macOS, Windows, or OS/2, I leave the exercise to the reader).
+Assuming you are using a `deb`-based distribution, here is how to install them (if you use macOS, Windows, or OS/2, I leave this exercise to the reader).
 
 `docker` and `kubectl` are usually available in Debian/Ubuntu and derivative repositories.
 
@@ -514,9 +511,7 @@ resource "local_file" "env" {
 
 We can let Tofu create an env file which once sourced, will provide convenient variables for the rest of this setup.
 
-# At Last, Kubernetes & Talos Setup
-
-## Cluster Configuration Deployment
+## At Last, Kubernetes & Talos Setup
 
 After a while, you should have a bunch of new VMs, booted-up into an unconfigured Talos.
 
@@ -893,24 +888,40 @@ helm upgrade --install external-dns external-dns/external-dns \
 
 # A Few Closing Items
 
+## Deploying A Private Docker Registry
+
+To Store and distribute our app container image, I've also deployed a private `Docker Registry` on the utility VM.
+
+The deployement is done through this Ansible [`docker_registry/`](https://github.com/kakwa/home.tf/tree/main/ansible/roles/docker_registry) role.
+
+The jist being it deploys a [`docker-registry`](https://github.com/kakwa/misc-pkg/tree/main/docker-registry) package I've built, configures plus enables the service and puts an nginx in front of it for Auth Basic and TLS.
+
+For TLS, it uses a proper Let's Encrypt certificate as loading a custom, self-signed, CA in Talos seems tedious.
+
+As It's a non-public service, the certificate was obtained using the [DNS-01 challenge](https://github.com/kakwa/home.tf/tree/main/ansible/roles/certbot_letsencrypt) with certbot's [OVH plugin](https://certbot-dns-ovh.readthedocs.io/en/stable/) (my DNS provider).
+
+
+For our app, this is were our Kubernetes cluster will download its container images
+
 ## Our First App!
 
-Now that we have a cluster, let's use it!
+Now that we have a cluster and its surrounding infrastructure, let's finally do something useful.
 
-As it happened, the prevalence of AI on Hacker News was a bit too high for my taste, so I've created a small fork of [hnrss](https://github.com/hnrss/hnrss) filtering AI stuff out into its dedicated feeds.
+As it happened to be, I was getting a bit annoyed by the prevalence of AI posts in my Hacker News RSS feed.
 
-The fork is available here [**hnrss-ai-filtering**](https://github.com/kakwa/hnrss-ai-filtering).
-Through quick vibecoding, it adds `/ai` and `/noai` endpoints leveraging a bit of keyword matching (`ai`, `llm`, `anthropic`, etc.).
+Through a bit Q&D vibe-coding on [hnrss](https://github.com/hnrss/hnrss) doing some keyword matching (words like `ai`, `llm`, `anthropic`...), I've created a [fork](https://github.com/kakwa/hnrss-ai-filtering) adding `/ai` and `/noai` endpoints separating AI and non AI content.
 
-This service is actually a good candidate for k8s since it doesn't have a persistent layer.
+This filtering works great, but now, we must host this thing, and well... we have a brand new Kubernetes cluster.
 
-In addition to the functional modification, I've added the bits necessary for Kubernetes, namely:
+This service is actually kind of ideal for k8s since it doesn't have a persistent layer.
+
+In addition to the filtering mods, I've added the bits necessary for Kubernetes, namely:
 
 * a [Dockerfile](https://github.com/kakwa/hnrss-ai-filtering/blob/master/Dockerfile) to create a container,
 * a small [script to publish](https://github.com/kakwa/hnrss-ai-filtering/blob/master/scripts/publish-image.sh) our container image into our registry
 * a minimal [Helm Chart](https://github.com/kakwa/hnrss-ai-filtering/tree/master/helm)
 
-To deploy it, do the following.
+To deploy it on our cluster, do the following.
 
 Clone the repository and enter it:
 
