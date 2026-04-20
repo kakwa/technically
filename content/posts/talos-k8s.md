@@ -913,9 +913,11 @@ In addition to the functional modification, I've added the bits necessary for K8
 
 To deploy it, do the following.
 
-Clone the reposorty
+Clone the repository and enter it:
+
 ```shell
-git clone kakwa hnrss-ai-filtering FIXME + cd
+git clone https://github.com/kakwa/hnrss-ai-filtering.git
+cd hnrss-ai-filtering
 ```
 
 Set a few env vars for docker and kubectl/helm:
