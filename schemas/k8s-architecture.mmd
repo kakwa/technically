@@ -12,12 +12,15 @@ flowchart TB
     Internet["🌍 Internet"]
     class Internet internet
 
+    subgraph Gateway["Kubernetes"]
     %% ========== GATEWAY ==========
-    Gateway["🚪 Gateway API (Traefik)\n• HTTP/TCP Routing\n• TLS Termination"]
-    class Gateway gateway
+    subgraph Gateway["Workers"]
+        Gateway["🚪 Gateway API (Traefik)\n• HTTP/TCP Routing\n• TLS Termination"]
+        class Gateway gateway
+    end
 
     %% ========== WORKER RUNTIME ==========
-    subgraph Runtime["🟩 Worker / Apps Runtime"]
+    subgraph Runtime["Workers"]
         direction TB
 
         subgraph W1["Worker Node 1"]
@@ -56,6 +59,8 @@ flowchart TB
         class Controller control
         class Etcd etcd
     end
+    end
+
 
     %% ========== FLOWS ==========
     Internet --> Gateway
