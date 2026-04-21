@@ -22,17 +22,17 @@ flowchart TB
     Internet["🌍 Internet"]
     class Internet internet
 
-    subgraph K8S["Kubernetes"]
+    subgraph K8S["`Kubernetes`"]
     class K8S k8s
     %% ========== GATEWAY ==========
-    subgraph AddOns["Workers"]
+    subgraph AddOns["`Gateway & Addons`"]
         Gateway["🚪 Gateway API"]
         ExternalDNS["ExternalDNS"]
         MetalLB["MetalLB"]
     end
 
     %% ========== WORKER RUNTIME ==========
-    subgraph Runtime["Workers"]
+    subgraph Runtime["`Workers`"]
         direction TB
 
         subgraph W1["Worker Node 1"]
@@ -44,21 +44,21 @@ flowchart TB
 
         subgraph W2["Worker Node 2"]
             W2_stack["⚙️ kubelet\n📦 containerd"]
-            W2_pods["🧩 Pods"]
+            W2_pods["🧩 Pods\n(App + Sidecars)"]
             class W2_stack worker
             class W2_pods pod
         end
 
         subgraph WN["Worker Node N"]
             WN_stack["⚙️ kubelet\n📦 containerd"]
-            WN_pods["🧩 Pods"]
+            WN_pods["🧩 Pods\n(App + Sidecars)"]
             class WN_stack worker
             class WN_pods pod
         end
     end
 
     %% ========== CONTROL PLANE ==========
-    subgraph ControlPlane["🟪 Control Plane"]
+    subgraph ControlPlane["`Control Plane`"]
         direction TB
 
         API["🧠 kube-apiserver"]
