@@ -14,6 +14,7 @@ flowchart TB
     class Internet internet
 
     subgraph K8S["Kubernetes"]
+    class K8S k8s
     %% ========== GATEWAY ==========
     subgraph AddOns["Workers"]
         Gateway["🚪 Gateway API (Traefik)\n• HTTP/TCP Routing\n• TLS Termination"]
