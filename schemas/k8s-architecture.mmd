@@ -16,14 +16,12 @@ flowchart TB
     classDef pod fill:#bbf7d0,stroke:#16a34a,color:#14532d
     classDef control fill:#ede9fe,stroke:#8b5cf6,color:#4c1d95
     classDef etcd fill:#fde68a,stroke:#f59e0b,color:#78350f
-    classDef k8s fill:#f3f4f6,stroke:#9ca3af,color:#111827
 
     %% ========== INTERNET ==========
     Internet["🌍 Internet"]
     class Internet internet
 
     subgraph K8S["`Kubernetes`"]
-    class K8S k8s
     %% ========== GATEWAY ==========
     subgraph AddOns["`Gateway & Addons`"]
         Gateway["🚪 Gateway API"]
@@ -61,19 +59,20 @@ flowchart TB
     subgraph ControlPlane["`Control Plane`"]
         direction TB
 
-        API["🧠 kube-apiserver"]
+        KAS["🧠 kube-apiserver"]
         Scheduler["🕑 kube-scheduler"]
         Controller["🔁 controller-manager"]
         Etcd["🗄️ etcd\n(cluster state)"]
 
-        class API control
+        class KAS control
         class Scheduler control
         class Controller control
         class Etcd etcd
     end
-    class K8S k8s
     end
 
+    %% Outer cluster frame: style applies to the subgraph box (classDef is unreliable on subgraphs)
+    style K8S fill:#e8efff,stroke:#1d4ed8,stroke-width:3px,color:#0f172a
 
     %% ========== FLOWS ==========
     Internet --> Gateway
@@ -85,13 +84,13 @@ flowchart TB
     Gateway --> WN_pods
 
     %% Control plane communication
-    W1_stack -. "mTLS API" .-> API
-    W2_stack -. "mTLS API" .-> API
-    WN_stack -. "mTLS API" .-> API
+    W1_stack -. "mTLS API" .-> KAS
+    W2_stack -. "mTLS API" .-> KAS
+    WN_stack -. "mTLS API" .-> KAS
 
     %% Control plane internals
-    API --> Scheduler
-    API --> Controller
+    KAS --> Scheduler
+    KAS --> Controller
     Scheduler --> Etcd
     Controller --> Etcd
-    API --> Etcd
+    KAS --> Etcd
