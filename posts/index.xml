@@ -68,30 +68,13 @@ The third and last category is the Cluster &lt;code>Add-Ons&lt;/code>, enabling 
 &lt;li>&lt;a href="https://kubernetes-sigs.github.io/external-dns/latest" target="_blank">ExternalDNS&lt;/a> (third party): DNS record manager, which integrates with various DNS providers&amp;rsquo; APIs (AWS Route53, GCP DNS, OVH, Gandi, RFC2136) and gives names to your exposed services.&lt;/li>
 &lt;/ul>
 &lt;p>Here is how everything fits together (simplified):&lt;/p>
-&lt;pre tabindex="0">&lt;code> Worker/Apps Runtime | Control Plane
- ┌──────────────────────────┐ |
- │ Internet │ |
- └────────────┬─────────────┘ |
- ┌────────────▼─────────────┐ |
- │ Gateway API (Traefik) │ | ┌────────────────────────────┐
- │--------------------------│ | │ Control Plane Nodes │
- │ - HTTP / TCP Routing │ | │----------------------------│
- │ - TLS Termination │ | │ kube-apiserver │
- └────────────┬─────────────┘ | │ - Kubernetes HTTP API │
- ┌───────────────────┼────────────────────┐ | │ - AuthN/AuthZ/Admission │
- ┌────────▼─────────┐┌────────▼─────────┐┌─────────▼────────┐ | │ │
- │ Worker Node 1 ││ Worker Node 2 ││ Worker Node N │ | │ kube-scheduler │
- │------------------││------------------││------------------│ | │ │
- │ kubelet ││ kubelet ││ kubelet │ | │ kube-controller-manager │
- │ containerd ││ containerd ││ containerd │ | │ - Namespace controller │
- │ ││ ││ │ | │ - Replication controller │
- │ Pods ││ Pods ││ Pods │ | │ │
- │ - App containers ││ - App containers ││ - App containers │ | │ etcd (cluster state store) │
- │ - Sidecars ││ ││ │ | │ │
- └────────┬─────────┘└────────┬─────────┘└─────────┬────────┘ | └─────────────┬──────────────┘
- └───────────────────┴────────────────────┴─ Kubernetes API (mTLS) ──┘
- |
-&lt;/code>&lt;/pre>&lt;p>The cluster components talk to each other using HTTP and gRPC and usually authenticate each other using mutual TLS certificates.&lt;/p>
+&lt;figure>&lt;img src="https://technically.kakwalab.ovh/images/talos-k8s/architecture.png"
+ alt="Basic K8S architecture">&lt;figcaption>
+ &lt;p>Kubernetes Architecture (simplified)&lt;/p>
+ &lt;/figcaption>
+&lt;/figure>
+
+&lt;p>The cluster components talk to each other using HTTP and gRPC and usually authenticate each other using mutual TLS certificates.&lt;/p>
 &lt;p>In addition, Talos adds its own &lt;a href="https://docs.siderolabs.com/talos/v1.6/learn-more/components" target="_blank">components (apid, machined, etc)&lt;/a> to configure the cluster and manage its idiosyncrasies (custom init, etc).&lt;/p>
 &lt;h1 id="non-k8s-bits">Non-K8s Bits&lt;/h1>
 &lt;h2 id="the-metal--a-few-nuts--bolts">The Metal + A Few Nuts &amp;amp; Bolts&lt;/h2>
@@ -520,7 +503,7 @@ Underneath all that, the cluster states are backed by the &lt;a href="https://en
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">done&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>And grab an updated kubeconfig&lt;/p>
 &lt;pre tabindex="0">&lt;code>talosctl kubeconfig . --endpoints &amp;#34;${BOOTSTRAP_CP}&amp;#34; --nodes &amp;#34;${BOOTSTRAP_CP}&amp;#34;
-&lt;/code>&lt;/pre>&lt;h1 id="not-so-optional-kubernetes-plugins">(Not So) Optional Kubernetes plugins&lt;/h1>
+&lt;/code>&lt;/pre>&lt;h1 id="not-so-optional-kubernetes-add-ons">(Not So) Optional Kubernetes Add-Ons&lt;/h1>
 &lt;h2 id="metallb">MetalLB&lt;/h2>
 &lt;p>In the cloud, Kubernetes leverages the providers&amp;rsquo; load balancer services such as NLB on AWS. But that is not something we have at home.&lt;/p>
 &lt;p>&lt;a href="https://metallb.io/" target="_blank">MetalLB&lt;/a> fills that gap for on-premises deployments. In a simple deployment, it watches &lt;code>LoadBalancer&lt;/code> services and assigns addresses from a pool you define to be used by said &lt;code>LoadBalancer&lt;/code> services.&lt;/p>
