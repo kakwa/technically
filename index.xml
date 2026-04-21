@@ -726,7 +726,7 @@ Underneath all that, the cluster states are backed by the &lt;a href="https://en
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-shell" data-lang="shell">&lt;span style="display:flex;">&lt;span>kubectl rollout restart deployment -n hnrss
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="conclusion">Conclusion&lt;/h2>
 &lt;p>So, was this exercise worth it?&lt;/p>
-&lt;p>&amp;hellip; Well&amp;hellip; Kind of&amp;hellip; but not completely.&lt;/p>
+&lt;p>&amp;hellip; Well&amp;hellip; kind of&amp;hellip; but not completely.&lt;/p>
 &lt;p>For my personal stuff, I&amp;rsquo;m much more in the &amp;ldquo;just use a VPS&amp;rdquo; camp.
 Just to illustrate, the hnrss app took me 15 minutes to deploy on my VPS. In k8s, with all the Helm template and Docker stuff, it was closer to two hours (granted, I was also fixing the last cluster setup issues).&lt;/p>
 &lt;p>In a professional context, while I do appreciate what K8s brings (clean decoupling between infrastructure and app + easy instrumentation enabling stuff like CI/CD), I just want to remain being a user of the thing, not administer it.&lt;/p>
