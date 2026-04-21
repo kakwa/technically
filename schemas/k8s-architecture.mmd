@@ -26,8 +26,7 @@ flowchart TB
     class K8S k8s
     %% ========== GATEWAY ==========
     subgraph AddOns["Workers"]
-        Gateway["🚪 Gateway API (Traefik)\n• HTTP/TCP Routing\n• TLS Termination"]
-        class Gateway gateway
+        Gateway["🚪 Gateway API"]
         ExternalDNS["ExternalDNS"]
         MetalLB["MetalLB"]
     end
@@ -62,8 +61,8 @@ flowchart TB
     subgraph ControlPlane["🟪 Control Plane"]
         direction TB
 
-        API["🧠 kube-apiserver\nKubernetes API\nAuthN/AuthZ"]
-        Scheduler["📅 kube-scheduler"]
+        API["🧠 kube-apiserver"]
+        Scheduler["🕑 kube-scheduler"]
         Controller["🔁 controller-manager"]
         Etcd["🗄️ etcd\n(cluster state)"]
 
