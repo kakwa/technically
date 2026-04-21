@@ -1,0 +1,77 @@
+flowchart TB
+
+    %% ========== STYLES ==========
+    classDef internet fill:#f3f4f6,stroke:#9ca3af,color:#111827
+    classDef gateway fill:#dbeafe,stroke:#3b82f6,color:#1e3a8a
+    classDef worker fill:#dcfce7,stroke:#22c55e,color:#14532d
+    classDef pod fill:#bbf7d0,stroke:#16a34a,color:#14532d
+    classDef control fill:#ede9fe,stroke:#8b5cf6,color:#4c1d95
+    classDef etcd fill:#fde68a,stroke:#f59e0b,color:#78350f
+
+    %% ========== INTERNET ==========
+    Internet["🌍 Internet"]
+    class Internet internet
+
+    %% ========== GATEWAY ==========
+    Gateway["🚪 Gateway API (Traefik)\n• HTTP/TCP Routing\n• TLS Termination"]
+    class Gateway gateway
+
+    %% ========== WORKER RUNTIME ==========
+    subgraph Runtime["🟩 Worker / Apps Runtime"]
+        direction TB
+
+        subgraph W1["Worker Node 1"]
+            W1_stack["⚙️ kubelet\n📦 containerd"]
+            W1_pods["🧩 Pods\n(App + Sidecars)"]
+            class W1_stack worker
+            class W1_pods pod
+        end
+
+        subgraph W2["Worker Node 2"]
+            W2_stack["⚙️ kubelet\n📦 containerd"]
+            W2_pods["🧩 Pods"]
+            class W2_stack worker
+            class W2_pods pod
+        end
+
+        subgraph WN["Worker Node N"]
+            WN_stack["⚙️ kubelet\n📦 containerd"]
+            WN_pods["🧩 Pods"]
+            class WN_stack worker
+            class WN_pods pod
+        end
+    end
+
+    %% ========== CONTROL PLANE ==========
+    subgraph ControlPlane["🟪 Control Plane"]
+        direction TB
+
+        API["🧠 kube-apiserver\nKubernetes API\nAuthN/AuthZ"]
+        Scheduler["📅 kube-scheduler"]
+        Controller["🔁 controller-manager"]
+        Etcd["🗄️ etcd\n(cluster state)"]
+
+        class API control
+        class Scheduler control
+        class Controller control
+        class Etcd etcd
+    end
+
+    %% ========== FLOWS ==========
+    Internet --> Gateway
+    Gateway --> Runtime
+
+    %% Gateway to pods
+    Gateway --> W1_pods
+    Gateway --> W2_pods
+    Gateway --> WN_pods
+
+    %% Control plane communication
+    W1_stack -. "mTLS API" .-> API
+    W2_stack -. "mTLS API" .-> API
+    WN_stack -. "mTLS API" .-> API
+
+    %% Control plane internals
+    API --> Scheduler
+    API --> Controller
+    API --> Etcd
