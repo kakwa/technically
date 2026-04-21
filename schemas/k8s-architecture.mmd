@@ -83,4 +83,6 @@ flowchart TB
     %% Control plane internals
     API --> Scheduler
     API --> Controller
+    Scheduler --> Etcd
+    Controller --> Etcd
     API --> Etcd
