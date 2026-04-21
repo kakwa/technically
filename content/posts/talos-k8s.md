@@ -945,7 +945,7 @@ kubectl rollout restart deployment -n hnrss
 
 So, was this exercise worth it?
 
-... Well... Kind of... but not completely.
+... Well... kind of... but not completely.
 
 For my personal stuff, I'm much more in the "just use a VPS" camp.
 Just to illustrate, the hnrss app took me 15 minutes to deploy on my VPS. In k8s, with all the Helm template and Docker stuff, it was closer to two hours (granted, I was also fixing the last cluster setup issues).
