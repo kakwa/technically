@@ -7,12 +7,14 @@ flowchart TB
     classDef pod fill:#bbf7d0,stroke:#16a34a,color:#14532d
     classDef control fill:#ede9fe,stroke:#8b5cf6,color:#4c1d95
     classDef etcd fill:#fde68a,stroke:#f59e0b,color:#78350f
+    classDef k8s fill:#dbeafe,stroke:#3b82f6,color:#1e3a8a
 
     %% ========== INTERNET ==========
     Internet["🌍 Internet"]
     class Internet internet
 
     subgraph K8S["Kubernetes"]
+    class K8S k8s
     %% ========== GATEWAY ==========
     subgraph AddOns["Workers"]
         Gateway["🚪 Gateway API (Traefik)\n• HTTP/TCP Routing\n• TLS Termination"]
