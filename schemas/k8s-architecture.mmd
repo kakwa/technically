@@ -12,11 +12,13 @@ flowchart TB
     Internet["🌍 Internet"]
     class Internet internet
 
-    subgraph Gateway["Kubernetes"]
+    subgraph K8S["Kubernetes"]
     %% ========== GATEWAY ==========
-    subgraph Gateway["Workers"]
+    subgraph AddOns["Workers"]
         Gateway["🚪 Gateway API (Traefik)\n• HTTP/TCP Routing\n• TLS Termination"]
         class Gateway gateway
+        ExternalDNS["ExternalDNS"]
+        MetalLB["MetalLB"]
     end
 
     %% ========== WORKER RUNTIME ==========
