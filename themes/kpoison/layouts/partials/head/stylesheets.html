@@ -7,6 +7,7 @@
     (resources.Get "css/lib/katex.css")
     (resources.Get "css/tabs.css")
     (resources.Get "css/custom.css")
+    (resources.Get "css/figure-zoom.css")
   | resources.Concat "css/bundle.css" | minify | fingerprint }}
 
 <link type="text/css" rel="stylesheet" href="{{ $css_bundle.RelPermalink }}">

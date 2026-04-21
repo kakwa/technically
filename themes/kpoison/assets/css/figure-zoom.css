@@ -1,0 +1,76 @@
+/* Full-size image overlay on top of the post (see figure-zoom.js) */
+
+main.content div.post img.post-img-overlayable {
+  cursor: zoom-in;
+}
+
+/* Must win over poison.css mobile `body { overflow: auto !important; }` */
+body.post-img-overlay-open {
+  overflow: hidden !important;
+}
+
+.post-img-overlay {
+  box-sizing: border-box;
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1rem 1rem;
+  background: rgba(0, 0, 0, 0.88);
+  cursor: zoom-out;
+  /* Do not rely on the [hidden] attribute: our display would override it in
+     some cascades, leaving the overlay visible while .hidden is true so
+     close() becomes a no-op. */
+  display: none;
+}
+
+.post-img-overlay.post-img-overlay--open {
+  display: flex;
+}
+
+.post-img-overlay__inner {
+  max-width: 96vw;
+  max-height: 92vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+}
+
+.post-img-overlay__img {
+  max-width: 96vw;
+  max-height: 92vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 4px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.45);
+}
+
+.post-img-overlay__close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 10001;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1.75rem;
+  line-height: 1;
+  cursor: pointer;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.post-img-overlay__close:hover,
+.post-img-overlay__close:focus-visible {
+  background: rgba(255, 255, 255, 0.22);
+  outline: 2px solid rgba(255, 255, 255, 0.6);
+  outline-offset: 2px;
+}
+
+.post-img-overlay__close:focus:not(:focus-visible) {
+  outline: none;
+}
