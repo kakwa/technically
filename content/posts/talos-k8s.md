@@ -87,31 +87,8 @@ And here are some cluster Add-ons we will deploy (non-exhaustive):
 
 Here is how everything fits together (simplified):
 
-```
-                     Worker/Apps Runtime                      |         Control Plane
-                 ┌──────────────────────────┐                 |
-                 │         Internet         │                 |
-                 └────────────┬─────────────┘                 |
-                 ┌────────────▼─────────────┐                 |
-                 │    Gateway API (Traefik) │                 | ┌────────────────────────────┐
-                 │--------------------------│                 | │      Control Plane Nodes   │
-                 │ - HTTP / TCP Routing     │                 | │----------------------------│
-                 │ - TLS Termination        │                 | │ kube-apiserver             │
-                 └────────────┬─────────────┘                 | │ - Kubernetes HTTP API      │
-          ┌───────────────────┼────────────────────┐          | │ - AuthN/AuthZ/Admission    │
- ┌────────▼─────────┐┌────────▼─────────┐┌─────────▼────────┐ | │                            │
- │  Worker Node 1   ││  Worker Node 2   ││  Worker Node N   │ | │ kube-scheduler             │
- │------------------││------------------││------------------│ | │                            │
- │ kubelet          ││ kubelet          ││ kubelet          │ | │ kube-controller-manager    │
- │ containerd       ││ containerd       ││ containerd       │ | │ - Namespace controller     │
- │                  ││                  ││                  │ | │ - Replication controller   │
- │ Pods             ││ Pods             ││ Pods             │ | │                            │
- │ - App containers ││ - App containers ││ - App containers │ | │ etcd (cluster state store) │
- │ - Sidecars       ││                  ││                  │ | │                            │
- └────────┬─────────┘└────────┬─────────┘└─────────┬────────┘ | └─────────────┬──────────────┘
-          └───────────────────┴────────────────────┴─ Kubernetes API (mTLS) ──┘
-                                                              |
-```
+{{< figure src="/images/talos-k8s/architecture.png" alt="Basic K8S architecture" caption="Kubernetes Architecture (simplified)" >}}
+
 
 The cluster components talk to each other using HTTP and gRPC and usually authenticate each other using mutual TLS certificates.
 
@@ -652,7 +629,7 @@ And grab an updated kubeconfig
 talosctl kubeconfig . --endpoints "${BOOTSTRAP_CP}" --nodes "${BOOTSTRAP_CP}"
 ```
 
-# (Not So) Optional Kubernetes plugins
+# (Not So) Optional Kubernetes Add-Ons
 
 ## MetalLB
 
