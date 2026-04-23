@@ -5,7 +5,13 @@ languageCode = "en"
 theme = "kpoison"
 copyright = "&copy; <a href=\"https://github.com/kakwa\">Pierre-Francois Carpentier</a> 2025"
 googleAnalytics = ""
-enableRobotsTXT = false
+enableRobotsTXT = true
+enableGitInfo = true
+
+[sitemap]
+changefreq = "monthly"
+priority = 0.7
+filename = "sitemap.xml"
 
 [params.rss] # Adding this tag enables RSS feed
 includeContent = true # Includes whole content in rss
