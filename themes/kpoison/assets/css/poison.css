@@ -284,13 +284,14 @@ tbody tr:nth-child(odd) th {
     font-size: 0.9em;
     width: 20em;
     margin-top: 5em;
-    overflow-y: auto;
     line-height: 1.4em;
-    max-height: 85%;
 }
 .article-toc .toc-wrapper{
     position: fixed;
     padding-left: 0em;
+    max-height: calc(100vh - 6rem);
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 .article-toc ol {
     margin-left: 0;
