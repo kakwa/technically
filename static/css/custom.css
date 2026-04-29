@@ -35,7 +35,8 @@
   position: sticky;
   top: 80px;
   max-height: calc(100vh - 100px);
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
   padding: 6px 0 6px 6px;
   border-right: 1px solid #eee;
 }

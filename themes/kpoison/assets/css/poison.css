@@ -109,24 +109,48 @@ body {
 body > .wrapper {
     display: flex;
     height: 100%;
+    min-height: 0;
 }
 .container.content {
     overflow-y: auto;
     flex-grow: 1;
+    min-height: 0;
     margin-right: 0;
 }
 .layout-reverse .container.content {
     padding-right: 0;
     padding-left: 2rem;
 }
-.container.content::-webkit-scrollbar {
-   width: 3px;
+.container.content,
+.sidebar,
+.article-toc {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(70, 70, 70) transparent;
 }
-.container.content::-webkit-scrollbar-thumb {
-   border-radius: 1.5px;
+.container.content::-webkit-scrollbar,
+.sidebar::-webkit-scrollbar,
+.article-toc::-webkit-scrollbar {
+    width: 3px;
 }
-.container.content::-webkit-scrollbar-track {
-   margin: 5.5em 0;
+.container.content::-webkit-scrollbar-thumb,
+.sidebar::-webkit-scrollbar-thumb,
+.article-toc::-webkit-scrollbar-thumb {
+    border-radius: 1.5px;
+    background-color: rgb(70, 70, 70);
+}
+.container.content::-webkit-scrollbar-thumb:hover,
+.sidebar::-webkit-scrollbar-thumb:hover,
+.article-toc::-webkit-scrollbar-thumb:hover {
+    background-color: rgb(150, 150, 150);
+}
+.container.content::-webkit-scrollbar-track,
+.sidebar::-webkit-scrollbar-track {
+    margin: 5.5em 0;
+    background: transparent;
+}
+.article-toc::-webkit-scrollbar-track {
+    margin: 0;
+    background: transparent;
 }
 
 .sidebar {
@@ -279,19 +303,21 @@ tbody tr:nth-child(odd) th {
     order: 2;
 }
 .article-toc {
+    box-sizing: border-box;
     padding-left: 0em;
+    padding-top: 5em;
     display: none;
     font-size: 0.9em;
-    width: 20em;
-    margin-top: 5em;
-    line-height: 1.4em;
-}
-.article-toc .toc-wrapper{
-    position: fixed;
-    padding-left: 0em;
-    max-height: calc(100vh - 6rem);
+    min-width: 0;
+    min-height: 0;
+    align-self: stretch;
+    max-height: 100vh;
     overflow-y: auto;
     overflow-x: hidden;
+    line-height: 1.4em;
+}
+.article-toc .toc-wrapper {
+    padding-left: 0em;
 }
 .article-toc ol {
     margin-left: 0;
@@ -332,8 +358,15 @@ tbody tr:nth-child(odd) th {
     font-weight: 300;
 }
 @media screen and (min-width: 100em) {
+    /* Main keeps Hyde max-width; TOC absorbs all remaining row width (scrollbar on viewport right). */
+    .container.content {
+        flex-grow: 0;
+        flex-shrink: 1;
+    }
     .article-toc {
         display: block;
+        flex: 1 1 0;
+        width: auto;
     }
 }
 .next-post {
