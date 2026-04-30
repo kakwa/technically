@@ -66,14 +66,15 @@ front_page_content = ["posts"]
 
 # Sidebar/menu
 menu = [
-    {Name = "Content", URL = ""},
+    {Name = "Kakwa's Stuff", URL = ""},
     {Name = "Blog Posts", URL = "/posts/"},
-    {Name = "Projects Starred - Github", URL = "/github-starred/"},
-    {Name = "Models Liked - Printables", URL = "/printables-liked/"},
-    {Name = "External Links", External = true, URL = ""},
-    {Name = "Software Projects", External = true, URL = "https://github.com/kakwa?tab=repositories&q=&type=&language=&sort=stargazers", HasChildren = false},
-    {Name = "3D Printing Models", External = true, URL = "https://www.printables.com/@kakwa_3337391/models", HasChildren = false},
-    {Name = "Photos", External = true, URL = "https://lens.kakwalab.ovh/", HasChildren = false},
+    {Name = "Kakwa's Software Projects", External = true, URL = "https://github.com/kakwa?tab=repositories&q=&type=&language=&sort=stargazers", HasChildren = false},
+    {Name = "Kakwa's 3D Printing Models", External = true, URL = "https://www.printables.com/@kakwa_3337391/models", HasChildren = false},
+    {Name = "Kakwa's Photos", External = true, URL = "https://lens.kakwalab.ovh/", HasChildren = false},
+    {Name = "Currated Projects & Content", External = true, URL = ""},
+    {Name = "Interesting Links & Tutorials", URL = "/interesting-links/"},
+    {Name = "Software Stars - Github", URL = "/github-starred/"},
+    {Name = "3D Models Liked - Printables", URL = "/printables-liked/"},
 ]
 
 # Social links (used by theme)
