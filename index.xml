@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Technically some technical stuff.</title><link>https://technically.kakwalab.ovh/</link><description>Recent content on Technically some technical stuff.</description><generator>Hugo</generator><language>en</language><managingEditor>carpentier.pf@gmail.com (Pierre-François Carpentier)</managingEditor><webMaster>carpentier.pf@gmail.com (Pierre-François Carpentier)</webMaster><copyright>&amp;copy; &lt;a href="https://github.com/kakwa">Pierre-Francois Carpentier&lt;/a> 2025</copyright><lastBuildDate>Thu, 30 Apr 2026 14:42:04 +0200</lastBuildDate><atom:link href="https://technically.kakwalab.ovh/index.xml" rel="self" type="application/rss+xml"/><item><title>Over-Engineered My Self-Hosting with Kubernetes</title><link>https://technically.kakwalab.ovh/posts/talos-k8s/</link><pubDate>Mon, 20 Apr 2026 12:55:15 +0100</pubDate><author>carpentier.pf@gmail.com (Pierre-François Carpentier)</author><guid>https://technically.kakwalab.ovh/posts/talos-k8s/</guid><description>&lt;h1 id="introduction">Introduction&lt;/h1>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Technically some technical stuff.</title><link>https://technically.kakwalab.ovh/</link><description>Recent content on Technically some technical stuff.</description><generator>Hugo</generator><language>en</language><managingEditor>carpentier.pf@gmail.com (Pierre-François Carpentier)</managingEditor><webMaster>carpentier.pf@gmail.com (Pierre-François Carpentier)</webMaster><copyright>&amp;copy; &lt;a href="https://github.com/kakwa">Pierre-Francois Carpentier&lt;/a> 2025</copyright><lastBuildDate>Wed, 09 Sep 2026 17:38:21 +0200</lastBuildDate><atom:link href="https://technically.kakwalab.ovh/index.xml" rel="self" type="application/rss+xml"/><item><title>Over-Engineered My Self-Hosting with Kubernetes</title><link>https://technically.kakwalab.ovh/posts/talos-k8s/</link><pubDate>Mon, 20 Apr 2026 12:55:15 +0100</pubDate><author>carpentier.pf@gmail.com (Pierre-François Carpentier)</author><guid>https://technically.kakwalab.ovh/posts/talos-k8s/</guid><description>&lt;h1 id="introduction">Introduction&lt;/h1>
 &lt;h2 id="too-honest-for-cv-driven-development">Too Honest For CV Driven Development&lt;/h2>
 &lt;p>Working at a &amp;ldquo;Big Tech&amp;rdquo; company has its perks: because of the scale such company operates at,
 you typically don&amp;rsquo;t have to deal with basic services like DNS, authentication or CI/CD as
@@ -4428,6 +4428,9 @@ The next pattern starts at 000023d0 and ends at 000023df, which again lines up r
 &lt;h1 id="3d-printing---ender3">3D Printing - Ender3&lt;/h1>
 &lt;p>collection page: &lt;a href="https://www.printables.com/@kakwa_3337391/collections/2696811" target="_blank">🔗&lt;/a>&lt;/p>
 &lt;ul>
+&lt;li>&lt;a href="https://www.printables.com/model/1106087" target="_blank">Ender 3 Spring Clip V-Slot Cover Set&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.printables.com/model/826676" target="_blank">Sherpa Mini &amp;amp; Micro universal holder for Ender 3&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.printables.com/model/476465" target="_blank">PSU fan cover&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://www.printables.com/model/1446310" target="_blank">Ender 3 X axis belt tensioner (lower screw remix)&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://www.printables.com/model/1437902" target="_blank">Mellow Fly - Gemini V3 mount brackets for Ender 3 Pro&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://www.printables.com/model/210992" target="_blank">Ender 3 Extruder Lever&lt;/a>&lt;/li>
@@ -4436,8 +4439,6 @@ The next pattern starts at 000023d0 and ends at 000023df, which again lines up r
 &lt;li>&lt;a href="https://www.printables.com/model/1417451" target="_blank">Logitech QuickCam Case&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://www.printables.com/model/46125" target="_blank">Back (Extruder) Cable Clip (Ender 3)&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://www.printables.com/model/1126623" target="_blank">PSU relocation Ender 3 Pro - Left Side with Removable Lid&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://www.printables.com/model/44686" target="_blank">Power Supply (PSU) fan silencer (Ender 3 &amp;amp; 3 PRO)&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://www.printables.com/model/309148" target="_blank">Ender 3 V2 X axis belt tensioner replacement&lt;/a>&lt;/li>
 &lt;/ul>
 &lt;hr>
 &lt;h1 id="3d-printing---misc">3D Printing - Misc&lt;/h1>
@@ -4449,13 +4450,34 @@ The next pattern starts at 000023d0 and ends at 000023df, which again lines up r
 &lt;h1 id="3d-printing---voron0">3D Printing - Voron0&lt;/h1>
 &lt;p>collection page: &lt;a href="https://www.printables.com/@kakwa_3337391/collections/2696833" target="_blank">🔗&lt;/a>&lt;/p>
 &lt;ul>
+&lt;li>&lt;a href="https://www.printables.com/model/991234" target="_blank">Voron v0 Umbilical Strain Relief v3&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.printables.com/model/888072" target="_blank">Voron 0.2 Logitech C270 tophat mount&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.printables.com/model/487010" target="_blank">AngryCAM Logitech C270 Voron&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://www.printables.com/model/451261" target="_blank">Voron 0.2 r1 Sherpa Mini &amp;amp; Micro StealthBurner&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://www.printables.com/model/1386216" target="_blank">Voron 0.2 - Build Plate Stop&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;hr>
+&lt;h1 id="ender3-toolhead">Ender3 Toolhead&lt;/h1>
+&lt;p>collection page: &lt;a href="https://www.printables.com/@kakwa_3337391/collections/3124576" target="_blank">🔗&lt;/a>&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://www.printables.com/model/941420" target="_blank">Ender-3 V2 Dual 4010 blower remix&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.printables.com/model/826676" target="_blank">Sherpa Mini &amp;amp; Micro universal holder for Ender 3&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;hr>
+&lt;h1 id="home---bathroom">Home - Bathroom&lt;/h1>
+&lt;p>collection page: &lt;a href="https://www.printables.com/@kakwa_3337391/collections/3003962" target="_blank">🔗&lt;/a>&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://www.printables.com/model/1644328" target="_blank">Toilettenschild Türschild Toilette Frau Mann v3&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.printables.com/model/968118" target="_blank">Soap dish (always dry soap)&lt;/a>&lt;/li>
 &lt;/ul>
 &lt;hr>
 &lt;h1 id="home---kitchen">Home - Kitchen&lt;/h1>
 &lt;p>collection page: &lt;a href="https://www.printables.com/@kakwa_3337391/collections/2696855" target="_blank">🔗&lt;/a>&lt;/p>
 &lt;ul>
+&lt;li>&lt;a href="https://www.printables.com/model/1640321" target="_blank">IKEA SKOLÄST bin door mount&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.printables.com/model/793889" target="_blank">Modular and sturdy pan holder 45°&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.printables.com/model/1234010" target="_blank">Hexa-Comb Drip Tray&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.printables.com/model/669216" target="_blank">Ikea Hallbar (10L) Lower Support Brackets&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://www.printables.com/model/1474613" target="_blank">Stackable Tea Holder&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://www.printables.com/model/1491662" target="_blank">Aldi-Sud Studio KM 2010 raised detector arm.&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://www.printables.com/model/650285" target="_blank">Modular Dish Stand / Rack / Organizer&lt;/a>&lt;/li>
@@ -4465,24 +4487,36 @@ The next pattern starts at 000023d0 and ends at 000023df, which again lines up r
 &lt;h1 id="home---toys">Home - Toys&lt;/h1>
 &lt;p>collection page: &lt;a href="https://www.printables.com/@kakwa_3337391/collections/2696859" target="_blank">🔗&lt;/a>&lt;/p>
 &lt;ul>
-&lt;li>&lt;a href="https://www.printables.com/model/1464181" target="_blank">扭扭圣诞树&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.printables.com/model/1525226" target="_blank">WAGO STAR Connector – Interlocking Assembly&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://www.printables.com/model/1422806" target="_blank">Toothless&amp;rsquo; girlfriend&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://www.printables.com/model/161938" target="_blank">Joycon Controller with Trigger buttons. Easy print&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://www.printables.com/model/456319" target="_blank">LEGO Compatible parts [v1] (120+ parts)&lt;/a>&lt;/li>
 &lt;/ul>
 &lt;hr>
+&lt;h1 id="maker---cable-management">Maker - Cable Management&lt;/h1>
+&lt;p>collection page: &lt;a href="https://www.printables.com/@kakwa_3337391/collections/3254080" target="_blank">🔗&lt;/a>&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://www.printables.com/model/1114855" target="_blank">Electrical strip (cable strip)&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.printables.com/model/1241519" target="_blank">Electric Cable Mounts&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;hr>
 &lt;h1 id="maker---tools">Maker - Tools&lt;/h1>
 &lt;p>collection page: &lt;a href="https://www.printables.com/@kakwa_3337391/collections/2696839" target="_blank">🔗&lt;/a>&lt;/p>
 &lt;ul>
+&lt;li>&lt;a href="https://www.printables.com/model/1669296" target="_blank">Black &amp;amp; Decker Vacuum Adapter&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.printables.com/model/237094" target="_blank">Black and Decker Random Orbit Sander to Ridgid Hose Adapter&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.printables.com/model/857687" target="_blank">Electrical Switch &amp;amp; Outlet Alignment Tool / Jig &amp;amp; Flat Surface Level - for Rectangle switches and Outlets&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://www.printables.com/model/1476330" target="_blank">One-Hand Multimeter Probe Tweezer Adapter&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://www.printables.com/model/1432435" target="_blank">&amp;ldquo;This Machine Has No Brain&amp;rdquo; sign&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://www.printables.com/model/122460" target="_blank">Inbus / Allen Key Holder&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.printables.com/model/122460" target="_blank">Inbus / Allen Key and Torx KeyHolder&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://www.printables.com/model/1214894" target="_blank">Stackable Desk Organizer&lt;/a>&lt;/li>
 &lt;/ul>
 &lt;hr>
 &lt;h1 id="maker---useful-parts">Maker - Useful Parts&lt;/h1>
 &lt;p>collection page: &lt;a href="https://www.printables.com/@kakwa_3337391/collections/2696861" target="_blank">🔗&lt;/a>&lt;/p>
 &lt;ul>
+&lt;li>&lt;a href="https://www.printables.com/model/1644379" target="_blank">Dupont connector bridge&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.printables.com/model/599970" target="_blank">PC Extension Card Slot Brackets in 30 Variation for Standard and Low Profile&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://www.printables.com/model/1464475" target="_blank">WAGO Feedthrough connector&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://www.printables.com/model/973403" target="_blank">4040 Cable Clip (Motedis)&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://www.printables.com/model/1376139" target="_blank">M3 Brackets&lt;/a>&lt;/li>
@@ -4491,6 +4525,9 @@ The next pattern starts at 000023d0 and ends at 000023df, which again lines up r
 &lt;h1 id="misc---random">Misc - Random&lt;/h1>
 &lt;p>collection page: &lt;a href="https://www.printables.com/@kakwa_3337391/collections/2696840" target="_blank">🔗&lt;/a>&lt;/p>
 &lt;ul>
+&lt;li>&lt;a href="https://www.printables.com/model/61368" target="_blank">Brush &amp;amp; pen holder&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.printables.com/model/1557875" target="_blank">Oval Paint brush holder&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.printables.com/model/885121" target="_blank">Template Ruler with Electrical Diagrams&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://www.printables.com/model/604793" target="_blank">A Trio of Halloween Ghost Cats&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://www.printables.com/model/1323316" target="_blank">Faber Castell Slide Rule Cursor&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://www.printables.com/model/1344603" target="_blank">Sun Microsystems Logo&lt;/a>&lt;/li>
@@ -4501,12 +4538,14 @@ The next pattern starts at 000023d0 and ends at 000023df, which again lines up r
 &lt;h1 id="outdoor---bike">Outdoor - Bike&lt;/h1>
 &lt;p>collection page: &lt;a href="https://www.printables.com/@kakwa_3337391/collections/2696837" target="_blank">🔗&lt;/a>&lt;/p>
 &lt;ul>
+&lt;li>&lt;a href="https://www.printables.com/model/888515" target="_blank">Kryptonite Key Cover&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.printables.com/model/1564651" target="_blank">Anti-Rattle Bushing for Kryptonite Evolution Bike Lock&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://www.printables.com/model/203205" target="_blank">Threaded Bicycle Crank Arm Cap&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://www.printables.com/model/779126" target="_blank">Kryptonite U-Lock Anti-Rattle Washer&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://www.printables.com/model/1368746" target="_blank">Axle cap for vintage bike pedals&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://www.printables.com/model/514279" target="_blank">Kryptonite bottle cage lock&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://www.printables.com/model/50907" target="_blank">Bike Lock Mount (Kryptonite)&lt;/a>&lt;/li>
-&lt;li>&lt;a href="https://www.printables.com/model/983449" target="_blank">Kryptonite Lock Mount (metric)&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://www.printables.com/model/983449" target="_blank">Kryptonite Lock Mount (Metric)&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://www.printables.com/model/1390929" target="_blank">Kryptonite Bottle Cage Holder + Cosmetic Bracket&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://www.printables.com/model/1393252" target="_blank">Bicycle Chain Installation Tool / Fahrradketten Montagehilfe&lt;/a>&lt;/li>
 &lt;/ul>
@@ -4514,11 +4553,12 @@ The next pattern starts at 000023d0 and ends at 000023df, which again lines up r
 &lt;h1 id="storage">Storage&lt;/h1>
 &lt;p>collection page: &lt;a href="https://www.printables.com/@kakwa_3337391/collections/2801529" target="_blank">🔗&lt;/a>&lt;/p>
 &lt;ul>
+&lt;li>&lt;a href="https://www.printables.com/model/1655213" target="_blank">Cable Clip - Cable Crab&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://www.printables.com/model/430132" target="_blank">Gridfinity 3x6 Dymo LetraTag Label Maker Holder&lt;/a>&lt;/li>
 &lt;li>&lt;a href="https://www.printables.com/model/1449027" target="_blank">Folding Drawers Mini-Cabinet&lt;/a>&lt;/li>
 &lt;/ul>
 &lt;hr>
-&lt;p>&lt;em>last refresh: 2025-11-25T10:33:51&lt;/em>&lt;/p></description></item><item><title>Interesting Links &amp; Tutorials</title><link>https://technically.kakwalab.ovh/interesting-links/</link><pubDate>Wed, 01 Jan 2025 00:00:00 +0200</pubDate><author>carpentier.pf@gmail.com (Pierre-François Carpentier)</author><guid>https://technically.kakwalab.ovh/interesting-links/</guid><description>&lt;p>A curated list of quality tutorials &amp;amp; articles.&lt;/p>
+&lt;p>&lt;em>last refresh: 2026-09-09T17:38:10&lt;/em>&lt;/p></description></item><item><title>Interesting Links &amp; Tutorials</title><link>https://technically.kakwalab.ovh/interesting-links/</link><pubDate>Wed, 01 Jan 2025 00:00:00 +0200</pubDate><author>carpentier.pf@gmail.com (Pierre-François Carpentier)</author><guid>https://technically.kakwalab.ovh/interesting-links/</guid><description>&lt;p>A curated list of quality tutorials &amp;amp; articles.&lt;/p>
 &lt;h1 id="contents">Contents&lt;/h1>
 &lt;ul>
 &lt;li>&lt;a href="#3d-printing--cad">3D Printing &amp;amp; CAD&lt;/a>&lt;/li>
