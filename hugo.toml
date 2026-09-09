@@ -101,7 +101,7 @@ code_color = "#303030"                   # was #000
 code_background_color = "#E0E0E0"
 code_block_color = "#fffaf3"            # was #FFF
 code_block_background_color = "#272822"
-content_bg_color = "#f6edda"            # slightly beige
+content_bg_color = "#fcf9f2"            # slightly beige
 date_color = "#515151"
 link_color = "#268BD2"
 list_color = "#5A5A5A"
@@ -122,7 +122,7 @@ list_color_dark = "#9D9D9D"
 post_title_color_dark = "#EDE7DB"
 table_border_color_dark = "#515151"
 table_stripe_color_dark = "#1E1E1E"
-text_color_dark = "#f6edda"             # was #EEE/white
+text_color_dark = "#fcf9f2"             # was #EEE/white
 
 [params.social]
 mastodon = "mastodon.social/@kakwa_"

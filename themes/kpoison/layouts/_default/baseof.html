@@ -3,7 +3,9 @@
         <div class="wrapper">
             {{ partial "sidebar/sidebar.html" . }}
             <main class="content container">
-                {{ block "main" . -}}{{- end }}
+                <div class="content-inner">
+                    {{ block "main" . -}}{{- end }}
+                </div>
             </main>
             {{ block "sidebar" . }}{{ end }}
         </div>

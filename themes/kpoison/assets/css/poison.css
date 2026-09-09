@@ -322,7 +322,7 @@ tbody tr:nth-child(odd) th {
 .article-toc ol {
     margin-left: 0;
     padding: 0;
-    padding-left: 0.5em;
+    padding-left: 1.75em;
 }
 
 .article-toc nav {
@@ -336,8 +336,8 @@ tbody tr:nth-child(odd) th {
     padding: 0;
 }
 .article-toc li {
-    margin-left: 20px;
-    margin-top: 2px;
+    margin-left: 23px;
+    margin-top: 2.3px;
 }
 .article-toc ol li {
     list-style: upper-roman;
@@ -358,15 +358,16 @@ tbody tr:nth-child(odd) th {
     font-weight: 300;
 }
 @media screen and (min-width: 100em) {
-    /* Main keeps Hyde max-width; TOC absorbs all remaining row width (scrollbar on viewport right). */
+    /* Content absorbs all remaining row width (scrollbar on viewport right / next to TOC);
+       the TOC itself always stays a fixed width. */
     .container.content {
-        flex-grow: 0;
+        flex-grow: 1;
         flex-shrink: 1;
     }
     .article-toc {
         display: block;
-        flex: 1 1 0;
-        width: auto;
+        flex: 0 0 20em;
+        width: 20em;
     }
 }
 .next-post {

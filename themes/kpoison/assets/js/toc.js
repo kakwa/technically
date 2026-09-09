@@ -95,6 +95,14 @@ window.addEventListener('DOMContentLoaded', () => {
         activeId = id;
     }
 
+    function isAtBottom() {
+        const epsilon = 0.1;
+        if (scrollContainer === window) {
+            return (window.scrollY + window.innerHeight) >= (document.documentElement.scrollHeight - epsilon);
+        }
+        return (scrollContainer.scrollTop + scrollContainer.clientHeight) >= (scrollContainer.scrollHeight - epsilon);
+    }
+
     function onScroll() {
         if (ticking) return;
         ticking = true;
@@ -108,6 +116,9 @@ window.addEventListener('DOMContentLoaded', () => {
                 } else {
                     break;
                 }
+            }
+            if (headingPositions.length > 0 && isAtBottom()) {
+                currentId = headingPositions[headingPositions.length - 1].id;
             }
             setActive(currentId);
             ticking = false;
