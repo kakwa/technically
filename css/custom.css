@@ -90,3 +90,23 @@ main h2, main h3, .blog-post h2, .blog-post h3 {
     padding-left: 10px;
   }
 }
+
+/* Decouple the scrollable content box from the readable text width: the box
+   itself fills all remaining row width so its scrollbar sits at the true edge
+   of the content column (viewport edge, or the fixed-width TOC) instead of
+   floating mid-page; the readable width is capped on .content-inner instead. */
+.container.content {
+  max-width: none;
+}
+
+@media (min-width: 48em) {
+  .content-inner {
+    max-width: 38rem;
+  }
+}
+
+@media (min-width: 64em) {
+  .content-inner {
+    max-width: 60%;
+  }
+}
